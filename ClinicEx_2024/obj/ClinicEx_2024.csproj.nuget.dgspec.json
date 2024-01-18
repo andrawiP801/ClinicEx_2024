@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\fulan\\Desktop\\Clinic-Ex_2024\\ClinicEx_2024\\ClinicEx_2024\\ClinicEx_2024.csproj": {}
+    "C:\\Users\\aguir\\Desktop\\ClinicEx_2024\\ClinicEx_2024\\ClinicEx_2024.csproj": {}
   },
   "projects": {
-    "C:\\Users\\fulan\\Desktop\\Clinic-Ex_2024\\ClinicEx_2024\\ClinicEx_2024\\ClinicEx_2024.csproj": {
+    "C:\\Users\\aguir\\Desktop\\ClinicEx_2024\\ClinicEx_2024\\ClinicEx_2024.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\fulan\\Desktop\\Clinic-Ex_2024\\ClinicEx_2024\\ClinicEx_2024\\ClinicEx_2024.csproj",
+        "projectUniqueName": "C:\\Users\\aguir\\Desktop\\ClinicEx_2024\\ClinicEx_2024\\ClinicEx_2024.csproj",
         "projectName": "ClinicEx_2024",
-        "projectPath": "C:\\Users\\fulan\\Desktop\\Clinic-Ex_2024\\ClinicEx_2024\\ClinicEx_2024\\ClinicEx_2024.csproj",
-        "packagesPath": "C:\\Users\\fulan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\fulan\\Desktop\\Clinic-Ex_2024\\ClinicEx_2024\\ClinicEx_2024\\obj\\",
+        "projectPath": "C:\\Users\\aguir\\Desktop\\ClinicEx_2024\\ClinicEx_2024\\ClinicEx_2024.csproj",
+        "packagesPath": "C:\\Users\\aguir\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\aguir\\Desktop\\ClinicEx_2024\\ClinicEx_2024\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\fulan\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\aguir\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
