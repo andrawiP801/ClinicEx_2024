@@ -7,6 +7,9 @@ namespace ClinicEx_2024
 {
     public partial class MainForm : Form
     {
+        private TextBox textBoxnombrep;
+        private TextBox textBoxapellidop;
+        private TextBox textBoxedadp;
         public MainForm()
         {
             InitializeFormComponents();
@@ -24,11 +27,52 @@ namespace ClinicEx_2024
                 TextAlign = ContentAlignment.MiddleCenter,
                 AutoSize = true
             };
+            Label labelnombrep = new Label
+            {
+                Text = "Nombre",
+                Location = new Point(300, 90),
+                AutoSize = true
+            };
+            textBoxnombrep = new TextBox
+            {
+                Location = new Point(300, 120),
+                Size = new Size(100, 50)
+            };
+            Label labelapellidop = new Label
+            {
+                Text = "Apellido",
+                Location = new Point(500, 90),
+                
+            };
+            textBoxapellidop = new TextBox
+            {
+                Location = new Point(500, 120),
+                Size = new Size(100, 50)
+            };
+            Label labeledadp = new Label
+            {
+                Text = "Edad",
+                Location = new Point(700, 90),
+                AutoSize = true
+            };
+            textBoxedadp = new TextBox
+            {
+                Location = new Point(700, 120),
+                Width = 50
+            };
+            Button selecciona = new Button
+            {
+                Text = "Selecciona paciente",
+                Location = new Point(900, 50),
+                AutoSize = true,
+                BackColor = Color.FromArgb(128, 0, 32),
+                ForeColor = Color.White
+            };
 
             Label labelFechaConsulta = new Label
             {
                 Text = "Fecha de consulta",
-                Location = new Point(10, 100),
+                Location = new Point(10, 90),
                 AutoSize = true
             };
             DateTimePicker dateTimePickerConsulta = new DateTimePicker
@@ -251,7 +295,15 @@ namespace ClinicEx_2024
                 Location = new Point(10, 1000),
                 Size = new Size(760, 100)
             };
-
+            Button Agregar = new Button
+            {
+                Text = "Agregar",
+                Location = new Point(950, 1000),
+                Size = new Size(100, 60),
+                BackColor = Color.FromArgb(128, 0, 32),
+                ForeColor = Color.White
+            };
+            Agregar.Click += new EventHandler(Agregar_Click);
 
             Panel panelScroll = new Panel
             {
@@ -261,6 +313,13 @@ namespace ClinicEx_2024
 
             panelScroll.SuspendLayout();
             panelScroll.Controls.Add(labelnombre);
+            panelScroll.Controls.Add(selecciona);
+            panelScroll.Controls.Add(labelnombrep);
+            panelScroll.Controls.Add(textBoxnombrep);
+            panelScroll.Controls.Add(labelapellidop);
+            panelScroll.Controls.Add(textBoxapellidop);
+            panelScroll.Controls.Add(labeledadp);
+            panelScroll.Controls.Add(textBoxedadp);
             panelScroll.Controls.Add(labelFechaConsulta);
             panelScroll.Controls.Add(dateTimePickerConsulta);
             panelScroll.Controls.Add(labelSignosVitales);
@@ -295,7 +354,7 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(textBoxHallazgos);
             panelScroll.Controls.Add(labelPruebasDiag);
             panelScroll.Controls.Add(textBoxPruebasDiag);
-
+            panelScroll.Controls.Add(Agregar);
             panelScroll.ResumeLayout(false);
             this.Controls.Add(panelScroll);
         }
@@ -307,10 +366,15 @@ namespace ClinicEx_2024
 
         }
 
-        private Label label1;
-
         private void label1_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void Agregar_Click(object sender, EventArgs e)
+        {
+            Clases.CPacientes objP = new Clases.CPacientes();
+            objP.guardarPacientes(textBoxnombrep, textBoxapellidop, textBoxedadp);
 
         }
     }
