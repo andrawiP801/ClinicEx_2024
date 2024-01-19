@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using static System.Windows.Forms.LinkLabel;
 
 namespace ClinicEx_2024
 {
@@ -8,7 +9,6 @@ namespace ClinicEx_2024
     {
         public MainForm()
         {
-            
             InitializeFormComponents();
         }
 
@@ -16,7 +16,7 @@ namespace ClinicEx_2024
         {
             this.Size = new Size(1200, 700);
             this.Text = "Registro de Expediente Médico";
-            
+
             Label labelnombre = new Label
             {
                 Text = "Consultorio San Francisco",
@@ -28,28 +28,29 @@ namespace ClinicEx_2024
             Label labelFechaConsulta = new Label
             {
                 Text = "Fecha de consulta",
-                Location = new Point(10, 80),
+                Location = new Point(10, 100),
                 AutoSize = true
             };
             DateTimePicker dateTimePickerConsulta = new DateTimePicker
             {
                 Format = DateTimePickerFormat.Short,
-                Location = new Point(170, 80)
+                Location = new Point(10, 120)
             };
 
 
-            Label labelServicio = new Label
+            Label labelSignosVitales = new Label
             {
-                Text = "Servicio",
-                Location = new Point(10, 150),
+                Text = "Signos vitales",
+                Location = new Point(10, 170),
                 AutoSize = true
             };
-            ComboBox comboBoxServicio = new ComboBox
-            {
-                Location = new Point(120, 150),
-                Width = 200
-            };
-            comboBoxServicio.Items.AddRange(new string[] { "Servicio 1", "Servicio 2", "Servicio 3" });
+            Label lineSV = new Label();
+            lineSV.AutoSize = false;
+            lineSV.Height = 2;
+            lineSV.BorderStyle = BorderStyle.Fixed3D;
+            lineSV.Width = this.Width;
+            lineSV.Location = new Point(0, 180);
+            lineSV.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
 
             Label labelPeso = new Label
@@ -60,7 +61,7 @@ namespace ClinicEx_2024
             };
             TextBox textBoxPeso = new TextBox
             {
-                Location = new Point(30, 250),
+                Location = new Point(10, 240),
                 Width = 50
             };
 
@@ -73,11 +74,12 @@ namespace ClinicEx_2024
             };
             TextBox textBoxTalla = new TextBox
             {
-                Location = new Point(120, 250),
+                Location = new Point(110, 240),
                 Width = 50
             };
 
             // IMC se calcularía automáticamente basado en el peso y la talla
+
             Label labelIMC = new Label
             {
                 Text = "IMC",
@@ -87,7 +89,7 @@ namespace ClinicEx_2024
             Label datoIMC = new Label
             {
                 Text = "--",
-                Location = new Point(220, 250),
+                Location = new Point(220, 240),
                 AutoSize = true
             };
 
@@ -99,35 +101,49 @@ namespace ClinicEx_2024
             };
             TextBox textBoxCintura = new TextBox
             {
-                Location = new Point(380, 250),
+                Location = new Point(300, 240),
                 Width = 50
             };
 
 
-            Label labelPresionSistolica = new Label
+            Label labelPresionArterial = new Label
             {
-                Text = "Presión arterial sistólica",
+                Text = "Presión arterial",
                 Location = new Point(600, 220),
                 AutoSize = true
             };
-            TextBox textBoxPresionSistolica = new TextBox
+            TextBox textBoxPresionArterial = new TextBox
             {
-                Location = new Point(680, 250),
+                Location = new Point(600, 240),
                 Width = 50
             };
 
 
-            Label labelPresionDiastolica = new Label
+            Label labelFrecuenciaCardiaca = new Label
             {
-                Text = "Presión arterial diastólica",
+                Text = "Frecuencia Cardiaca",
                 Location = new Point(800, 220),
                 AutoSize = true
             };
-            TextBox textBoxPresionDiastolica = new TextBox
+            TextBox textBoxFrecuenciaCardiaca = new TextBox
             {
-                Location = new Point(880, 250),
+                Location = new Point(800, 240),
                 Width = 50
             };
+
+            Label labelFrecuenciaRespiratoria = new Label
+            {
+                Text = "Frecuencia Respiratoria",
+                Location = new Point(1000, 220),
+                AutoSize = true
+            };
+            TextBox textBoxFrecuenciaRespiratoria = new TextBox
+            {
+                Location = new Point(1000, 240),
+                Width = 50
+            };
+
+
             Label temperaturalabel = new Label
             {
                 Text = "Temperatura",
@@ -136,9 +152,11 @@ namespace ClinicEx_2024
             };
             TextBox textBoxtemperatura = new TextBox
             {
-                Location = new Point(40, 350),
+                Location = new Point(10, 340),
                 Width = 50
             };
+
+
             Label saturacionlabel = new Label
             {
                 Text = "Saturación de oxígeno",
@@ -147,9 +165,11 @@ namespace ClinicEx_2024
             };
             TextBox textBoxsaturacion = new TextBox
             {
-                Location = new Point(370, 350),
+                Location = new Point(300, 340),
                 Width = 50
             };
+
+
             Label glucemialabel = new Label
             {
                 Text = "Glucemia",
@@ -158,9 +178,10 @@ namespace ClinicEx_2024
             };
             TextBox textBoxglucemia = new TextBox
             {
-                Location = new Point(620, 350),
+                Location = new Point(600, 340),
                 Width = 50
             };
+
 
             Label labelNotaMedica = new Label
             {
@@ -168,12 +189,13 @@ namespace ClinicEx_2024
                 Location = new Point(10, 400),
                 AutoSize = true
             };
-            TextBox textBoxNotaMedica = new TextBox
-            {
-                Multiline = true,
-                Location = new Point(10, 440),
-                Size = new Size(650, 100)
-            };
+            Label lineNM = new Label();
+            lineNM.AutoSize = false;
+            lineNM.Height = 2;
+            lineNM.BorderStyle = BorderStyle.Fixed3D;
+            lineNM.Width = this.Width;
+            lineNM.Location = new Point(0, 410);
+            lineNM.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
 
             Label labelPadecimientoActual = new Label
@@ -241,8 +263,8 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(labelnombre);
             panelScroll.Controls.Add(labelFechaConsulta);
             panelScroll.Controls.Add(dateTimePickerConsulta);
-            panelScroll.Controls.Add(labelServicio);
-            panelScroll.Controls.Add(comboBoxServicio);
+            panelScroll.Controls.Add(labelSignosVitales);
+            panelScroll.Controls.Add(lineSV);
             panelScroll.Controls.Add(labelPeso);
             panelScroll.Controls.Add(textBoxPeso);
             panelScroll.Controls.Add(labelTalla);
@@ -251,10 +273,12 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(datoIMC);
             panelScroll.Controls.Add(labelCintura);
             panelScroll.Controls.Add(textBoxCintura);
-            panelScroll.Controls.Add(labelPresionSistolica);
-            panelScroll.Controls.Add(textBoxPresionSistolica);
-            panelScroll.Controls.Add(labelPresionDiastolica);
-            panelScroll.Controls.Add(textBoxPresionDiastolica);
+            panelScroll.Controls.Add(labelPresionArterial);
+            panelScroll.Controls.Add(textBoxPresionArterial);
+            panelScroll.Controls.Add(labelFrecuenciaCardiaca);
+            panelScroll.Controls.Add(textBoxFrecuenciaCardiaca);
+            panelScroll.Controls.Add(labelFrecuenciaRespiratoria);
+            panelScroll.Controls.Add(textBoxFrecuenciaRespiratoria);
             panelScroll.Controls.Add(temperaturalabel);
             panelScroll.Controls.Add(textBoxtemperatura);
             panelScroll.Controls.Add(saturacionlabel);
@@ -262,7 +286,7 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(glucemialabel);
             panelScroll.Controls.Add(textBoxglucemia);
             panelScroll.Controls.Add(labelNotaMedica);
-            panelScroll.Controls.Add(textBoxNotaMedica);
+            panelScroll.Controls.Add(lineNM);
             panelScroll.Controls.Add(labelPadecimientoActual);
             panelScroll.Controls.Add(textBoxPadecimientoActual);
             panelScroll.Controls.Add(labelAntecedentesImportancia);
@@ -276,7 +300,7 @@ namespace ClinicEx_2024
             this.Controls.Add(panelScroll);
         }
 
-        
+
 
         private void MainForm_Load(object sender, EventArgs e)
         {
