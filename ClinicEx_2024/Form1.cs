@@ -10,6 +10,9 @@ namespace ClinicEx_2024
         private TextBox textBoxnombrep;
         private TextBox textBoxapellidop;
         private TextBox textBoxedadp;
+        private TextBox textBoxPeso;
+        private TextBox textBoxTalla;
+        private Label datoIMC;
         public MainForm()
         {
             InitializeFormComponents();
@@ -103,7 +106,7 @@ namespace ClinicEx_2024
                 Location = new Point(10, 220),
                 AutoSize = true
             };
-            TextBox textBoxPeso = new TextBox
+            textBoxPeso = new TextBox
             {
                 Location = new Point(10, 240),
                 Width = 50
@@ -116,7 +119,7 @@ namespace ClinicEx_2024
                 Location = new Point(110, 220),
                 AutoSize = true
             };
-            TextBox textBoxTalla = new TextBox
+            textBoxTalla = new TextBox
             {
                 Location = new Point(110, 240),
                 Width = 50
@@ -130,12 +133,15 @@ namespace ClinicEx_2024
                 Location = new Point(210, 220),
                 AutoSize = true
             };
-            Label datoIMC = new Label
+            datoIMC = new Label
             {
                 Text = "--",
-                Location = new Point(220, 240),
+                Location = new Point(210, 240),
                 AutoSize = true
             };
+            // Evento TextChanged para ambos TextBox
+            textBoxPeso.TextChanged += (sender, e) => CalcularIMC();
+            textBoxTalla.TextChanged += (sender, e) => CalcularIMC();
 
             Label labelCintura = new Label
             {
@@ -366,10 +372,27 @@ namespace ClinicEx_2024
 
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void CalcularIMC()
         {
-
+            if (float.TryParse(textBoxPeso.Text, out float peso) && float.TryParse(textBoxTalla.Text, out float talla))
+            {
+                if (talla > 0)
+                {
+                    // La talla debe estar en metros para calcular el IMC
+                    float tallaEnMetros = talla / 100;
+                    float imc = peso / (tallaEnMetros * tallaEnMetros);
+                    datoIMC.Text = imc.ToString("0.00"); // Formatea a dos decimales
+                }
+            }
+            else
+            {
+                // Si no se puede parsear, dejar el datoIMC con guiones o vacío.
+                datoIMC.Text = "--";
+            }
         }
+
+
+
 
         private void Agregar_Click(object sender, EventArgs e)
         {

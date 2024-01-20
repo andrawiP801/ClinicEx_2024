@@ -11,11 +11,12 @@ namespace ClinicEx_2024.Clases
     {
         public void guardarPacientes(TextBox textBoxnombrep, TextBox textBoxapellidop, TextBox textBoxedadp)
         {
+            int edad = int.Parse(textBoxedadp.Text);
             try
             {
                 CConexion obj = new CConexion();
                 String query = "insert into Pacientes (Nombre,Apellido,Edad)" +
-                    "values ('" + textBoxnombrep.Text + "','" + textBoxapellidop.Text + "','" + textBoxedadp.Text+ "');";
+                    "values ('" + textBoxnombrep.Text + "','" + textBoxapellidop.Text + "','" + edad+ "');";
                 MySqlCommand myComand = new MySqlCommand(query,obj.establecerConexion());
                 MySqlDataReader reader = myComand.ExecuteReader();
                 MessageBox.Show("agregado");

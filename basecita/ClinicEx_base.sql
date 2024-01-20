@@ -5,7 +5,7 @@ CREATE TABLE Pacientes (
     PacienteID INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(50),
     Apellido VARCHAR(50),
-    Edad VARCHAR(3)
+    Edad int
 );
 
 CREATE TABLE Visitas (
@@ -34,3 +34,4 @@ CREATE TABLE SignosVitales (
     Glucemia DECIMAL(5,2),
     FOREIGN KEY (VisitaID) REFERENCES Visitas(VisitaID)
 );
+select* from Pacientes;
