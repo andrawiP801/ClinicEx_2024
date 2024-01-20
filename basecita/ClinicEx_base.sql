@@ -35,3 +35,4 @@ CREATE TABLE SignosVitales (
     FOREIGN KEY (VisitaID) REFERENCES Visitas(VisitaID)
 );
 select* from Pacientes;
+select* from Visitas;

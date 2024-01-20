@@ -13,6 +13,10 @@ namespace ClinicEx_2024
         private TextBox textBoxPeso;
         private TextBox textBoxTalla;
         private Label datoIMC;
+        private TextBox textBoxPadecimientoActual;
+        private TextBox textBoxAntecedentesImportancia;
+        private TextBox textBoxHallazgos;
+        private TextBox textBoxPruebasDiag;
         public MainForm()
         {
             InitializeFormComponents();
@@ -254,7 +258,7 @@ namespace ClinicEx_2024
                 Location = new Point(10, 540),
                 AutoSize = true
             };
-            TextBox textBoxPadecimientoActual = new TextBox
+            textBoxPadecimientoActual = new TextBox
             {
                 Multiline = true,
                 Location = new Point(10, 580),
@@ -268,7 +272,7 @@ namespace ClinicEx_2024
                 Location = new Point(10, 680),
                 AutoSize = true
             };
-            TextBox textBoxAntecedentesImportancia = new TextBox
+            textBoxAntecedentesImportancia = new TextBox
             {
                 Multiline = true,
                 Location = new Point(10, 720),
@@ -281,7 +285,7 @@ namespace ClinicEx_2024
                 Location = new Point(10, 820),
                 AutoSize = true
             };
-            TextBox textBoxHallazgos = new TextBox
+            textBoxHallazgos = new TextBox
             {
                 Multiline = true,
                 Location = new Point(10, 860),
@@ -295,7 +299,7 @@ namespace ClinicEx_2024
                 Location = new Point(10, 960),
                 AutoSize = true
             };
-            TextBox textBoxPruebasDiag = new TextBox
+            textBoxPruebasDiag = new TextBox
             {
                 Multiline = true,
                 Location = new Point(10, 1000),
@@ -391,14 +395,25 @@ namespace ClinicEx_2024
             }
         }
 
-
-
-
         private void Agregar_Click(object sender, EventArgs e)
         {
             Clases.CPacientes objP = new Clases.CPacientes();
-            objP.guardarPacientes(textBoxnombrep, textBoxapellidop, textBoxedadp);
+            int pacienteID = objP.guardarPacientes(textBoxnombrep, textBoxapellidop, textBoxedadp);
 
+            if (pacienteID > 0)
+            {
+                DateTime fechaConsulta = DateTime.Now; 
+                string padecimientoActual = textBoxPadecimientoActual.Text; 
+                string antecedentesImportancia = textBoxAntecedentesImportancia.Text; 
+                string hallazgosExploracionFisica = textBoxHallazgos.Text; 
+                string pruebasDiagnosticasRealizadas = textBoxPruebasDiag.Text; 
+                objP.guardarVisita(pacienteID, fechaConsulta, padecimientoActual, antecedentesImportancia, hallazgosExploracionFisica, pruebasDiagnosticasRealizadas);
+            }
+            else
+            {
+                MessageBox.Show("No se pudo obtener el ID del paciente.");
+            }
         }
+
     }
 }
