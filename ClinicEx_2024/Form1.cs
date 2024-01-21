@@ -1,7 +1,10 @@
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 using static System.Windows.Forms.LinkLabel;
+using ClinicEx_2024.Properties;
+
 
 namespace ClinicEx_2024
 {
@@ -17,9 +20,12 @@ namespace ClinicEx_2024
         private TextBox textBoxAntecedentesImportancia;
         private TextBox textBoxHallazgos;
         private TextBox textBoxPruebasDiag;
+        Image logoImage = Properties.Resources.Logo;
+
         public MainForm()
         {
             InitializeFormComponents();
+            this.Icon = Properties.Resources.Icono;
         }
 
         private void InitializeFormComponents()
@@ -27,6 +33,13 @@ namespace ClinicEx_2024
             this.Size = new Size(1200, 700);
             this.Text = "Registro de Expediente Médico";
 
+            PictureBox pictureBox = new PictureBox
+            {
+                Size = new Size(75, 75),
+                Location = new Point(5, 5),
+                Image = logoImage,
+                SizeMode = PictureBoxSizeMode.Zoom
+            };
             Label labelnombre = new Label
             {
                 Text = "Consultorio San Francisco",
@@ -34,10 +47,12 @@ namespace ClinicEx_2024
                 TextAlign = ContentAlignment.MiddleCenter,
                 AutoSize = true
             };
+
+
             Label labelnombrep = new Label
             {
                 Text = "Nombre",
-                Location = new Point(300, 90),
+                Location = new Point(300, 100),
                 AutoSize = true
             };
             textBoxnombrep = new TextBox
@@ -45,21 +60,25 @@ namespace ClinicEx_2024
                 Location = new Point(300, 120),
                 Size = new Size(100, 50)
             };
+
+
             Label labelapellidop = new Label
             {
                 Text = "Apellido",
-                Location = new Point(500, 90),
-                
+                Location = new Point(500, 100),
+
             };
             textBoxapellidop = new TextBox
             {
                 Location = new Point(500, 120),
                 Size = new Size(100, 50)
             };
+
+
             Label labeledadp = new Label
             {
                 Text = "Edad",
-                Location = new Point(700, 90),
+                Location = new Point(700, 100),
                 AutoSize = true
             };
             textBoxedadp = new TextBox
@@ -67,6 +86,8 @@ namespace ClinicEx_2024
                 Location = new Point(700, 120),
                 Width = 50
             };
+
+
             Button selecciona = new Button
             {
                 Text = "Selecciona paciente",
@@ -79,7 +100,7 @@ namespace ClinicEx_2024
             Label labelFechaConsulta = new Label
             {
                 Text = "Fecha de consulta",
-                Location = new Point(10, 90),
+                Location = new Point(10, 100),
                 AutoSize = true
             };
             DateTimePicker dateTimePickerConsulta = new DateTimePicker
@@ -143,6 +164,7 @@ namespace ClinicEx_2024
                 Location = new Point(210, 240),
                 AutoSize = true
             };
+
             // Evento TextChanged para ambos TextBox
             textBoxPeso.TextChanged += (sender, e) => CalcularIMC();
             textBoxTalla.TextChanged += (sender, e) => CalcularIMC();
@@ -323,6 +345,7 @@ namespace ClinicEx_2024
 
             panelScroll.SuspendLayout();
             panelScroll.Controls.Add(labelnombre);
+            panelScroll.Controls.Add(pictureBox);
             panelScroll.Controls.Add(selecciona);
             panelScroll.Controls.Add(labelnombrep);
             panelScroll.Controls.Add(textBoxnombrep);
@@ -369,8 +392,6 @@ namespace ClinicEx_2024
             this.Controls.Add(panelScroll);
         }
 
-
-
         private void MainForm_Load(object sender, EventArgs e)
         {
 
@@ -378,13 +399,13 @@ namespace ClinicEx_2024
 
         private void CalcularIMC()
         {
-            if (float.TryParse(textBoxPeso.Text, out float peso) && float.TryParse(textBoxTalla.Text, out float talla))
+            if (double.TryParse(textBoxPeso.Text, out double peso) && double.TryParse(textBoxTalla.Text, out double talla))
             {
                 if (talla > 0)
                 {
                     // La talla debe estar en metros para calcular el IMC
-                    float tallaEnMetros = talla / 100;
-                    float imc = peso / (tallaEnMetros * tallaEnMetros);
+                    double tallaEnMetros = talla / 100;
+                    double imc = peso / (Math.Pow(tallaEnMetros, 2));
                     datoIMC.Text = imc.ToString("0.00"); // Formatea a dos decimales
                 }
             }
@@ -402,11 +423,11 @@ namespace ClinicEx_2024
 
             if (pacienteID > 0)
             {
-                DateTime fechaConsulta = DateTime.Now; 
-                string padecimientoActual = textBoxPadecimientoActual.Text; 
-                string antecedentesImportancia = textBoxAntecedentesImportancia.Text; 
-                string hallazgosExploracionFisica = textBoxHallazgos.Text; 
-                string pruebasDiagnosticasRealizadas = textBoxPruebasDiag.Text; 
+                DateTime fechaConsulta = DateTime.Now;
+                string padecimientoActual = textBoxPadecimientoActual.Text;
+                string antecedentesImportancia = textBoxAntecedentesImportancia.Text;
+                string hallazgosExploracionFisica = textBoxHallazgos.Text;
+                string pruebasDiagnosticasRealizadas = textBoxPruebasDiag.Text;
                 objP.guardarVisita(pacienteID, fechaConsulta, padecimientoActual, antecedentesImportancia, hallazgosExploracionFisica, pruebasDiagnosticasRealizadas);
             }
             else
@@ -415,5 +436,14 @@ namespace ClinicEx_2024
             }
         }
 
+        private void MainForm_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
