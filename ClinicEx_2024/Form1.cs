@@ -12,8 +12,7 @@ namespace ClinicEx_2024
     public partial class MainForm : Form
     {
         private TextBox textBoxnombrep;
-        private TextBox textBoxapellidop;
-        private TextBox textBoxedadp;
+        private TextBox textBoxapellidop, textBoxapellidom;
         private TextBox textBoxSexo;
         private TextBox textBoxPeso;
         private TextBox textBoxTalla;
@@ -21,15 +20,29 @@ namespace ClinicEx_2024
         private TextBox textBoxPadecimientoActual;
         private TextBox textBoxAntecedentesImportancia;
         private TextBox textBoxHallazgos;
-        private TextBox textBoxPruebasDiag;  
+        private TextBox textBoxPruebasDiag;
+        private TextBox textBoxDiagnostico, textBoxTratamiento, textBoxPronostico;
+        private DateTimePicker dateTimePickerFechaN;
+        private Panel panelScroll;
 
         Image logoImage = Properties.Resources.Logo;
 
         public MainForm()
         {
             InitializeFormComponents();
+            panelScroll.BackColor = Color.LightBlue;
             CambiarFuenteLabels(this, "Century", 10);
             this.Icon = Properties.Resources.Icono;
+
+            AjustarAnchoTextBox(textBoxPadecimientoActual);
+            AjustarAnchoTextBox(textBoxAntecedentesImportancia);
+            AjustarAnchoTextBox(textBoxHallazgos);
+            AjustarAnchoTextBox(textBoxPruebasDiag);
+            AjustarAnchoTextBox(textBoxDiagnostico);
+            AjustarAnchoTextBox(textBoxTratamiento);
+            AjustarAnchoTextBox(textBoxPronostico);
+
+            this.Resize += MainForm_Resize;
         }
 
         private void InitializeFormComponents()
@@ -68,39 +81,53 @@ namespace ClinicEx_2024
 
             Label labelapellidop = new Label
             {
-                Text = "Apellido",
-                Location = new Point(500, 100),
-
+                Text = "Apellido Paterno",
+                Location = new Point(420, 100),
+                AutoSize = true
             };
             textBoxapellidop = new TextBox
             {
-                Location = new Point(500, 120),
+                Location = new Point(420, 120),
                 Size = new Size(100, 50)
             };
 
 
-            Label labeledadp = new Label
+            Label labelapellidom = new Label
             {
-                Text = "Edad",
+                Text = "Apellido Materno",
+                Location = new Point(550, 100),
+                AutoSize = true
+            };
+            textBoxapellidom = new TextBox
+            {
+                Location = new Point(550, 120),
+                Size = new Size(100, 50)
+            };
+
+
+            Label labelFechaN = new Label
+            {
+                Text = "Fecha Nacimiento",
                 Location = new Point(700, 100),
                 AutoSize = true
             };
-            textBoxedadp = new TextBox
+            dateTimePickerFechaN = new DateTimePicker
             {
+                Format = DateTimePickerFormat.Short,
                 Location = new Point(700, 120),
-                Width = 50
-            };
+                Width = 120
+        };
 
 
             Label labelsexo = new Label
             {
                 Text = "Sexo",
-                Location = new Point(900, 100),
+                Location = new Point(950, 100),
                 AutoSize = true
             };
             textBoxSexo = new TextBox
             {
-                Location = new Point(900, 120),
+                Location = new Point(950, 120),
                 Width = 50
             };
 
@@ -123,7 +150,8 @@ namespace ClinicEx_2024
             DateTimePicker dateTimePickerConsulta = new DateTimePicker
             {
                 Format = DateTimePickerFormat.Short,
-                Location = new Point(10, 120)
+                Location = new Point(10, 120),
+                Width = 120
             };
 
 
@@ -265,16 +293,29 @@ namespace ClinicEx_2024
             Label glucemialabel = new Label
             {
                 Text = "Glucemia",
-                Location = new Point(300, 320),
+                Location = new Point(250, 320),
                 AutoSize = true
             };
             TextBox textBoxglucemia = new TextBox
             {
-                Location = new Point(300, 340),
+                Location = new Point(250, 340),
                 Width = 50
             };
 
-            
+
+            Label alergiaslabel = new Label
+            {
+                Text = "Alergias",
+                Location = new Point(350, 320),
+                AutoSize = true
+            };
+            TextBox textBoxalergias = new TextBox
+            {
+                Location = new Point(350, 340),
+                Width = 50
+            };
+
+
             Label labelNotaMedica = new Label
             {
                 Text = "Nota médica",
@@ -293,13 +334,13 @@ namespace ClinicEx_2024
             Label labelPadecimientoActual = new Label
             {
                 Text = "Padecimiento actual",
-                Location = new Point(10, 540),
+                Location = new Point(10, 440),
                 AutoSize = true
             };
             textBoxPadecimientoActual = new TextBox
             {
                 Multiline = true,
-                Location = new Point(10, 580),
+                Location = new Point(10, 460),
                 Size = new Size(650, 100)
             };
 
@@ -307,26 +348,26 @@ namespace ClinicEx_2024
             Label labelAntecedentesImportancia = new Label
             {
                 Text = "Antecedentes de importancia",
-                Location = new Point(10, 680),
+                Location = new Point(10, 580),
                 AutoSize = true
             };
             textBoxAntecedentesImportancia = new TextBox
             {
                 Multiline = true,
-                Location = new Point(10, 720),
+                Location = new Point(10, 600),
                 Size = new Size(650, 100)
             };
 
             Label labelHallazgos = new Label
             {
                 Text = "Hallazgos en exploración física",
-                Location = new Point(10, 820),
+                Location = new Point(10, 720),
                 AutoSize = true
             };
             textBoxHallazgos = new TextBox
             {
                 Multiline = true,
-                Location = new Point(10, 860),
+                Location = new Point(10, 740),
                 Size = new Size(760, 100)
             };
 
@@ -334,26 +375,113 @@ namespace ClinicEx_2024
             Label labelPruebasDiag = new Label
             {
                 Text = "Pruebas diagnósticas realizadas",
-                Location = new Point(10, 960),
+                Location = new Point(10, 860),
                 AutoSize = true
             };
             textBoxPruebasDiag = new TextBox
             {
                 Multiline = true,
-                Location = new Point(10, 1000),
+                Location = new Point(10, 880),
                 Size = new Size(760, 100)
             };
+
+
+            Label labelDiagnostico = new Label
+            {
+                Text = "Diagnóstico",
+                Location = new Point(10, 1000),
+                AutoSize = true
+            };
+            textBoxDiagnostico = new TextBox
+            {
+                Multiline = true,
+                Location = new Point(10, 1020),
+                Size = new Size(760, 100)
+            };
+
+
+            Label labelTratamiento = new Label
+            {
+                Text = "Tratamiento",
+                Location = new Point(10, 1140),
+                AutoSize = true
+            };
+            textBoxTratamiento = new TextBox
+            {
+                Multiline = true,
+                Location = new Point(10, 1160),
+                Size = new Size(760, 100)
+            };
+
+
+            Label labelPronostico = new Label
+            {
+                Text = "Pronóstico",
+                Location = new Point(10, 1280),
+                AutoSize = true
+            };
+            textBoxPronostico = new TextBox
+            {
+                Multiline = true,
+                Location = new Point(10, 1300),
+                Size = new Size(760, 100)
+            };
+
+
+            Label labelMedico = new Label
+            {
+                Text = "Médico",
+                Location = new Point(10, 1430),
+                AutoSize = true
+            };
+            Label lineMed = new Label();
+            lineMed.AutoSize = false;
+            lineMed.Height = 2;
+            lineMed.BorderStyle = BorderStyle.Fixed3D;
+            lineMed.Width = this.Width;
+            lineMed.Location = new Point(0, 1440);
+            lineMed.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+
+            Label labelDatoNom = new Label
+            {
+                Text = "Nombre del Médico",
+                Location = new Point(25, 1460),
+                AutoSize = true
+            };
+            Label labelDatoCed = new Label
+            {
+                Text = "Cédula Profesional",
+                Location = new Point(600, 1460),
+                AutoSize = true
+            };
+
+
+            Label labelNombreMedico = new Label
+            {
+                Text = "FABIOLA ALEJANDRA MARQUEZ CADENA",
+                Location = new Point(25, 1485),
+                AutoSize = true
+            };
+
+            Label labelCedulaPro = new Label
+            {
+                Text = "4443217",
+                Location = new Point(600, 1485),
+                AutoSize = true
+            };
+
             Button Agregar = new Button
             {
                 Text = "Agregar",
-                Location = new Point(950, 1000),
+                Location = new Point(1030, 1480),
                 Size = new Size(100, 60),
                 BackColor = Color.FromArgb(128, 0, 32),
                 ForeColor = Color.White
             };
             Agregar.Click += new EventHandler(Agregar_Click);
 
-            Panel panelScroll = new Panel
+            panelScroll = new Panel
             {
                 AutoScroll = true,
                 Dock = DockStyle.Fill
@@ -367,8 +495,10 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(textBoxnombrep);
             panelScroll.Controls.Add(labelapellidop);
             panelScroll.Controls.Add(textBoxapellidop);
-            panelScroll.Controls.Add(labeledadp);
-            panelScroll.Controls.Add(textBoxedadp);
+            panelScroll.Controls.Add(labelapellidom);
+            panelScroll.Controls.Add(textBoxapellidom);
+            panelScroll.Controls.Add(labelFechaN);
+            panelScroll.Controls.Add(dateTimePickerFechaN);
             panelScroll.Controls.Add(labelsexo);
             panelScroll.Controls.Add(textBoxSexo);
             panelScroll.Controls.Add(labelFechaConsulta);
@@ -395,6 +525,8 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(textBoxsaturacion);
             panelScroll.Controls.Add(glucemialabel);
             panelScroll.Controls.Add(textBoxglucemia);
+            panelScroll.Controls.Add(alergiaslabel);
+            panelScroll.Controls.Add(textBoxalergias);
             panelScroll.Controls.Add(labelNotaMedica);
             panelScroll.Controls.Add(lineNM);
             panelScroll.Controls.Add(labelPadecimientoActual);
@@ -405,6 +537,18 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(textBoxHallazgos);
             panelScroll.Controls.Add(labelPruebasDiag);
             panelScroll.Controls.Add(textBoxPruebasDiag);
+            panelScroll.Controls.Add(labelDiagnostico);
+            panelScroll.Controls.Add(textBoxDiagnostico);
+            panelScroll.Controls.Add(labelTratamiento);
+            panelScroll.Controls.Add(textBoxTratamiento);
+            panelScroll.Controls.Add(labelPronostico);
+            panelScroll.Controls.Add(textBoxPronostico);
+            panelScroll.Controls.Add(labelMedico);
+            panelScroll.Controls.Add(lineMed);
+            panelScroll.Controls.Add(labelDatoNom);
+            panelScroll.Controls.Add(labelDatoCed);
+            panelScroll.Controls.Add(labelNombreMedico);
+            panelScroll.Controls.Add(labelCedulaPro);
             panelScroll.Controls.Add(Agregar);
             panelScroll.ResumeLayout(false);
             this.Controls.Add(panelScroll);
@@ -437,7 +581,7 @@ namespace ClinicEx_2024
         private void Agregar_Click(object sender, EventArgs e)
         {
             Clases.CPacientes objP = new Clases.CPacientes();
-            int pacienteID = objP.guardarPacientes(textBoxnombrep, textBoxapellidop, textBoxedadp);
+            int pacienteID = objP.guardarPacientes(textBoxnombrep, textBoxapellidop, dateTimePickerFechaN);
 
             if (pacienteID > 0)
             {
@@ -470,6 +614,34 @@ namespace ClinicEx_2024
             }
         }
 
+        private void btnEnviar_Click(object sender, EventArgs e)
+        {
+            DateTime fechaNacimiento = dateTimePickerFechaN.Value;
+            string edad = CalcularEdad(fechaNacimiento);
+        }
+
+        private string CalcularEdad(DateTime fechaNacimiento)
+        {
+            DateTime hoy = DateTime.Today;
+            int años = hoy.Year - fechaNacimiento.Year;
+            int meses = hoy.Month - fechaNacimiento.Month;
+            int dias = hoy.Day - fechaNacimiento.Day;
+
+            if (dias < 0)
+            {
+                meses--;
+                dias += DateTime.DaysInMonth(hoy.Year, hoy.Month - 1);
+            }
+
+            if (meses < 0)
+            {
+                años--;
+                meses += 12;
+            }
+
+            return $"{años} años, {meses} meses y {dias} días";
+        }
+
         private void MainForm_Load_1(object sender, EventArgs e)
         {
 
@@ -478,6 +650,24 @@ namespace ClinicEx_2024
         private void button1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void AjustarAnchoTextBox(TextBox textBox)
+        {
+            int margenDerecho = 150 + panelScroll.Padding.Right;
+            textBox.Width = panelScroll.ClientSize.Width - textBox.Location.X - margenDerecho;
+            textBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            AjustarAnchoTextBox(textBoxPadecimientoActual);
+            AjustarAnchoTextBox(textBoxAntecedentesImportancia);
+            AjustarAnchoTextBox(textBoxHallazgos);
+            AjustarAnchoTextBox(textBoxPruebasDiag);
+            AjustarAnchoTextBox(textBoxDiagnostico);
+            AjustarAnchoTextBox(textBoxTratamiento);
+            AjustarAnchoTextBox(textBoxPronostico);
         }
     }
 }

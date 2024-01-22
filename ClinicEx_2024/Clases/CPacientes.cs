@@ -9,7 +9,7 @@ namespace ClinicEx_2024.Clases
 {
     internal class CPacientes
     {
-        public int guardarPacientes(TextBox textBoxnombrep, TextBox textBoxapellidop, TextBox textBoxedadp)
+        public int guardarPacientes(TextBox textBoxnombrep, TextBox textBoxapellidop, DateTimePicker textBoxedadp)
         {
             int pacienteID = 0;
             int edad = int.Parse(textBoxedadp.Text);
