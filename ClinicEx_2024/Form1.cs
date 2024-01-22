@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using static System.Windows.Forms.LinkLabel;
 using ClinicEx_2024.Properties;
+using System.Drawing.Text;
 
 
 namespace ClinicEx_2024
@@ -13,18 +14,21 @@ namespace ClinicEx_2024
         private TextBox textBoxnombrep;
         private TextBox textBoxapellidop;
         private TextBox textBoxedadp;
+        private TextBox textBoxSexo;
         private TextBox textBoxPeso;
         private TextBox textBoxTalla;
         private Label datoIMC;
         private TextBox textBoxPadecimientoActual;
         private TextBox textBoxAntecedentesImportancia;
         private TextBox textBoxHallazgos;
-        private TextBox textBoxPruebasDiag;
+        private TextBox textBoxPruebasDiag;  
+
         Image logoImage = Properties.Resources.Logo;
 
         public MainForm()
         {
             InitializeFormComponents();
+            CambiarFuenteLabels(this, "Century", 10);
             this.Icon = Properties.Resources.Icono;
         }
 
@@ -88,6 +92,19 @@ namespace ClinicEx_2024
             };
 
 
+            Label labelsexo = new Label
+            {
+                Text = "Sexo",
+                Location = new Point(900, 100),
+                AutoSize = true
+            };
+            textBoxSexo = new TextBox
+            {
+                Location = new Point(900, 120),
+                Width = 50
+            };
+
+
             Button selecciona = new Button
             {
                 Text = "Selecciona paciente",
@@ -125,140 +142,139 @@ namespace ClinicEx_2024
             lineSV.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
 
-            Label labelPeso = new Label
-            {
-                Text = "Peso (kg)",
-                Location = new Point(10, 220),
-                AutoSize = true
-            };
-            textBoxPeso = new TextBox
-            {
-                Location = new Point(10, 240),
-                Width = 50
-            };
-
-
-            Label labelTalla = new Label
-            {
-                Text = "Talla (cm)",
-                Location = new Point(110, 220),
-                AutoSize = true
-            };
-            textBoxTalla = new TextBox
-            {
-                Location = new Point(110, 240),
-                Width = 50
-            };
-
-            // IMC se calcularía automáticamente basado en el peso y la talla
-
-            Label labelIMC = new Label
-            {
-                Text = "IMC",
-                Location = new Point(210, 220),
-                AutoSize = true
-            };
-            datoIMC = new Label
-            {
-                Text = "--",
-                Location = new Point(210, 240),
-                AutoSize = true
-            };
-
-            // Evento TextChanged para ambos TextBox
-            textBoxPeso.TextChanged += (sender, e) => CalcularIMC();
-            textBoxTalla.TextChanged += (sender, e) => CalcularIMC();
-
-            Label labelCintura = new Label
-            {
-                Text = "Circunferencia de cintura (cm)",
-                Location = new Point(300, 220),
-                AutoSize = true
-            };
-            TextBox textBoxCintura = new TextBox
-            {
-                Location = new Point(300, 240),
-                Width = 50
-            };
-
-
             Label labelPresionArterial = new Label
             {
                 Text = "Presión arterial",
-                Location = new Point(600, 220),
+                Location = new Point(15, 220),
                 AutoSize = true
             };
             TextBox textBoxPresionArterial = new TextBox
             {
-                Location = new Point(600, 240),
-                Width = 50
-            };
-
-
-            Label labelFrecuenciaCardiaca = new Label
-            {
-                Text = "Frecuencia Cardiaca",
-                Location = new Point(800, 220),
-                AutoSize = true
-            };
-            TextBox textBoxFrecuenciaCardiaca = new TextBox
-            {
-                Location = new Point(800, 240),
-                Width = 50
-            };
-
-            Label labelFrecuenciaRespiratoria = new Label
-            {
-                Text = "Frecuencia Respiratoria",
-                Location = new Point(1000, 220),
-                AutoSize = true
-            };
-            TextBox textBoxFrecuenciaRespiratoria = new TextBox
-            {
-                Location = new Point(1000, 240),
-                Width = 50
+                Location = new Point(15, 240),
+                Width = 90
             };
 
 
             Label temperaturalabel = new Label
             {
                 Text = "Temperatura",
-                Location = new Point(10, 320),
+                Location = new Point(150, 220),
                 AutoSize = true
             };
             TextBox textBoxtemperatura = new TextBox
             {
-                Location = new Point(10, 340),
-                Width = 50
+                Location = new Point(150, 240),
+                Width = 70
+            };
+
+
+            Label labelFrecuenciaCardiaca = new Label
+            {
+                Text = "Frecuencia Cardiaca",
+                Location = new Point(270, 220),
+                AutoSize = true
+            };
+            TextBox textBoxFrecuenciaCardiaca = new TextBox
+            {
+                Location = new Point(270, 240),
+                Width = 115
+            };
+
+
+            Label labelFrecuenciaRespiratoria = new Label
+            {
+                Text = "Frecuencia Respiratoria",
+                Location = new Point(435, 220),
+                AutoSize = true
+            };
+            TextBox textBoxFrecuenciaRespiratoria = new TextBox
+            {
+                Location = new Point(435, 240),
+                Width = 127
+            };
+
+
+            Label labelPeso = new Label
+            {
+                Text = "Peso (kg)",
+                Location = new Point(620, 220),
+                AutoSize = true
+            };
+            textBoxPeso = new TextBox
+            {
+                Location = new Point(620, 240),
+                Width = 53
+            };
+
+
+            Label labelTalla = new Label
+            {
+                Text = "Talla (cm)",
+                Location = new Point(720, 220),
+                AutoSize = true
+            };
+            textBoxTalla = new TextBox
+            {
+                Location = new Point(720, 240),
+                Width = 55
+            };
+
+
+            Label labelIMC = new Label
+            {
+                Text = "IMC",
+                Location = new Point(820, 220),
+                AutoSize = true
+            };
+            datoIMC = new Label
+            {
+                Text = "--",
+                Location = new Point(820, 240),
+                AutoSize = true
+            };
+            textBoxPeso.TextChanged += (sender, e) => CalcularIMC();
+            textBoxTalla.TextChanged += (sender, e) => CalcularIMC();
+
+
+            Label labelCintura = new Label
+            {
+                Text = "Circunferencia de cintura (cm)",
+                Location = new Point(920, 220),
+                AutoSize = true
+            };
+            TextBox textBoxCintura = new TextBox
+            {
+                Location = new Point(920, 240),
+                Width = 165
             };
 
 
             Label saturacionlabel = new Label
             {
                 Text = "Saturación de oxígeno",
-                Location = new Point(300, 320),
+                Location = new Point(10, 320),
                 AutoSize = true
             };
             TextBox textBoxsaturacion = new TextBox
             {
-                Location = new Point(300, 340),
-                Width = 50
+                Location = new Point(10, 340),
+                Width = 105
             };
 
 
             Label glucemialabel = new Label
             {
                 Text = "Glucemia",
-                Location = new Point(600, 320),
+                Location = new Point(300, 320),
                 AutoSize = true
             };
             TextBox textBoxglucemia = new TextBox
             {
-                Location = new Point(600, 340),
+                Location = new Point(300, 340),
                 Width = 50
             };
 
-
+            
             Label labelNotaMedica = new Label
             {
                 Text = "Nota médica",
@@ -353,6 +369,8 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(textBoxapellidop);
             panelScroll.Controls.Add(labeledadp);
             panelScroll.Controls.Add(textBoxedadp);
+            panelScroll.Controls.Add(labelsexo);
+            panelScroll.Controls.Add(textBoxSexo);
             panelScroll.Controls.Add(labelFechaConsulta);
             panelScroll.Controls.Add(dateTimePickerConsulta);
             panelScroll.Controls.Add(labelSignosVitales);
@@ -433,6 +451,22 @@ namespace ClinicEx_2024
             else
             {
                 MessageBox.Show("No se pudo obtener el ID del paciente.");
+            }
+        }
+        private void CambiarFuenteLabels(Control controlPadre, string nombreFuente, float nuevoTamano)
+        {
+            foreach (Control control in controlPadre.Controls)
+            {
+                if (control is Label label)
+                {
+                    label.Font = new Font(nombreFuente, nuevoTamano, label.Font.Style);
+                }
+
+                // Si el control tiene controles hijos, busca Labels dentro de ellos también
+                if (control.HasChildren)
+                {
+                    CambiarFuenteLabels(control, nombreFuente, nuevoTamano);
+                }
             }
         }
 
