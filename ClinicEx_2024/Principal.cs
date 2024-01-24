@@ -7,16 +7,16 @@ namespace ClinicEx_2024
         private Button buscar;
         private Button miBoton;
         private Label labelNombre;
-        private TextBox textBoxNombre;
+        public TextBox textBoxNombre;
         private Label labelApellidoPaterno;
-        private TextBox textBoxApellidoPaterno;
+        public TextBox textBoxApellidoPaterno;
         private Label labelApellidoMaterno;
-        private TextBox textBoxApellidoMaterno;
+        public TextBox textBoxApellidoMaterno;
         private Label labelFechaNacimiento;
         private Label labelSexo;
         private Label labelConsultasAnteriores;
         private DateTimePicker dateTimePickerFechaNacimiento;
-        private ComboBox comboBoxSexo;
+        public ComboBox comboBoxSexo;
         Image logoImage = Properties.Resources.Logo;
         private PictureBox pictureBox;
 
@@ -28,6 +28,7 @@ namespace ClinicEx_2024
             this.Height = 700;
             this.Icon = Properties.Resources.Icono;
             this.MaximizeBox = false;
+
 
             pictureBox = new PictureBox();
             pictureBox.Location = new Point(5, 5);
@@ -69,7 +70,7 @@ namespace ClinicEx_2024
             this.Controls.Add(textBoxApellidoPaterno);
 
             labelApellidoMaterno = new Label();
-            labelApellidoMaterno.Text = "Apellido materno*:";
+            labelApellidoMaterno.Text = "Apellido materno:";
             labelApellidoMaterno.Location = new Point(400, 240);
             labelApellidoMaterno.Size = new Size(400, 30);
             labelApellidoMaterno.Font = new Font(labelApellidoMaterno.Font, FontStyle.Bold);
@@ -91,10 +92,11 @@ namespace ClinicEx_2024
             dateTimePickerFechaNacimiento.Location = new Point(400, 350);
             dateTimePickerFechaNacimiento.Format = DateTimePickerFormat.Short;
             dateTimePickerFechaNacimiento.Width = 150;
+            dateTimePickerFechaNacimiento.ValueChanged += new EventHandler(dateTimePickerFechaNacimiento_ValueChanged);
             this.Controls.Add(dateTimePickerFechaNacimiento);
 
             labelSexo = new Label();
-            labelSexo.Text = "Sexo*:";
+            labelSexo.Text = "Sexo:";
             labelSexo.Location = new Point(700, 320);
             labelSexo.Font = new Font(labelSexo.Font, FontStyle.Bold);
             this.Controls.Add(labelSexo);
@@ -153,7 +155,24 @@ namespace ClinicEx_2024
             );
         }
 
-        private void buscarClick(object sender, EventArgs e)
+
+        private void dateTimePickerFechaNacimiento_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime birthDate = dateTimePickerFechaNacimiento.Value;
+            int age = CalculateAge(birthDate);
+            // Assuming you have a label to display the age
+            labelFechaNacimiento.Text = "Edad: " + age.ToString() + " años";
+        }
+
+        private int CalculateAge(DateTime birthDate)
+        {
+            int age = DateTime.Today.Year - birthDate.Year;
+            if (birthDate > DateTime.Today.AddYears(-age)) age--;
+            return age;
+        }
+    
+
+    private void buscarClick(object sender, EventArgs e)
         {
             if (buscar.Text == "Buscar")
             {
@@ -161,40 +180,58 @@ namespace ClinicEx_2024
 
                 string nombre = textBoxNombre.Text;
                 string apellidoP = textBoxApellidoPaterno.Text;
-                string apellidoM = textBoxApellidoMaterno.Text;
                 DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value;
-                string sexo = comboBoxSexo.SelectedItem.ToString();
 
-                int pacienteID = objP.buscarPaciente(
-                    nombre,
-                    apellidoP,
-                    apellidoM,
-                    fechaNacimiento,
-                    sexo
-                );
-
+                int pacienteID = objP.buscarPaciente(nombre, apellidoP, fechaNacimiento);
                 if (pacienteID != 0)
                 {
+                    // Aquí asumimos que tienes un método que retorna los datos del paciente
+                    var paciente = objP.obtenerDatosPaciente(pacienteID);
+
                     MessageBox.Show("Paciente encontrado. ID: " + pacienteID);
-                    // Guardar el pacienteID en una variable para usarlo más tarde
-                    // Luego dirigir a la ventana de "Nueva Consulta"
                     buscar.Size = new Size(150, 40);
                     buscar.Text = "Nueva consulta";
                     buscar.Location = new Point(650, 400);
                     miBoton.Enabled = false;
+
+                    // Asumiendo que 'paciente' es un objeto con las propiedades 'ApellidoM' y 'Sexo'
+                    textBoxApellidoMaterno.Text = paciente.ApellidoM;
+                    comboBoxSexo.SelectedItem = paciente.Sexo;
                 }
                 else
                 {
                     MessageBox.Show("El Paciente no está Registrado");
-                }                
+                }
             }
-            else if (buscar.Text == "Nueva Consulta")
+
+            else if (buscar.Text == "Nueva consulta")
             {
-                MainForm nform = new MainForm();
+                Clases.CPacientes objP = new Clases.CPacientes();
+
+                string nombre = textBoxNombre.Text;
+                string apellidoPaterno = textBoxApellidoPaterno.Text;
+                string apellidoMaterno = textBoxApellidoMaterno.Text;
+                DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value;
+                string sexo = comboBoxSexo.SelectedItem.ToString();
+                int edad = CalculateAge(fechaNacimiento);
+
+                int pacienteID = objP.buscarPaciente(nombre, apellidoPaterno, fechaNacimiento);
+
+                MainForm nform = new MainForm
+                {
+                    PacienteID = pacienteID,
+                    Nombre = nombre,
+                    ApellidoPaterno = apellidoPaterno,
+                    ApellidoMaterno = apellidoMaterno,
+                    Sexo = sexo,
+                    Edad = edad
+                };
+
                 nform.Show();
                 this.Hide();
                 nform.FormClosed += (s, args) => this.Show();
             }
+
         }
     }
 }

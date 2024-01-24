@@ -10,11 +10,17 @@ namespace ClinicEx_2024
 {
     public partial class MainForm : Form
     {
+        public int PacienteID { get; set; }
+        public string Nombre { get; set; }
+        public string ApellidoPaterno { get; set; }
+        public string ApellidoMaterno { get; set; }
+        public string Sexo { get; set; }
+        public int Edad { get; set; }
         private Label labelnombre;
         private TextBox textBoxnombrep;
         private TextBox textBoxapellidop,
             textBoxapellidom;
-        private TextBox textBoxSexo;
+        private TextBox comboBoxSexo;
         private TextBox textBoxPeso;
         private TextBox textBoxTalla;
         private Label datoIMC;
@@ -33,6 +39,7 @@ namespace ClinicEx_2024
         public MainForm()
         {
             InitializeFormComponents();
+            this.Load += MainForm_Load;
             panelScroll.BackColor = Color.LightBlue;
             CambiarFuenteLabels(this, "Century", 10);
             labelnombre.Font = new Font("Century", 16, FontStyle.Bold);
@@ -64,7 +71,7 @@ namespace ClinicEx_2024
             labelnombre = new Label
             {
                 Text = "Consultorio San Francisco",
-                Location = new Point((this.ClientSize.Width - 200) / 2-100, 30),                
+                Location = new Point((this.ClientSize.Width - 200) / 2 - 100, 30),
                 TextAlign = ContentAlignment.MiddleCenter,
                 AutoSize = true
             };
@@ -72,12 +79,12 @@ namespace ClinicEx_2024
             Label labelnombrep = new Label
             {
                 Text = "Nombre",
-                Location = new Point(300, 100),
+                Location = new Point(200, 90),
                 AutoSize = true
             };
             textBoxnombrep = new TextBox
-            {
-                Location = new Point(300, 120),
+            {   Text = Nombre,
+                Location = new Point(200, 120),
                 Size = new Size(100, 50),
                 Enabled = false
             };
@@ -85,12 +92,13 @@ namespace ClinicEx_2024
             Label labelapellidop = new Label
             {
                 Text = "Apellido Paterno",
-                Location = new Point(420, 100),
+                Location = new Point(350, 90),
                 AutoSize = true
             };
             textBoxapellidop = new TextBox
             {
-                Location = new Point(420, 120),
+                Text = ApellidoPaterno,
+                Location = new Point(350, 120),
                 Size = new Size(100, 50),
                 Enabled = false
             };
@@ -98,11 +106,12 @@ namespace ClinicEx_2024
             Label labelapellidom = new Label
             {
                 Text = "Apellido Materno",
-                Location = new Point(550, 100),
+                Location = new Point(550, 90),
                 AutoSize = true
             };
             textBoxapellidom = new TextBox
             {
+                Text = ApellidoMaterno,
                 Location = new Point(550, 120),
                 Size = new Size(100, 50),
                 Enabled = false
@@ -111,42 +120,34 @@ namespace ClinicEx_2024
             Label labelEdad = new Label
             {
                 Text = "Edad",
-                Location = new Point(700, 100),
+                Location = new Point(800, 90),
                 AutoSize = true
             };
             textBoxEdad = new TextBox
             {
-                Location = new Point(700, 120),
-                Size = new Size(40, 50),
+                Location = new Point(800, 120),
+                Size = new Size(50, 50),
                 Enabled = false
             };
 
             Label labelsexo = new Label
             {
                 Text = "Sexo",
-                Location = new Point(950, 100),
+                Location = new Point(950, 90),
                 AutoSize = true
             };
-            textBoxSexo = new TextBox 
-            { 
-                Location = new Point(950, 120), 
-                Width = 50,
-                Enabled = false
-            };
 
-            Button selecciona = new Button
+            comboBoxSexo = new TextBox
             {
-                Text = "Selecciona paciente",
-                Location = new Point(900, 50),
-                AutoSize = true,
-                BackColor = Color.FromArgb(128, 0, 32),
-                ForeColor = Color.White
+               Location = new Point(950, 120),
+               Width = 100,
+               Enabled = false,
             };
 
             Label labelFechaConsulta = new Label
             {
                 Text = "Fecha de consulta",
-                Location = new Point(10, 100),
+                Location = new Point(10, 90),
                 AutoSize = true
             };
             DateTimePicker dateTimePickerConsulta = new DateTimePicker
@@ -173,73 +174,73 @@ namespace ClinicEx_2024
             Label labelPresionArterial = new Label
             {
                 Text = "Presión arterial",
-                Location = new Point(15, 220),
+                Location = new Point(10, 210),
                 AutoSize = true
             };
             TextBox textBoxPresionArterial = new TextBox
             {
-                Location = new Point(15, 240),
+                Location = new Point(10, 240),
                 Width = 90
             };
 
             Label temperaturalabel = new Label
             {
                 Text = "Temperatura",
-                Location = new Point(150, 220),
+                Location = new Point(180, 210),
                 AutoSize = true
             };
-            TextBox textBoxtemperatura = new TextBox { Location = new Point(150, 240), Width = 70 };
+            TextBox textBoxtemperatura = new TextBox { Location = new Point(180, 240), Width = 70 };
 
             Label labelFrecuenciaCardiaca = new Label
             {
                 Text = "Frecuencia Cardiaca",
-                Location = new Point(270, 220),
+                Location = new Point(330, 210),
                 AutoSize = true
             };
             TextBox textBoxFrecuenciaCardiaca = new TextBox
             {
-                Location = new Point(270, 240),
+                Location = new Point(330, 240),
                 Width = 115
             };
 
             Label labelFrecuenciaRespiratoria = new Label
             {
                 Text = "Frecuencia Respiratoria",
-                Location = new Point(435, 220),
+                Location = new Point(540, 210),
                 AutoSize = true
             };
             TextBox textBoxFrecuenciaRespiratoria = new TextBox
             {
-                Location = new Point(435, 240),
+                Location = new Point(540, 240),
                 Width = 127
             };
 
             Label labelPeso = new Label
             {
                 Text = "Peso (kg)",
-                Location = new Point(620, 220),
+                Location = new Point(790, 210),
                 AutoSize = true
             };
-            textBoxPeso = new TextBox { Location = new Point(620, 240), Width = 53 };
+            textBoxPeso = new TextBox { Location = new Point(790, 240), Width = 53 };
 
             Label labelTalla = new Label
             {
                 Text = "Talla (cm)",
-                Location = new Point(720, 220),
+                Location = new Point(890, 210),
                 AutoSize = true
             };
-            textBoxTalla = new TextBox { Location = new Point(720, 240), Width = 55 };
+            textBoxTalla = new TextBox { Location = new Point(890, 240), Width = 55 };
 
             Label labelIMC = new Label
             {
                 Text = "IMC",
-                Location = new Point(820, 220),
+                Location = new Point(1010, 210),
                 AutoSize = true
             };
             datoIMC = new Label
             {
                 Text = "--",
-                Location = new Point(820, 240),
+                Location = new Point(1010, 240),
                 AutoSize = true
             };
             textBoxPeso.TextChanged += (sender, e) => CalcularIMC();
@@ -248,15 +249,15 @@ namespace ClinicEx_2024
             Label labelCintura = new Label
             {
                 Text = "Circunferencia de cintura (cm)",
-                Location = new Point(920, 220),
+                Location = new Point(1100, 210),
                 AutoSize = true
             };
-            TextBox textBoxCintura = new TextBox { Location = new Point(920, 240), Width = 165 };
+            TextBox textBoxCintura = new TextBox { Location = new Point(1100, 240), Width = 165 };
 
             Label saturacionlabel = new Label
             {
                 Text = "Saturación de oxígeno",
-                Location = new Point(10, 320),
+                Location = new Point(10, 310),
                 AutoSize = true
             };
             TextBox textBoxsaturacion = new TextBox { Location = new Point(10, 340), Width = 105 };
@@ -264,7 +265,7 @@ namespace ClinicEx_2024
             Label glucemialabel = new Label
             {
                 Text = "Glucemia",
-                Location = new Point(250, 320),
+                Location = new Point(250, 310),
                 AutoSize = true
             };
             TextBox textBoxglucemia = new TextBox { Location = new Point(250, 340), Width = 50 };
@@ -272,7 +273,7 @@ namespace ClinicEx_2024
             Label alergiaslabel = new Label
             {
                 Text = "Alergias",
-                Location = new Point(350, 320),
+                Location = new Point(350, 310),
                 AutoSize = true
             };
             TextBox textBoxalergias = new TextBox { Location = new Point(350, 340), Width = 50 };
@@ -294,7 +295,7 @@ namespace ClinicEx_2024
             Label labelPadecimientoActual = new Label
             {
                 Text = "Padecimiento actual",
-                Location = new Point(10, 440),
+                Location = new Point(10, 430),
                 AutoSize = true
             };
             textBoxPadecimientoActual = new TextBox
@@ -307,7 +308,7 @@ namespace ClinicEx_2024
             Label labelAntecedentesImportancia = new Label
             {
                 Text = "Antecedentes de importancia",
-                Location = new Point(10, 580),
+                Location = new Point(10, 570),
                 AutoSize = true
             };
             textBoxAntecedentesImportancia = new TextBox
@@ -320,7 +321,7 @@ namespace ClinicEx_2024
             Label labelHallazgos = new Label
             {
                 Text = "Hallazgos en exploración física",
-                Location = new Point(10, 720),
+                Location = new Point(10, 710),
                 AutoSize = true
             };
             textBoxHallazgos = new TextBox
@@ -333,7 +334,7 @@ namespace ClinicEx_2024
             Label labelPruebasDiag = new Label
             {
                 Text = "Pruebas diagnósticas realizadas",
-                Location = new Point(10, 860),
+                Location = new Point(10, 850),
                 AutoSize = true
             };
             textBoxPruebasDiag = new TextBox
@@ -346,7 +347,7 @@ namespace ClinicEx_2024
             Label labelDiagnostico = new Label
             {
                 Text = "Diagnóstico",
-                Location = new Point(10, 1000),
+                Location = new Point(10, 990),
                 AutoSize = true
             };
             textBoxDiagnostico = new TextBox
@@ -359,7 +360,7 @@ namespace ClinicEx_2024
             Label labelTratamiento = new Label
             {
                 Text = "Tratamiento",
-                Location = new Point(10, 1140),
+                Location = new Point(10, 1130),
                 AutoSize = true
             };
             textBoxTratamiento = new TextBox
@@ -372,7 +373,7 @@ namespace ClinicEx_2024
             Label labelPronostico = new Label
             {
                 Text = "Pronóstico",
-                Location = new Point(10, 1280),
+                Location = new Point(10, 1270),
                 AutoSize = true
             };
             textBoxPronostico = new TextBox
@@ -438,7 +439,6 @@ namespace ClinicEx_2024
             panelScroll.SuspendLayout();
             panelScroll.Controls.Add(labelnombre);
             panelScroll.Controls.Add(pictureBox);
-            panelScroll.Controls.Add(selecciona);
             panelScroll.Controls.Add(labelnombrep);
             panelScroll.Controls.Add(textBoxnombrep);
             panelScroll.Controls.Add(labelapellidop);
@@ -448,7 +448,7 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(labelEdad);
             panelScroll.Controls.Add(textBoxEdad);
             panelScroll.Controls.Add(labelsexo);
-            panelScroll.Controls.Add(textBoxSexo);
+            panelScroll.Controls.Add(comboBoxSexo);
             panelScroll.Controls.Add(labelFechaConsulta);
             panelScroll.Controls.Add(dateTimePickerConsulta);
             panelScroll.Controls.Add(labelSignosVitales);
@@ -502,7 +502,14 @@ namespace ClinicEx_2024
             this.Controls.Add(panelScroll);
         }
 
-        private void MainForm_Load(object sender, EventArgs e) { }
+        private void MainForm_Load(object sender, EventArgs e) {
+
+            textBoxnombrep.Text = this.Nombre;
+            textBoxapellidop.Text = this.ApellidoPaterno;
+            textBoxapellidom.Text = this.ApellidoMaterno;
+            comboBoxSexo.Text = this.Sexo; // Asegúrate de que el valor exista en las opciones del ComboBox
+            textBoxEdad.Text = this.Edad.ToString();
+        }
 
         private void CalcularIMC()
         {
@@ -552,32 +559,7 @@ namespace ClinicEx_2024
             }
         }
         
-        private string CalcularEdad(DateTime fechaNacimiento)
-        {
-            DateTime hoy = DateTime.Today;
-            int años = hoy.Year - fechaNacimiento.Year;
-            int meses = hoy.Month - fechaNacimiento.Month;
-            int dias = hoy.Day - fechaNacimiento.Day;
-
-            if (dias < 0)
-            {
-                meses--;
-                dias += DateTime.DaysInMonth(hoy.Year, hoy.Month - 1);
-            }
-
-            if (meses < 0)
-            {
-                años--;
-                meses += 12;
-            }
-
-            return $"{años} años, {meses} meses y {dias} días";
-        }
-
-        private void MainForm_Load_1(object sender, EventArgs e) { }
-
-        private void button1_Click(object sender, EventArgs e) { }
-
+      
         private void AjustarAnchoTextBox(TextBox textBox)
         {
             int margenDerecho = 150 + panelScroll.Padding.Right;

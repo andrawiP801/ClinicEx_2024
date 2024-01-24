@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
+
 
 namespace ClinicEx_2024.Clases
 {
@@ -90,11 +92,7 @@ namespace ClinicEx_2024.Clases
         }
 
         public int buscarPaciente(
-            string nombre,
-            string apellidoP,
-            string apellidoM,
-            DateTime fechaNacimiento,
-            string sexo
+            string nombre, string apellidoP, DateTime fechaNacimiento
         )
         {
             int pacienteID = 0;
@@ -107,16 +105,12 @@ namespace ClinicEx_2024.Clases
                     "SELECT PacienteID FROM Pacientes "
                     + "WHERE Nombre = @Nombre "
                     + "AND ApellidoP = @ApellidoP "
-                    + "AND ApellidoM = @ApellidoM "
-                    + "AND FechaN = @FechaN "
-                    + "AND Sexo = @Sexo";
+                    + "AND FechaN = @FechaN ";
                 MySqlCommand myCommand = new MySqlCommand(query, obj.establecerConexion());
 
                 myCommand.Parameters.AddWithValue("@Nombre", nombre);
                 myCommand.Parameters.AddWithValue("@ApellidoP", apellidoP);
-                myCommand.Parameters.AddWithValue("@ApellidoM", apellidoM);
                 myCommand.Parameters.AddWithValue("@FechaN", fechaN);
-                myCommand.Parameters.AddWithValue("@Sexo", sexo);
 
                 // Ejecutar la consulta y obtener el ID del paciente
                 object result = myCommand.ExecuteScalar();
@@ -133,5 +127,40 @@ namespace ClinicEx_2024.Clases
 
             return pacienteID;
         }
+        public Paciente obtenerDatosPaciente(int id)
+        {
+            CConexion obj = new CConexion();
+            {
+                
+                string query =
+                    "SELECT ApellidoM, Sexo FROM Pacientes WHERE PacienteID = @id";
+                MySqlCommand myCommand = new MySqlCommand(query, obj.establecerConexion());
+                {
+                    // Usar parámetros para prevenir inyecciones SQL
+                    myCommand.Parameters.AddWithValue("@id", id);
+
+                    using (var reader = myCommand.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            var paciente = new Paciente
+                            {
+                                ApellidoM = reader.GetString(0),
+                                Sexo = reader.GetString(1)
+                            };
+                            return paciente;
+                        }
+                    }
+                }
+            }
+            return null; 
+        }
+
+        public class Paciente
+        {
+            public string ApellidoM { get; set; }
+            public string Sexo { get; set; }
+        }
+
     }
 }

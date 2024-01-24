@@ -11,23 +11,6 @@ CREATE TABLE Pacientes (
     Sexo varchar(10)
 );
 
-CREATE TABLE SignosVitales (
-    SignoVitalID INT AUTO_INCREMENT PRIMARY KEY,
-    VisitaID INT,
-    PresionArterial VARCHAR(10),
-    Temperatura DECIMAL(4,2),
-    FrecuenciaCardiaca INT,
-    FrecuenciaRespiratoria INT,
-    Peso DECIMAL(5,2),
-    Talla DECIMAL(5,2),
-    IMC DECIMAL(5,2),
-    CircunferenciaCintura DECIMAL(5,2),
-    SaturacionOxigeno DECIMAL(5,2),
-    Glucemia DECIMAL(5,2),
-    Alergias Varchar(45),
-    FOREIGN KEY (VisitaID) REFERENCES Visitas(VisitaID)
-);
-
 CREATE TABLE Consultas (
     VisitaID INT AUTO_INCREMENT PRIMARY KEY,
     PacienteID INT,
@@ -43,6 +26,23 @@ CREATE TABLE Consultas (
     FOREIGN KEY (PacienteID) REFERENCES Pacientes(PacienteID)
 );
 
+CREATE TABLE SignosVitales (
+    SignoVitalID INT AUTO_INCREMENT PRIMARY KEY,
+    VisitaID INT,
+    PresionArterial VARCHAR(10),
+    Temperatura DECIMAL(4,2),
+    FrecuenciaCardiaca INT,
+    FrecuenciaRespiratoria INT,
+    Peso DECIMAL(5,2),
+    Talla DECIMAL(5,2),
+    IMC DECIMAL(5,2),
+    CircunferenciaCintura DECIMAL(5,2),
+    SaturacionOxigeno DECIMAL(5,2),
+    Glucemia DECIMAL(5,2),
+    Alergias Varchar(45),
+    FOREIGN KEY (VisitaID) REFERENCES Consultas(VisitaID)
+);
+
 select* from Pacientes;
 select * from SignosVitales;
-select* from Visitas;
+select* from Consultas;
