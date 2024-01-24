@@ -509,6 +509,7 @@ namespace ClinicEx_2024
             textBoxapellidom.Text = this.ApellidoMaterno;
             comboBoxSexo.Text = this.Sexo; // Asegúrate de que el valor exista en las opciones del ComboBox
             textBoxEdad.Text = this.Edad.ToString();
+            int PacienteID = this.PacienteID;
         }
 
         private void CalcularIMC()
