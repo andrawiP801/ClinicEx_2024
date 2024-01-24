@@ -1,34 +1,20 @@
-drop database if exists ClinicEx_2024;
-create database ClinicEx_2024;
-use ClinicEx_2024;
+DROP DATABASE IF EXISTS ClinicEx_2024;
+CREATE DATABASE ClinicEx_2024;
+USE ClinicEx_2024;
 
 CREATE TABLE Pacientes (
     PacienteID INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(50),
     ApellidoP VARCHAR(50),
-    ApellidoM varchar(50),
+    ApellidoM VARCHAR(50),
     FechaN DATE,
-    Sexo varchar(10)
+    Sexo VARCHAR(10)
 );
 
 CREATE TABLE Consultas (
-    VisitaID INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Consulta INT AUTO_INCREMENT PRIMARY KEY,
     PacienteID INT,
     FechaConsulta DATE,
-    PadecimientoActual TEXT,
-    AntecedentesImportancia TEXT,
-    HallazgosExploracionFisica TEXT,
-    PruebasDiagnosticasRealizadas TEXT,
-    PuebasDiagnosticasRealizadas TEXT,
-    Diagnostico TEXT,
-    Tratamiento TEXT,
-    Pronostico TEXT,
-    FOREIGN KEY (PacienteID) REFERENCES Pacientes(PacienteID)
-);
-
-CREATE TABLE SignosVitales (
-    SignoVitalID INT AUTO_INCREMENT PRIMARY KEY,
-    VisitaID INT,
     PresionArterial VARCHAR(10),
     Temperatura DECIMAL(4,2),
     FrecuenciaCardiaca INT,
@@ -39,10 +25,25 @@ CREATE TABLE SignosVitales (
     CircunferenciaCintura DECIMAL(5,2),
     SaturacionOxigeno DECIMAL(5,2),
     Glucemia DECIMAL(5,2),
-    Alergias Varchar(45),
-    FOREIGN KEY (VisitaID) REFERENCES Consultas(VisitaID)
+    Alergias VARCHAR(45),
+    PadecimientoActual TEXT,
+    AntecedentesImportancia TEXT,
+    HallazgosExploracionFisica TEXT,
+    PruebasDiagnosticasRealizadas TEXT,
+    PuebasDiagnosticasRealizadas TEXT, 
+    Diagnostico TEXT,
+    Tratamiento TEXT,
+    Pronostico TEXT
 );
 
-select* from Pacientes;
-select * from SignosVitales;
-select* from Consultas;
+CREATE TABLE Expendiente (
+    ID_Expediente INT AUTO_INCREMENT PRIMARY KEY,
+    PacienteID INT,
+    ID_Consulta INT,
+    FOREIGN KEY (PacienteID) REFERENCES Pacientes(PacienteID),
+    FOREIGN KEY (ID_Consulta) REFERENCES Consultas(ID_Consulta)
+);
+
+
+SELECT * FROM Pacientes;
+SELECT * FROM Consultas;

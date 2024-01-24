@@ -93,12 +93,13 @@ namespace ClinicEx_2024
             Label labelnombrep = new Label
             {
                 Text = "Nombre",
-                Location = new Point(460, 105),
+                Location = new Point(450, 105),
                 AutoSize = true
             };
             textBoxnombrep = new TextBox
-            {   Text = Nombre,
-                Location = new Point(460, 135),
+            {
+                Text = Nombre,
+                Location = new Point(450, 135),
                 Size = new Size(100, 50),
                 Enabled = false
             };
@@ -106,13 +107,13 @@ namespace ClinicEx_2024
             Label labelapellidop = new Label
             {
                 Text = "Apellido Paterno",
-                Location = new Point(600, 105),
+                Location = new Point(590, 105),
                 AutoSize = true
             };
             textBoxapellidop = new TextBox
             {
                 Text = ApellidoPaterno,
-                Location = new Point(600, 135),
+                Location = new Point(590, 135),
                 Size = new Size(111, 50),
                 Enabled = false
             };
@@ -134,12 +135,12 @@ namespace ClinicEx_2024
             Label labelEdad = new Label
             {
                 Text = "Edad",
-                Location = new Point(910, 105),
+                Location = new Point(930, 105),
                 AutoSize = true
             };
             textBoxEdad = new TextBox
             {
-                Location = new Point(910, 135),
+                Location = new Point(930, 135),
                 Size = new Size(42, 50),
                 Enabled = false
             };
@@ -147,14 +148,14 @@ namespace ClinicEx_2024
             Label labelsexo = new Label
             {
                 Text = "Sexo",
-                Location = new Point(1000, 105),
+                Location = new Point(1010, 105),
                 AutoSize = true
             };
             comboBoxSexo = new TextBox
             {
-               Location = new Point(1000, 135),
-               Width = 100,
-               Enabled = false,
+                Location = new Point(1010, 135),
+                Width = 100,
+                Enabled = false,
             };
 
             Label labelFechaConsulta = new Label
@@ -259,6 +260,27 @@ namespace ClinicEx_2024
             textBoxPeso.TextChanged += (sender, e) => CalcularIMC();
             textBoxTalla.TextChanged += (sender, e) => CalcularIMC();
 
+            Label photoLabel = new Label
+            {
+                Text = "Estudios",
+                Location = new Point(1100, 210),
+                AutoSize = true
+            };
+
+            Button[] photoUploadButtons = new Button[4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                photoUploadButtons[i] = new Button
+                {
+                    Text = $"Selecciona foto {i + 1}",
+                    Location = new Point(1100, 240 + i * 30),
+                    Width = 150,
+                    Height =30,
+                };
+
+                photoUploadButtons[i].Click += (sender, e) => UploadPhotoButton_Click(i + 1);
+            }
             Label labelCintura = new Label
             {
                 Text = "Circunferencia de cintura (cm)",
@@ -278,19 +300,19 @@ namespace ClinicEx_2024
             Label glucemialabel = new Label
             {
                 Text = "Glucemia",
-                Location = new Point(487, 310),
+                Location = new Point(495, 310),
                 AutoSize = true
             };
-            TextBox textBoxglucemia = new TextBox { Location = new Point(487, 340), Width = 65 };
+            TextBox textBoxglucemia = new TextBox { Location = new Point(495, 340), Width = 65 };
 
             Label alergiaslabel = new Label
             {
                 Text = "Alergias",
-                Location = new Point(620, 310),
+                Location = new Point(640, 310),
                 AutoSize = true
             };
-            TextBox textBoxalergias = new TextBox { Location = new Point(620, 340), Width = 350 };
-
+            TextBox textBoxalergias = new TextBox { Location = new Point(640, 340), Width = 350 };
+            
             Label labelNotaMedica = new Label
             {
                 Text = "Nota médica",
@@ -490,6 +512,11 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(textBoxglucemia);
             panelScroll.Controls.Add(alergiaslabel);
             panelScroll.Controls.Add(textBoxalergias);
+            panelScroll.Controls.Add(photoLabel);
+            foreach (Button button in photoUploadButtons)
+            {
+                panelScroll.Controls.Add(button);
+            }
             panelScroll.Controls.Add(labelNotaMedica);
             panelScroll.Controls.Add(lineNM);
             panelScroll.Controls.Add(labelPadecimientoActual);
@@ -517,7 +544,8 @@ namespace ClinicEx_2024
             this.Controls.Add(panelScroll);
         }
 
-        private void MainForm_Load(object sender, EventArgs e) {
+        private void MainForm_Load(object sender, EventArgs e)
+        {
 
             textBoxnombrep.Text = this.Nombre;
             textBoxapellidop.Text = this.ApellidoPaterno;
@@ -551,7 +579,7 @@ namespace ClinicEx_2024
 
         private void Agregar_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void CambiarFuenteLabels(
@@ -561,7 +589,7 @@ namespace ClinicEx_2024
         )
         {
             foreach (Control control in controlPadre.Controls)
-            {                
+            {
                 if (control is Label label)
                 {
                     label.Font = new Font(nombreFuente, nuevoTamano, label.Font.Style);
@@ -574,8 +602,8 @@ namespace ClinicEx_2024
                 }
             }
         }
-        
-      
+
+
         private void AjustarAnchoTextBox(TextBox textBox)
         {
             int margenDerecho = 150 + panelScroll.Padding.Right;
@@ -599,6 +627,20 @@ namespace ClinicEx_2024
             labelnombre.Location = new Point((this.ClientSize.Width - labelnombre.Width) / 2, 10);
             labelGral.Location = new Point((this.ClientSize.Width - labelGral.Width) / 2, 35);
             labelDireccion.Location = new Point((this.ClientSize.Width - labelDireccion.Width) / 2, 60);
+        }
+        private void UploadPhotoButton_Click(int photoNumber)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp|All Files|*.*";
+                openFileDialog.Title = $"Selecciona foto {photoNumber}";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = openFileDialog.FileName;
+                    MessageBox.Show($"Selecciona foto {photoNumber}:\n{filePath}");
+                }
+            }
         }
     }
 }
