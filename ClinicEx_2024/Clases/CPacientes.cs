@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using System.Data.SqlClient;
-
 
 namespace ClinicEx_2024.Clases
 {
@@ -91,9 +90,7 @@ namespace ClinicEx_2024.Clases
             }
         }
 
-        public int buscarPaciente(
-            string nombre, string apellidoP, DateTime fechaNacimiento
-        )
+        public int buscarPaciente(string nombre, string apellidoP, DateTime fechaNacimiento)
         {
             int pacienteID = 0;
             DateTime fechaN = fechaNacimiento.Date;
@@ -117,7 +114,7 @@ namespace ClinicEx_2024.Clases
                 if (result != null)
                 {
                     pacienteID = Convert.ToInt32(result);
-                }                
+                }
                 obj.cerrarConexion();
             }
             catch (Exception ex)
@@ -127,13 +124,12 @@ namespace ClinicEx_2024.Clases
 
             return pacienteID;
         }
+
         public Paciente obtenerDatosPaciente(int id)
         {
             CConexion obj = new CConexion();
             {
-                
-                string query =
-                    "SELECT ApellidoM, Sexo FROM Pacientes WHERE PacienteID = @id";
+                string query = "SELECT ApellidoM, Sexo FROM Pacientes WHERE PacienteID = @id";
                 MySqlCommand myCommand = new MySqlCommand(query, obj.establecerConexion());
                 {
                     // Usar parámetros para prevenir inyecciones SQL
@@ -153,7 +149,7 @@ namespace ClinicEx_2024.Clases
                     }
                 }
             }
-            return null; 
+            return null;
         }
 
         public class Paciente
@@ -161,6 +157,5 @@ namespace ClinicEx_2024.Clases
             public string ApellidoM { get; set; }
             public string Sexo { get; set; }
         }
-
     }
 }
