@@ -281,6 +281,7 @@ namespace ClinicEx_2024
 
                 photoUploadButtons[i].Click += (sender, e) => UploadPhotoButton_Click(i + 1);
             }
+            
             Label labelCintura = new Label
             {
                 Text = "Circunferencia de cintura (cm)",
@@ -564,15 +565,13 @@ namespace ClinicEx_2024
             {
                 if (talla > 0)
                 {
-                    // La talla debe estar en metros para calcular el IMC
                     double tallaEnMetros = talla / 100;
                     double imc = peso / (Math.Pow(tallaEnMetros, 2));
-                    datoIMC.Text = imc.ToString("0.00"); // Formatea a dos decimales
+                    datoIMC.Text = imc.ToString("0.00"); 
                 }
             }
             else
             {
-                // Si no se puede parsear, dejar el datoIMC con guiones o vacío.
                 datoIMC.Text = "--";
             }
         }
@@ -638,9 +637,13 @@ namespace ClinicEx_2024
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string filePath = openFileDialog.FileName;
-                    MessageBox.Show($"Selecciona foto {photoNumber}:\n{filePath}");
+                    // Crear y mostrar el nuevo formulario con la imagen
+                    ImageForm imageForm = new ImageForm(filePath);
+                    imageForm.Show();
                 }
             }
         }
+
+
     }
 }
