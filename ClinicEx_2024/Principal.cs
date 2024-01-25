@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Data;
+using System.Windows.Forms;
 
 namespace ClinicEx_2024
 {
@@ -317,13 +318,38 @@ namespace ClinicEx_2024
                 if (pacienteID != 0)
                 {                    
                     var paciente = objP.ObtenerDatosPaciente(pacienteID);
-
                     MessageBox.Show("Paciente encontrado. ID: " + pacienteID);
                     buscar.Size = new Size(150, 40);
                     buscar.Text = "Nueva Consulta";
                     buscar.Location = new Point(650, 415);
                     miBoton.Enabled = false;
                     comboBoxSexo.SelectedItem = paciente.Sexo;
+                    DataTable consultas = objP.GetConsultasPorPaciente(pacienteID);
+                    dataGridViewConsultas.DataSource = consultas;
+                    dataGridViewConsultas.Columns["Nombre"].HeaderText = "Nombre del Paciente";
+                    dataGridViewConsultas.Columns["FechaConsulta"].HeaderText = "Fecha de la Consulta";
+                    
+                    //diseño tabla
+                    dataGridViewConsultas.ColumnHeadersDefaultCellStyle.Font = new Font("Tahoma", 7.75F, FontStyle.Bold);
+                    dataGridViewConsultas.ColumnHeadersDefaultCellStyle.BackColor = Color.LightBlue;
+                    dataGridViewConsultas.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+                    dataGridViewConsultas.EnableHeadersVisualStyles = false;
+                    dataGridViewConsultas.ColumnHeadersHeight = 28;
+
+                    dataGridViewConsultas.DefaultCellStyle.Font = new Font("Tahoma", 7.75F);
+                    dataGridViewConsultas.DefaultCellStyle.BackColor = Color.White;
+                    dataGridViewConsultas.DefaultCellStyle.ForeColor = Color.Black;
+                    dataGridViewConsultas.DefaultCellStyle.SelectionBackColor = Color.Navy;
+                    dataGridViewConsultas.DefaultCellStyle.SelectionForeColor = Color.White;
+
+                    dataGridViewConsultas.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+                    dataGridViewConsultas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; 
+                    dataGridViewConsultas.RowHeadersVisible = false;
+                    dataGridViewConsultas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dataGridViewConsultas.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+                    dataGridViewConsultas.GridColor = Color.LightGray;
+
+
                 }
                 else
                 {

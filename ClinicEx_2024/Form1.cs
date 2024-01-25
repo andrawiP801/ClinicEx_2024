@@ -591,8 +591,8 @@ namespace ClinicEx_2024
                 string pronostico = textBoxPronostico.Text;
 
                 CPacientes pacientes = new CPacientes();
-                pacientes.GuardarConsulta(
-                    this.PacienteID, // Asegúrate de que este valor esté asignado correctamente
+                int idConsulta = pacientes.GuardarConsulta(
+                    this.PacienteID,
                     fechaConsulta,
                     presionArterial,
                     temperatura,
@@ -613,13 +613,14 @@ namespace ClinicEx_2024
                     tratamiento,
                     pronostico
                 );
+                if (idConsulta > 0)
+                {
+                    pacientes.ActualizarExpediente(idConsulta);
+                }
 
                 this.Close();
             }
-            catch (FormatException fe)
-            {
-                MessageBox.Show("Error en el formato de los datos: " + fe.Message);
-            }
+            
             catch (Exception ex)
             {
                 MessageBox.Show("Error al guardar la consulta: " + ex.Message);

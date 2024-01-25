@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClinicEx_2024.Clases;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -59,7 +60,22 @@ namespace ClinicEx_2024
 
         private void guardarClick(object? sender, EventArgs e)
         {
-            this.Close();
+            if (MessageBox.Show("¿Desea guardar la imagen en la base de datos?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                MemoryStream ms = new MemoryStream();
+                pictureBox1.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Png); 
+                byte[] imageBytes = ms.ToArray();
+
+                CPacientes pacientes = new CPacientes();
+                int newImageId = pacientes.GuardarImagen(imageBytes);
+
+                if (newImageId > 0)
+                {
+                    MessageBox.Show("La imagen ha sido guardada con éxito. ID de imagen: " + newImageId);
+                    this.Close();
+                }
+            }
         }
+
     }
 }

@@ -29,7 +29,7 @@ CREATE TABLE Consultas (
     PadecimientoActual TEXT,
     AntecedentesImportancia TEXT,
     HallazgosExploracionFisica TEXT,
-    PuebasDiagnosticasRealizadas TEXT, 
+    PruebasDiagnosticasRealizadas TEXT,  
     Diagnostico TEXT,
     Tratamiento TEXT,
     Pronostico TEXT,
@@ -37,17 +37,19 @@ CREATE TABLE Consultas (
 );
 
 CREATE TABLE Imagenes (
-    ID_Imagen INT AUTO_INCREMENT PRIMARY KEY,    
-    Imagen BLOB    
+    ID_Imagen INT AUTO_INCREMENT PRIMARY KEY,
+    Imagen LONGBLOB
 );
 
-CREATE TABLE Expendiente (
-    ID_Paciente INT,
+
+CREATE TABLE Expediente (
+    ID_Consulta INT,
     ID_Imagen INT,
-    foreign key (ID_Paciente) references Pacientes(ID_Paciente),
+    foreign key (ID_Consulta) references Consultas(ID_Consulta),
     foreign key (ID_Imagen) references Imagenes(ID_Imagen)
 );
 
 SELECT * FROM Pacientes;
 SELECT * FROM Consultas;
 SELECT * FROM Imagenes;
+SELECT *FROM Expediente;
