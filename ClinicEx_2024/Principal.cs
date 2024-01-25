@@ -4,155 +4,202 @@ namespace ClinicEx_2024
 {
     public partial class Principal : Form
     {
-        private Button buscar;
-        private Button miBoton;
-        private Label miLabel, labelGral, labelDireccion;
-        private Label labelNombre;
-        public TextBox textBoxNombre;
-        private Label labelApellidoPaterno;
-        public TextBox textBoxApellidoPaterno;
-        private Label labelApellidoMaterno;
-        public TextBox textBoxApellidoMaterno;
-        private Label labelFechaNacimiento;
-        private Label labelSexo;
-        private Label labelConsultasAnteriores;
+        private Button buscar,
+            miBoton;
+        private Label miLabel,
+            labelGral,
+            labelDireccion,
+            labelNombre,
+            labelApellidoPaterno,
+            labelApellidoMaterno,
+            labelFechaNacimiento,
+            labelSexo,
+            labelConsultasAnteriores;
+        public TextBox textBoxNombre,
+            textBoxApellidoPaterno,
+            textBoxApellidoMaterno;
         private DateTimePicker dateTimePickerFechaNacimiento;
         public ComboBox comboBoxSexo;
-        Image logoImage = Properties.Resources.Logo;
-        private PictureBox pictureBox;
+        private DataGridView dataGridViewConsultas;
 
         public Principal()
         {
             InitializeComponent();
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.LightBlue;
-            this.Width = 1200;
-            this.Height = 700;
-            this.Icon = Properties.Resources.Icono;            
-            this.MaximizeBox = false;
+            ConfigurarFormulario();
+            ConfigurarControles();
+        }
 
-            pictureBox = new PictureBox();
-            pictureBox.Location = new Point(5, 5);
-            pictureBox.Size = new Size(75, 75);
-            pictureBox.Image = logoImage;
-            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            this.Controls.Add(pictureBox);
+        private void ConfigurarFormulario()
+        {
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = Color.LightBlue;
+            Size = new Size(1200, 700);
+            Icon = Properties.Resources.Icono;
+            MaximizeBox = false;
+            Layout += Principal_Layout;
+        }
 
-            miLabel = new Label();
-            miLabel.AutoSize = true;
-            miLabel.Text = "Consultorio San Francisco";
-            miLabel.Font = new Font("Century", 16, FontStyle.Bold);
-            miLabel.TextAlign = ContentAlignment.MiddleCenter;
-            this.Controls.Add(miLabel);
-
-            labelGral = new Label();
-            labelGral.Text = "\"Medicina General\"";
-            labelGral.Font = new Font("Century", 16, FontStyle.Bold);
-            labelGral.TextAlign = ContentAlignment.MiddleCenter;
-            labelGral.AutoSize = true;
-            this.Controls.Add(labelGral);
-
-            labelDireccion = new Label();
-            labelDireccion.Text = "Av. hidalgo 67 Tequexquináhuac, Texcoco";
-            labelDireccion.TextAlign = ContentAlignment.MiddleCenter;
-            labelDireccion.Font = new Font("Century", 10, labelDireccion.Font.Style);
-            labelDireccion.AutoSize = true;
-            this.Controls.Add(labelDireccion);
-
-            labelNombre = new Label();
-            labelNombre.Text = "Nombre*:";
-            labelNombre.Location = new Point(400, 90);
-            labelNombre.Size = new Size(400, 30);
-            labelNombre.Font = new Font(labelNombre.Font, FontStyle.Bold);
-            this.Controls.Add(labelNombre);            
-
-            textBoxNombre = new TextBox();
-            textBoxNombre.Location = new Point(400, 120);
-            textBoxNombre.Size = new Size(400, 40);
-            this.Controls.Add(textBoxNombre);
-
-            labelApellidoPaterno = new Label();
-            labelApellidoPaterno.Text = "Apellido paterno*:";
-            labelApellidoPaterno.Location = new Point(400, 170);
-            labelApellidoPaterno.Size = new Size(400, 30);
-            labelApellidoPaterno.Font = new Font(labelApellidoPaterno.Font, FontStyle.Bold);
-            this.Controls.Add(labelApellidoPaterno);
-
-            textBoxApellidoPaterno = new TextBox();
-            textBoxApellidoPaterno.Location = new Point(400, 200);
-            textBoxApellidoPaterno.Size = new Size(400, 40);
-            this.Controls.Add(textBoxApellidoPaterno);
-
-            labelApellidoMaterno = new Label();
-            labelApellidoMaterno.Text = "Apellido materno:";
-            labelApellidoMaterno.Location = new Point(400, 250);
-            labelApellidoMaterno.Size = new Size(400, 30);
-            labelApellidoMaterno.Font = new Font(labelApellidoMaterno.Font, FontStyle.Bold);
-            this.Controls.Add(labelApellidoMaterno);
-
-            textBoxApellidoMaterno = new TextBox();
-            textBoxApellidoMaterno.Location = new Point(400, 280);
-            textBoxApellidoMaterno.Size = new Size(400, 40);
-            this.Controls.Add(textBoxApellidoMaterno);
-
-            labelFechaNacimiento = new Label();
-            labelFechaNacimiento.Text = "Fecha de nacimiento*:";
-            labelFechaNacimiento.Location = new Point(400, 330);
-            labelFechaNacimiento.Size = new Size(200, 30);
-            labelFechaNacimiento.Font = new Font(labelFechaNacimiento.Font, FontStyle.Bold);
-            this.Controls.Add(labelFechaNacimiento);
-
-            dateTimePickerFechaNacimiento = new DateTimePicker();
-            dateTimePickerFechaNacimiento.Location = new Point(400, 360);
-            dateTimePickerFechaNacimiento.Format = DateTimePickerFormat.Short;
-            dateTimePickerFechaNacimiento.Width = 150;
-            dateTimePickerFechaNacimiento.ValueChanged += new EventHandler(
-                dateTimePickerFechaNacimiento_ValueChanged
+        private void ConfigurarControles()
+        {
+            Controls.Add(
+                new PictureBox
+                {
+                    Location = new Point(5, 5),
+                    Size = new Size(75, 75),
+                    Image = Properties.Resources.Logo,
+                    SizeMode = PictureBoxSizeMode.Zoom
+                }
             );
-            this.Controls.Add(dateTimePickerFechaNacimiento);
 
-            labelSexo = new Label();
-            labelSexo.Text = "Sexo:";
-            labelSexo.Location = new Point(700, 330);
-            labelSexo.Font = new Font(labelSexo.Font, FontStyle.Bold);
-            this.Controls.Add(labelSexo);
+            miLabel = CrearLabel(
+                "Consultorio San Francisco",
+                new Font("Century", 16, FontStyle.Bold),
+                new Point(0, 10),
+                true
+            );
+            labelGral = CrearLabel(
+                "\"Medicina General\"",
+                new Font("Century", 16, FontStyle.Bold),
+                new Point(0, 35),
+                true
+            );
+            labelDireccion = CrearLabel(
+                "Av. hidalgo 67 Tequexquináhuac, Texcoco",
+                new Font("Century", 10),
+                new Point(0, 60),
+                true
+            );
 
-            comboBoxSexo = new ComboBox();
-            comboBoxSexo.Location = new Point(700, 360);
-            comboBoxSexo.Width = 100;
-            comboBoxSexo.Items.Add("Masculino");
-            comboBoxSexo.Items.Add("Femenino");
-            this.Controls.Add(comboBoxSexo);
+            labelNombre = CrearLabel(
+                "Nombre*:",
+                new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                new Point(400, 90)
+            );
+            textBoxNombre = CrearTextBox(new Point(400, 120));
 
-            miBoton = new Button();
-            miBoton.Size = new Size(100, 40);
-            miBoton.Location = new Point(400, 410);
-            miBoton.Text = "Registrar";
-            miBoton.Click += new EventHandler(miBotonClick);
-            this.Controls.Add(miBoton);
+            labelApellidoPaterno = CrearLabel(
+                "Apellido paterno*:",
+                new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                new Point(400, 170)
+            );
+            textBoxApellidoPaterno = CrearTextBox(new Point(400, 200));
 
-            buscar = new Button();
-            buscar.Size = new Size(100, 40);
-            buscar.Location = new Point(700, 410);
-            //buscar.Text = "Buscar";
-            buscar.Text = "Nueva Consulta";
-            buscar.Click += new EventHandler(buscarClick);
-            this.Controls.Add(buscar);
+            labelApellidoMaterno = CrearLabel(
+                "Apellido materno:",
+                new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                new Point(400, 250)
+            );
+            textBoxApellidoMaterno = CrearTextBox(new Point(400, 280));
 
-            labelConsultasAnteriores = new Label();
-            labelConsultasAnteriores.Text = "Consultas anteriores:";
-            labelConsultasAnteriores.Location = new Point(400, 470);
-            labelConsultasAnteriores.Size = new Size(200, 30);
-            this.Controls.Add(labelConsultasAnteriores);
+            labelFechaNacimiento = CrearLabel(
+                "Fecha de nacimiento*:",
+                new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                new Point(400, 330)
+            );
+            dateTimePickerFechaNacimiento = CrearDateTimePicker(new Point(400, 360));
 
-            DataGridView dataGridViewConsultas = new DataGridView();
-            dataGridViewConsultas.Location = new Point(400, 500);
-            dataGridViewConsultas.Size = new Size(400, 120);
-            dataGridViewConsultas.AllowUserToAddRows = false;
-            dataGridViewConsultas.ReadOnly = true;
-            this.Controls.Add(dataGridViewConsultas);
+            labelSexo = CrearLabel(
+                "Sexo:",
+                new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                new Point(700, 330)
+            );
+            comboBoxSexo = CrearComboBox(new Point(700, 360), new[] { "Masculino", "Femenino" });
 
-            this.Layout += new LayoutEventHandler(Principal_Layout);
+            miBoton = CrearButton("Registrar", new Point(400, 410), miBotonClick);
+            buscar = CrearButton("Buscar", new Point(700, 410), buscarClick);
+
+            labelConsultasAnteriores = CrearLabel(
+                "Consultas anteriores:",
+                new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                new Point(400, 470)
+            );
+
+            dataGridViewConsultas = new DataGridView
+            {
+                Location = new Point(400, 500),
+                Size = new Size(400, 120),
+                AllowUserToAddRows = false,
+                ReadOnly = true
+            };
+            Controls.Add(dataGridViewConsultas);
+        }
+
+        private Label CrearLabel(string texto, Font fuente, Point ubicacion, bool autoSize = true)
+        {
+            var label = new Label
+            {
+                Text = texto,
+                Font = fuente,
+                Location = ubicacion,
+                AutoSize = autoSize
+            };
+            Controls.Add(label);
+            return label;
+        }
+
+        private TextBox CrearTextBox(Point ubicacion)
+        {
+            var textBox = new TextBox { Location = ubicacion, Size = new Size(400, 40) };
+            Controls.Add(textBox);
+            return textBox;
+        }
+
+        private DateTimePicker CrearDateTimePicker(Point ubicacion)
+        {
+            var picker = new DateTimePicker
+            {
+                Location = ubicacion,
+                Format = DateTimePickerFormat.Short,
+                Width = 150
+            };
+            picker.ValueChanged += dateTimePickerFechaNacimiento_ValueChanged;
+            Controls.Add(picker);
+            return picker;
+        }
+
+        private ComboBox CrearComboBox(Point ubicacion, string[] items)
+        {
+            var comboBox = new ComboBox { Location = ubicacion, Width = 100 };
+            foreach (var item in items)
+            {
+                comboBox.Items.Add(item);
+            }
+            Controls.Add(comboBox);
+            return comboBox;
+        }
+
+        private Button CrearButton(string texto, Point ubicacion, EventHandler clickEvent)
+        {
+            var button = new Button
+            {
+                Text = texto,
+                Location = ubicacion,
+                Size = new Size(100, 40)
+            };
+            button.Click += clickEvent;
+            Controls.Add(button);
+            return button;
+        }
+
+        private void Principal_Layout(object sender, LayoutEventArgs e)
+        {
+            if (miLabel != null)
+                CentrarControl(miLabel);
+            if (labelGral != null)
+                CentrarControl(labelGral);
+            if (labelDireccion != null)
+                CentrarControl(labelDireccion);
+        }
+
+        private void CentrarControl(Control control)
+        {            
+            if (control != null)
+            {
+                control.Location = new Point(
+                    (ClientSize.Width - control.Width) / 2,
+                    control.Location.Y
+                );
+            }
         }
 
         private void miBotonClick(object sender, EventArgs e)
@@ -183,7 +230,7 @@ namespace ClinicEx_2024
             DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value.Date;
             string sexo = comboBoxSexo.SelectedItem.ToString();
 
-            int pacienteID = objP.guardarPacientes(
+            int pacienteID = objP.GuardarPaciente(
                 nombre,
                 apellidoP,
                 apellidoM,
@@ -217,8 +264,8 @@ namespace ClinicEx_2024
 
         private int CalculateAge(DateTime birthDate)
         {
-            DateTime currentDate = DateTime.Now;
-            int age = currentDate.Year - birthDate.Year;
+            var currentDate = DateTime.Now;
+            var age = currentDate.Year - birthDate.Year;
             if (birthDate > currentDate.AddYears(-age))
                 age--;
             return age;
@@ -231,6 +278,7 @@ namespace ClinicEx_2024
                 if (
                     string.IsNullOrWhiteSpace(textBoxNombre.Text)
                     || string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text)
+                    || string.IsNullOrWhiteSpace(textBoxApellidoMaterno.Text)
                 )
                 {
                     string camposFaltantes = "";
@@ -242,7 +290,11 @@ namespace ClinicEx_2024
                     {
                         camposFaltantes += "Apellido Paterno, ";
                     }
-                    
+                    if (string.IsNullOrWhiteSpace(textBoxApellidoMaterno.Text))
+                    {
+                        camposFaltantes += "Apellido Materno, ";
+                    }
+
                     camposFaltantes = camposFaltantes.TrimEnd(',', ' ');
 
                     MessageBox.Show(
@@ -258,22 +310,19 @@ namespace ClinicEx_2024
 
                 string nombre = textBoxNombre.Text;
                 string apellidoP = textBoxApellidoPaterno.Text;
+                string apellidoM = textBoxApellidoMaterno.Text;
                 DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value;
 
-                int pacienteID = objP.buscarPaciente(nombre, apellidoP, fechaNacimiento);
+                int pacienteID = objP.BuscarPaciente(nombre, apellidoP, apellidoM, fechaNacimiento);
                 if (pacienteID != 0)
-                {
-                    // Aquí asumimos que tienes un método que retorna los datos del paciente
-                    var paciente = objP.obtenerDatosPaciente(pacienteID);
+                {                    
+                    var paciente = objP.ObtenerDatosPaciente(pacienteID);
 
                     MessageBox.Show("Paciente encontrado. ID: " + pacienteID);
                     buscar.Size = new Size(150, 40);
-                    buscar.Text = "Nueva consulta";
-                    buscar.Location = new Point(650, 400);
+                    buscar.Text = "Nueva Consulta";
+                    buscar.Location = new Point(650, 415);
                     miBoton.Enabled = false;
-
-                    // Asumiendo que 'paciente' es un objeto con las propiedades 'ApellidoM' y 'Sexo'
-                    textBoxApellidoMaterno.Text = paciente.ApellidoM;
                     comboBoxSexo.SelectedItem = paciente.Sexo;
                 }
                 else
@@ -292,7 +341,12 @@ namespace ClinicEx_2024
                 string sexo = comboBoxSexo.SelectedItem.ToString();
                 int edad = CalculateAge(fechaNacimiento);
 
-                int pacienteID = objP.buscarPaciente(nombre, apellidoPaterno, fechaNacimiento);
+                int pacienteID = objP.BuscarPaciente(
+                    nombre,
+                    apellidoPaterno,
+                    apellidoMaterno,
+                    fechaNacimiento
+                );
 
                 MainForm nform = new MainForm
                 {
@@ -308,12 +362,6 @@ namespace ClinicEx_2024
                 this.Hide();
                 nform.FormClosed += (s, args) => this.Show();
             }
-        }
-        private void Principal_Layout(object sender, LayoutEventArgs e)
-        {
-            miLabel.Location = new Point((this.ClientSize.Width - miLabel.Width) / 2, 10);
-            labelGral.Location = new Point((this.ClientSize.Width - labelGral.Width) / 2, 35);
-            labelDireccion.Location = new Point((this.ClientSize.Width - labelDireccion.Width) / 2, 60);
         }
     }
 }

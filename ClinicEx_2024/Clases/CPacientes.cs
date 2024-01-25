@@ -1,16 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
 namespace ClinicEx_2024.Clases
 {
     internal class CPacientes
     {
-        public int guardarPacientes(
+        private CConexion conexion = new CConexion();
+
+        private MySqlCommand PrepararComando(string query, params (string, object)[] parametros)
+        {
+            var cmd = new MySqlCommand(query, conexion.establecerConexion());
+            foreach (var (nombre, valor) in parametros)
+            {
+                cmd.Parameters.AddWithValue(nombre, valor);
+            }
+            return cmd;
+        }
+
+        public int GuardarPaciente(
             string nombre,
             string apellidoP,
             string apellidoM,
@@ -18,138 +25,162 @@ namespace ClinicEx_2024.Clases
             string sexo
         )
         {
-            int pacienteID = 0;
-
             try
             {
-                CConexion obj = new CConexion();
                 string query =
                     "INSERT INTO Pacientes (Nombre, ApellidoP, ApellidoM, FechaN, Sexo) VALUES (@Nombre, @ApellidoP, @ApellidoM, @FechaN, @Sexo); SELECT LAST_INSERT_ID();";
-                MySqlCommand myCommand = new MySqlCommand(query, obj.establecerConexion());
+                var cmd = PrepararComando(
+                    query,
+                    ("@Nombre", nombre),
+                    ("@ApellidoP", apellidoP),
+                    ("@ApellidoM", apellidoM),
+                    ("@FechaN", fechaNacimiento),
+                    ("@Sexo", sexo)
+                );
 
-                // Usar parámetros para prevenir la inyección de SQL
-                myCommand.Parameters.AddWithValue("@Nombre", nombre);
-                myCommand.Parameters.AddWithValue("@ApellidoP", apellidoP);
-                myCommand.Parameters.AddWithValue("@ApellidoM", apellidoM);
-                myCommand.Parameters.AddWithValue("@FechaN", fechaNacimiento); // Pasar la fecha de nacimiento completa
-                myCommand.Parameters.AddWithValue("@Sexo", sexo);
-
-                // Ejecutar la consulta y obtener el último ID insertado
-                pacienteID = Convert.ToInt32(myCommand.ExecuteScalar());
-                MessageBox.Show("Paciente agregado. ID: " + pacienteID);
-                obj.cerrarConexion();
+                int pacienteID = Convert.ToInt32(cmd.ExecuteScalar());
+                MessageBox.Show($"Paciente agregado. ID: {pacienteID}");
+                return pacienteID;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.ToString());
+                MessageBox.Show($"Error: {ex}");
+                return 0;
             }
-            return pacienteID;
+            finally
+            {
+                conexion.cerrarConexion();
+            }
         }
 
-        public void guardarVisita(
+        public void GuardarConsulta(
             int pacienteID,
             DateTime fechaConsulta,
+            string presionArterial,
+            decimal temperatura,
+            int frecuenciaCardiaca,
+            int frecuenciaRespiratoria,
+            decimal peso,
+            decimal talla,
+            decimal imc,
+            decimal circunferenciaCintura,
+            decimal saturacionOxigeno,
+            decimal glucemia,
+            string alergias,
             string padecimientoActual,
             string antecedentesImportancia,
             string hallazgosExploracionFisica,
-            string pruebasDiagnosticasRealizadas
+            string pruebasDiagnosticasRealizadas,
+            string diagnostico,
+            string tratamiento,
+            string pronostico
         )
         {
             try
             {
-                CConexion obj = new CConexion();
-                String query =
-                    "INSERT INTO Visitas (PacienteID, FechaConsulta, PadecimientoActual, AntecedentesImportancia, HallazgosExploracionFisica, PruebasDiagnosticasRealizadas) "
-                    + "VALUES (@PacienteID, @FechaConsulta, @PadecimientoActual, @AntecedentesImportancia, @HallazgosExploracionFisica, @PruebasDiagnosticasRealizadas);";
+                string query =
+                    "INSERT INTO Consultas (ID_Paciente, FechaConsulta, PresionArterial, Temperatura, FrecuenciaCardiaca, FrecuenciaRespiratoria, Peso, Talla, IMC, CircunferenciaCintura, SaturacionOxigeno, Glucemia, Alergias, PadecimientoActual, AntecedentesImportancia, HallazgosExploracionFisica, PruebasDiagnosticasRealizadas, Diagnostico, Tratamiento, Pronostico) "
+                    + "VALUES (@PacienteID, @FechaConsulta, @PresionArterial, @Temperatura, @FrecuenciaCardiaca, @FrecuenciaRespiratoria, @Peso, @Talla, @IMC, @CircunferenciaCintura, @SaturacionOxigeno, @Glucemia, @Alergias, @PadecimientoActual, @AntecedentesImportancia, @HallazgosExploracionFisica, @PruebasDiagnosticasRealizadas, @Diagnostico, @Tratamiento, @Pronostico);";
 
-                MySqlCommand myCommand = new MySqlCommand(query, obj.establecerConexion());
+                var cmd = PrepararComando(
+                    query,
+                    ("@PacienteID", pacienteID),
+                    ("@FechaConsulta", fechaConsulta),
+                    ("@PresionArterial", presionArterial),
+                    ("@Temperatura", temperatura),
+                    ("@FrecuenciaCardiaca", frecuenciaCardiaca),
+                    ("@FrecuenciaRespiratoria", frecuenciaRespiratoria),
+                    ("@Peso", peso),
+                    ("@Talla", talla),
+                    ("@IMC", imc),
+                    ("@CircunferenciaCintura", circunferenciaCintura),
+                    ("@SaturacionOxigeno", saturacionOxigeno),
+                    ("@Glucemia", glucemia),
+                    ("@Alergias", alergias),
+                    ("@PadecimientoActual", padecimientoActual),
+                    ("@AntecedentesImportancia", antecedentesImportancia),
+                    ("@HallazgosExploracionFisica", hallazgosExploracionFisica),
+                    ("@PruebasDiagnosticasRealizadas", pruebasDiagnosticasRealizadas),
+                    ("@Diagnostico", diagnostico),
+                    ("@Tratamiento", tratamiento),
+                    ("@Pronostico", pronostico)
+                );
 
-                myCommand.Parameters.AddWithValue("@PacienteID", pacienteID);
-                myCommand.Parameters.AddWithValue("@FechaConsulta", fechaConsulta);
-                myCommand.Parameters.AddWithValue("@PadecimientoActual", padecimientoActual);
-                myCommand.Parameters.AddWithValue(
-                    "@AntecedentesImportancia",
-                    antecedentesImportancia
-                );
-                myCommand.Parameters.AddWithValue(
-                    "@HallazgosExploracionFisica",
-                    hallazgosExploracionFisica
-                );
-                myCommand.Parameters.AddWithValue(
-                    "@PruebasDiagnosticasRealizadas",
-                    pruebasDiagnosticasRealizadas
-                );
-
-                myCommand.ExecuteNonQuery();
-                MessageBox.Show("Visita agregada con éxito.");
-                obj.cerrarConexion();
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Consulta agregada con éxito.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al guardar la visita: " + ex.Message);
+                MessageBox.Show($"Error al guardar la Consulta: {ex.Message}");
+            }
+            finally
+            {
+                conexion.cerrarConexion();
             }
         }
 
-        public int buscarPaciente(string nombre, string apellidoP, DateTime fechaNacimiento)
+        public int BuscarPaciente(
+            string nombre,
+            string apellidoP,
+            string apellidoM,
+            DateTime fechaNacimiento
+        )
         {
-            int pacienteID = 0;
-            DateTime fechaN = fechaNacimiento.Date;
-
             try
             {
-                CConexion obj = new CConexion();
                 string query =
-                    "SELECT PacienteID FROM Pacientes "
-                    + "WHERE Nombre = @Nombre "
-                    + "AND ApellidoP = @ApellidoP "
-                    + "AND FechaN = @FechaN ";
-                MySqlCommand myCommand = new MySqlCommand(query, obj.establecerConexion());
+                    "SELECT ID_Paciente FROM Pacientes WHERE Nombre = @Nombre AND ApellidoP = @ApellidoP AND ApellidoM = @ApellidoM AND FechaN = @FechaN";
+                var cmd = PrepararComando(
+                    query,
+                    ("@Nombre", nombre),
+                    ("@ApellidoP", apellidoP),
+                    ("@ApellidoM", apellidoM),
+                    ("@FechaN", fechaNacimiento.Date)
+                );
 
-                myCommand.Parameters.AddWithValue("@Nombre", nombre);
-                myCommand.Parameters.AddWithValue("@ApellidoP", apellidoP);
-                myCommand.Parameters.AddWithValue("@FechaN", fechaN);
-
-                // Ejecutar la consulta y obtener el ID del paciente
-                object result = myCommand.ExecuteScalar();
-                if (result != null)
-                {
-                    pacienteID = Convert.ToInt32(result);
-                }
-                obj.cerrarConexion();
+                object result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : 0;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al buscar el paciente: " + ex.ToString());
+                MessageBox.Show($"Error al buscar el paciente: {ex}");
+                return 0;
             }
-
-            return pacienteID;
+            finally
+            {
+                conexion.cerrarConexion();
+            }
         }
 
-        public Paciente obtenerDatosPaciente(int id)
+        public Paciente ObtenerDatosPaciente(int id)
         {
-            CConexion obj = new CConexion();
+            try
             {
-                string query = "SELECT ApellidoM, Sexo FROM Pacientes WHERE PacienteID = @id";
-                MySqlCommand myCommand = new MySqlCommand(query, obj.establecerConexion());
-                {
-                    // Usar parámetros para prevenir inyecciones SQL
-                    myCommand.Parameters.AddWithValue("@id", id);
+                string query = "SELECT ApellidoM, Sexo FROM Pacientes WHERE ID_Paciente = @id";
+                var cmd = PrepararComando(query, ("@id", id));
 
-                    using (var reader = myCommand.ExecuteReader())
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        return new Paciente
                         {
-                            var paciente = new Paciente
-                            {
-                                ApellidoM = reader.GetString(0),
-                                Sexo = reader.GetString(1)
-                            };
-                            return paciente;
-                        }
+                            ApellidoM = reader.GetString(0),
+                            Sexo = reader.GetString(1)
+                        };
                     }
                 }
+                return null;
             }
-            return null;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al obtener datos del paciente: {ex}");
+                return null;
+            }
+            finally
+            {
+                conexion.cerrarConexion();
+            }
         }
 
         public class Paciente

@@ -1,10 +1,8 @@
 using System;
 using System.Drawing;
-using System.Drawing.Text;
 using System.Windows.Forms;
+using ClinicEx_2024.Clases;
 using ClinicEx_2024.Properties;
-using Microsoft.VisualBasic.ApplicationServices;
-using static System.Windows.Forms.LinkLabel;
 
 namespace ClinicEx_2024
 {
@@ -16,7 +14,9 @@ namespace ClinicEx_2024
         public string ApellidoMaterno { get; set; }
         public string Sexo { get; set; }
         public int Edad { get; set; }
-        private Label labelnombre, labelGral, labelDireccion;
+        private Label labelnombre,
+            labelGral,
+            labelDireccion;
         private TextBox textBoxnombrep;
         private TextBox textBoxapellidop,
             textBoxapellidom;
@@ -24,6 +24,14 @@ namespace ClinicEx_2024
         private TextBox textBoxPeso;
         private TextBox textBoxTalla;
         private Label datoIMC;
+        private TextBox textBoxPresionArterial,
+            textBoxtemperatura,
+            textBoxFrecuenciaCardiaca,
+            textBoxFrecuenciaRespiratoria,
+            textBoxCintura,
+            textBoxsaturacion,
+            textBoxglucemia,
+            textBoxalergias;
         private TextBox textBoxPadecimientoActual;
         private TextBox textBoxAntecedentesImportancia;
         private TextBox textBoxHallazgos;
@@ -34,7 +42,7 @@ namespace ClinicEx_2024
         private TextBox textBoxEdad;
         private Panel panelScroll;
 
-        Image logoImage = Properties.Resources.Logo;
+        Image logoImage = Resources.Logo;
 
         public MainForm()
         {
@@ -61,7 +69,7 @@ namespace ClinicEx_2024
 
         private void InitializeFormComponents()
         {
-            this.Size = new Size(1200, 700);
+            this.Size = new Size(1300, 700);
             this.Text = "Registro de Expediente Médico";
 
             PictureBox pictureBox = new PictureBox
@@ -191,11 +199,7 @@ namespace ClinicEx_2024
                 Location = new Point(20, 210),
                 AutoSize = true
             };
-            TextBox textBoxPresionArterial = new TextBox
-            {
-                Location = new Point(20, 240),
-                Width = 105
-            };
+            textBoxPresionArterial = new TextBox { Location = new Point(20, 240), Width = 105 };
 
             Label temperaturalabel = new Label
             {
@@ -203,7 +207,7 @@ namespace ClinicEx_2024
                 Location = new Point(180, 210),
                 AutoSize = true
             };
-            TextBox textBoxtemperatura = new TextBox { Location = new Point(180, 240), Width = 89 };
+            textBoxtemperatura = new TextBox { Location = new Point(180, 240), Width = 89 };
 
             Label labelFrecuenciaCardiaca = new Label
             {
@@ -211,11 +215,7 @@ namespace ClinicEx_2024
                 Location = new Point(330, 210),
                 AutoSize = true
             };
-            TextBox textBoxFrecuenciaCardiaca = new TextBox
-            {
-                Location = new Point(330, 240),
-                Width = 138
-            };
+            textBoxFrecuenciaCardiaca = new TextBox { Location = new Point(330, 240), Width = 138 };
 
             Label labelFrecuenciaRespiratoria = new Label
             {
@@ -223,7 +223,7 @@ namespace ClinicEx_2024
                 Location = new Point(540, 210),
                 AutoSize = true
             };
-            TextBox textBoxFrecuenciaRespiratoria = new TextBox
+            textBoxFrecuenciaRespiratoria = new TextBox
             {
                 Location = new Point(540, 240),
                 Width = 158
@@ -267,28 +267,22 @@ namespace ClinicEx_2024
                 AutoSize = true
             };
 
-            Button[] photoUploadButtons = new Button[4];
-
-            for (int i = 0; i < 4; i++)
+            Button photoUploadButton = new Button
             {
-                photoUploadButtons[i] = new Button
-                {
-                    Text = $"Selecciona foto {i + 1}",
-                    Location = new Point(1100, 240 + i * 30),
-                    Width = 150,
-                    Height =30,
-                };
+                Text = "Selecciona foto",
+                Location = new Point(1100, 240),
+                Width = 150,
+                Height = 50
+            };
+            photoUploadButton.Click += (sender, e) => UploadPhotoButton_Click();
 
-                photoUploadButtons[i].Click += (sender, e) => UploadPhotoButton_Click(i + 1);
-            }
-            
             Label labelCintura = new Label
             {
                 Text = "Circunferencia de cintura (cm)",
                 Location = new Point(20, 310),
                 AutoSize = true
             };
-            TextBox textBoxCintura = new TextBox { Location = new Point(20, 340), Width = 200 };
+            textBoxCintura = new TextBox { Location = new Point(20, 340), Width = 200 };
 
             Label saturacionlabel = new Label
             {
@@ -296,7 +290,7 @@ namespace ClinicEx_2024
                 Location = new Point(280, 310),
                 AutoSize = true
             };
-            TextBox textBoxsaturacion = new TextBox { Location = new Point(280, 340), Width = 147 };
+            textBoxsaturacion = new TextBox { Location = new Point(280, 340), Width = 147 };
 
             Label glucemialabel = new Label
             {
@@ -304,7 +298,7 @@ namespace ClinicEx_2024
                 Location = new Point(495, 310),
                 AutoSize = true
             };
-            TextBox textBoxglucemia = new TextBox { Location = new Point(495, 340), Width = 65 };
+            textBoxglucemia = new TextBox { Location = new Point(495, 340), Width = 65 };
 
             Label alergiaslabel = new Label
             {
@@ -312,8 +306,8 @@ namespace ClinicEx_2024
                 Location = new Point(640, 310),
                 AutoSize = true
             };
-            TextBox textBoxalergias = new TextBox { Location = new Point(640, 340), Width = 350 };
-            
+            textBoxalergias = new TextBox { Location = new Point(640, 340), Width = 350 };
+
             Label labelNotaMedica = new Label
             {
                 Text = "Nota médica",
@@ -514,10 +508,7 @@ namespace ClinicEx_2024
             panelScroll.Controls.Add(alergiaslabel);
             panelScroll.Controls.Add(textBoxalergias);
             panelScroll.Controls.Add(photoLabel);
-            foreach (Button button in photoUploadButtons)
-            {
-                panelScroll.Controls.Add(button);
-            }
+            panelScroll.Controls.Add(photoUploadButton);
             panelScroll.Controls.Add(labelNotaMedica);
             panelScroll.Controls.Add(lineNM);
             panelScroll.Controls.Add(labelPadecimientoActual);
@@ -547,7 +538,6 @@ namespace ClinicEx_2024
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
             textBoxnombrep.Text = this.Nombre;
             textBoxapellidop.Text = this.ApellidoPaterno;
             textBoxapellidom.Text = this.ApellidoMaterno;
@@ -567,7 +557,7 @@ namespace ClinicEx_2024
                 {
                     double tallaEnMetros = talla / 100;
                     double imc = peso / (Math.Pow(tallaEnMetros, 2));
-                    datoIMC.Text = imc.ToString("0.00"); 
+                    datoIMC.Text = imc.ToString("0.00");
                 }
             }
             else
@@ -578,7 +568,62 @@ namespace ClinicEx_2024
 
         private void Agregar_Click(object sender, EventArgs e)
         {
+            try
+            {
+                DateTime fechaConsulta = DateTime.Now; // O usa un DateTimePicker si la fecha no es la actual
+                string presionArterial = textBoxPresionArterial.Text;
+                decimal temperatura = decimal.Parse(textBoxtemperatura.Text);
+                int frecuenciaCardiaca = int.Parse(textBoxFrecuenciaCardiaca.Text);
+                int frecuenciaRespiratoria = int.Parse(textBoxFrecuenciaRespiratoria.Text);
+                decimal peso = decimal.Parse(textBoxPeso.Text);
+                decimal talla = decimal.Parse(textBoxTalla.Text);
+                decimal imc = decimal.Parse(datoIMC.Text); // Asegúrate de que esto es un decimal
+                decimal circunferenciaCintura = decimal.Parse(textBoxCintura.Text);
+                decimal saturacionOxigeno = decimal.Parse(textBoxsaturacion.Text);
+                decimal glucemia = decimal.Parse(textBoxglucemia.Text);
+                string alergias = textBoxalergias.Text;
+                string padecimientoActual = textBoxPadecimientoActual.Text;
+                string antecedentesImportancia = textBoxAntecedentesImportancia.Text;
+                string hallazgosExploracionFisica = textBoxHallazgos.Text;
+                string pruebasDiagnosticasRealizadas = textBoxPruebasDiag.Text;
+                string diagnostico = textBoxDiagnostico.Text;
+                string tratamiento = textBoxTratamiento.Text;
+                string pronostico = textBoxPronostico.Text;
 
+                CPacientes pacientes = new CPacientes();
+                pacientes.GuardarConsulta(
+                    this.PacienteID, // Asegúrate de que este valor esté asignado correctamente
+                    fechaConsulta,
+                    presionArterial,
+                    temperatura,
+                    frecuenciaCardiaca,
+                    frecuenciaRespiratoria,
+                    peso,
+                    talla,
+                    imc,
+                    circunferenciaCintura,
+                    saturacionOxigeno,
+                    glucemia,
+                    alergias,
+                    padecimientoActual,
+                    antecedentesImportancia,
+                    hallazgosExploracionFisica,
+                    pruebasDiagnosticasRealizadas,
+                    diagnostico,
+                    tratamiento,
+                    pronostico
+                );
+
+                this.Close();
+            }
+            catch (FormatException fe)
+            {
+                MessageBox.Show("Error en el formato de los datos: " + fe.Message);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al guardar la consulta: " + ex.Message);
+            }
         }
 
         private void CambiarFuenteLabels(
@@ -602,7 +647,6 @@ namespace ClinicEx_2024
             }
         }
 
-
         private void AjustarAnchoTextBox(TextBox textBox)
         {
             int margenDerecho = 150 + panelScroll.Padding.Right;
@@ -625,14 +669,18 @@ namespace ClinicEx_2024
         {
             labelnombre.Location = new Point((this.ClientSize.Width - labelnombre.Width) / 2, 10);
             labelGral.Location = new Point((this.ClientSize.Width - labelGral.Width) / 2, 35);
-            labelDireccion.Location = new Point((this.ClientSize.Width - labelDireccion.Width) / 2, 60);
+            labelDireccion.Location = new Point(
+                (this.ClientSize.Width - labelDireccion.Width) / 2,
+                60
+            );
         }
-        private void UploadPhotoButton_Click(int photoNumber)
+
+        private void UploadPhotoButton_Click()
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp|All Files|*.*";
-                openFileDialog.Title = $"Selecciona foto {photoNumber}";
+                openFileDialog.Title = $"Selecciona foto";
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -643,7 +691,5 @@ namespace ClinicEx_2024
                 }
             }
         }
-
-
     }
 }

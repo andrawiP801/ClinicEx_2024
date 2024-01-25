@@ -2,8 +2,8 @@ DROP DATABASE IF EXISTS ClinicEx_2024;
 CREATE DATABASE ClinicEx_2024;
 USE ClinicEx_2024;
 
-CREATE TABLE Pacientes (
-    PacienteID INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Pacientes(
+    ID_Paciente INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(50),
     ApellidoP VARCHAR(50),
     ApellidoM VARCHAR(50),
@@ -13,7 +13,7 @@ CREATE TABLE Pacientes (
 
 CREATE TABLE Consultas (
     ID_Consulta INT AUTO_INCREMENT PRIMARY KEY,
-    PacienteID INT,
+    ID_Paciente INT,
     FechaConsulta DATE,
     PresionArterial VARCHAR(10),
     Temperatura DECIMAL(4,2),
@@ -29,21 +29,25 @@ CREATE TABLE Consultas (
     PadecimientoActual TEXT,
     AntecedentesImportancia TEXT,
     HallazgosExploracionFisica TEXT,
-    PruebasDiagnosticasRealizadas TEXT,
     PuebasDiagnosticasRealizadas TEXT, 
     Diagnostico TEXT,
     Tratamiento TEXT,
-    Pronostico TEXT
+    Pronostico TEXT,
+    foreign key (ID_Paciente) references Pacientes(ID_Paciente)
+);
+
+CREATE TABLE Imagenes (
+    ID_Imagen INT AUTO_INCREMENT PRIMARY KEY,    
+    Imagen BLOB    
 );
 
 CREATE TABLE Expendiente (
-    ID_Expediente INT AUTO_INCREMENT PRIMARY KEY,
-    PacienteID INT,
-    ID_Consulta INT,
-    FOREIGN KEY (PacienteID) REFERENCES Pacientes(PacienteID),
-    FOREIGN KEY (ID_Consulta) REFERENCES Consultas(ID_Consulta)
+    ID_Paciente INT,
+    ID_Imagen INT,
+    foreign key (ID_Paciente) references Pacientes(ID_Paciente),
+    foreign key (ID_Imagen) references Imagenes(ID_Imagen)
 );
-
 
 SELECT * FROM Pacientes;
 SELECT * FROM Consultas;
+SELECT * FROM Imagenes;
