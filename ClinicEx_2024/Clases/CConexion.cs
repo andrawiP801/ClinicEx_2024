@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +23,11 @@ namespace ClinicEx_2024.Clases
         {
             try
             {
-                conex.ConnectionString = cadenaConexion;
-                conex.Open();
+                if (conex.State != ConnectionState.Open)
+                {
+                    conex.ConnectionString = cadenaConexion;
+                    conex.Open();
+                }
             }
             catch(Exception ex) 
             {

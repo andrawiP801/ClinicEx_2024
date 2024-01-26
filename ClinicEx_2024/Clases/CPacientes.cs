@@ -2,6 +2,7 @@
 using System.Data;
 using MySql.Data.MySqlClient;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static ClinicEx_2024.Clases.CPacientes;
 
 namespace ClinicEx_2024.Clases
 {
@@ -224,26 +225,6 @@ namespace ClinicEx_2024.Clases
 
             return consultas;
         }
-
-        public int ObtenerUltimoID_Imagen()
-        {
-            try
-            {
-                string query = "SELECT LAST_INSERT_ID() FROM Imagenes ORDER BY ID_Imagen DESC LIMIT 1;";
-                var cmd = PrepararComando(query);
-                int ID_Imagen = Convert.ToInt32(cmd.ExecuteScalar());
-                return ID_Imagen;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al obtener el ID de la imagen más reciente: {ex.Message}");
-                return 0;
-            }
-            finally
-            {
-                conexion.cerrarConexion();
-            }
-        }
         public int GuardarImagen(byte[] imageBytes)
         {
             try
@@ -263,22 +244,50 @@ namespace ClinicEx_2024.Clases
                 conexion.cerrarConexion();
             }
         }
+        public List<int> ObtenerIDsImagenesNoRegistradas()
+        {
+            List<int> idsImagenes = new List<int>();
+            try
+            {
+                string query = "SELECT ID_Imagen FROM Imagenes WHERE ID_Imagen NOT IN (SELECT ID_Imagen FROM Expediente)";
+                var cmd = PrepararComando(query);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        idsImagenes.Add(reader.GetInt32(0));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al obtener los IDs de las imágenes no registradas: {ex.Message}");
+            }
+            finally
+            {
+                conexion.cerrarConexion();
+            }
+            return idsImagenes;
+        }
 
         public void ActualizarExpediente(int idConsulta)
         {
-            int ID_Imagen = ObtenerUltimoID_Imagen();
+            List<int> idsImagenes = ObtenerIDsImagenesNoRegistradas();
 
-            if (ID_Imagen > 0 && idConsulta > 0)
+            if (idsImagenes.Count > 0 && idConsulta > 0)
             {
                 try
                 {
-                    string query = "INSERT INTO Expediente (ID_Consulta, ID_Imagen) VALUES (@ID_Consulta, @ID_Imagen);";
-                    var cmd = PrepararComando(query, ("@ID_Consulta", idConsulta), ("@ID_Imagen", ID_Imagen));
-                    cmd.ExecuteNonQuery();
+                    foreach (int idImagen in idsImagenes)
+                    {
+                        string query = "INSERT INTO Expediente (ID_Consulta, ID_Imagen) VALUES (@ID_Consulta, @ID_Imagen);";
+                        var cmd = PrepararComando(query, ("@ID_Consulta", idConsulta), ("@ID_Imagen", idImagen));
+                        cmd.ExecuteNonQuery();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error al actualizar el expediente: {ex.Message}");
+                    MessageBox.Show($"Error al actualizar el expediente con las imágenes: {ex.Message}");
                 }
                 finally
                 {
@@ -287,13 +296,9 @@ namespace ClinicEx_2024.Clases
             }
             else
             {
-                MessageBox.Show("Error: No se pudo obtener el ID de la consulta o de la imagen.");
+                MessageBox.Show("No hay imágenes nuevas para registrar o el ID de la consulta no es válido.");
             }
         }
-
-
-
-
 
     }
 }

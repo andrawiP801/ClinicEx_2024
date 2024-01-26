@@ -122,6 +122,8 @@ namespace ClinicEx_2024
                 AllowUserToAddRows = false,
                 ReadOnly = true
             };
+            dataGridViewConsultas.CellDoubleClick += dataGridViewConsultas_CellDoubleClick;
+
             Controls.Add(dataGridViewConsultas);
         }
 
@@ -366,7 +368,6 @@ namespace ClinicEx_2024
                 DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value;
                 string sexo = comboBoxSexo.SelectedItem.ToString();
                 int edad = CalculateAge(fechaNacimiento);
-
                 int pacienteID = objP.BuscarPaciente(
                     nombre,
                     apellidoPaterno,
@@ -385,8 +386,61 @@ namespace ClinicEx_2024
                 };
 
                 nform.Show();
+                textBoxNombre.Text = "";
+                textBoxApellidoPaterno.Text = "";
+                textBoxApellidoMaterno.Text = "";
+                dateTimePickerFechaNacimiento.Value = DateTime.Now; 
+                comboBoxSexo.SelectedIndex = -1;
+                buscar.Text = "Buscar";
+                if (dataGridViewConsultas.DataSource != null)
+                {
+                    dataGridViewConsultas.DataSource = null;
+                }
+                else
+                {
+                    dataGridViewConsultas.Rows.Clear();
+                }
+
+                dataGridViewConsultas.Columns.Clear();
                 this.Hide();
                 nform.FormClosed += (s, args) => this.Show();
+            }
+        }
+        private void dataGridViewConsultas_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0) 
+            {
+                Clases.CPacientes objP = new Clases.CPacientes();
+
+                string nombre = textBoxNombre.Text;
+                string apellidoPaterno = textBoxApellidoPaterno.Text;
+                string apellidoMaterno = textBoxApellidoMaterno.Text;
+                DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value;
+                string sexo = comboBoxSexo.SelectedItem.ToString();
+                int edad = CalculateAge(fechaNacimiento);
+
+                int pacienteID = objP.BuscarPaciente(
+                    nombre,
+                    apellidoPaterno,
+                    apellidoMaterno,
+                    fechaNacimiento
+                );
+                DateTime fechaConsulta = Convert.ToDateTime(dataGridViewConsultas.Rows[e.RowIndex].Cells["FechaConsulta"].Value);
+                MainForm nform = new MainForm
+                {
+                    PacienteID = pacienteID,
+                    Nombre = nombre,
+                    ApellidoPaterno = apellidoPaterno,
+                    ApellidoMaterno = apellidoMaterno,
+                    Sexo = sexo,
+                    Edad = edad,
+                    FechaConsulta = fechaConsulta
+                };
+
+                nform.Show();
+                this.Hide();
+                nform.FormClosed += (s, args) => this.Show();
+
             }
         }
     }

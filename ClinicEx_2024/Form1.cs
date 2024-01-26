@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using ClinicEx_2024.Clases;
 using ClinicEx_2024.Properties;
+using MySql.Data.MySqlClient;
+using static ClinicEx_2024.Clases.CPacientes;
 
 namespace ClinicEx_2024
 {
@@ -14,6 +16,7 @@ namespace ClinicEx_2024
         public string ApellidoMaterno { get; set; }
         public string Sexo { get; set; }
         public int Edad { get; set; }
+        public DateTime FechaConsulta { get; set; }
         private Label labelnombre,
             labelGral,
             labelDireccion;
@@ -40,10 +43,13 @@ namespace ClinicEx_2024
             textBoxTratamiento,
             textBoxPronostico;
         private TextBox textBoxEdad;
+        Button Agregar;
+        Button photoUploadButton;
+        public DateTimePicker dateTimePickerConsulta;
         private Panel panelScroll;
 
         Image logoImage = Resources.Logo;
-
+        private int idConsulta;
         public MainForm()
         {
             InitializeFormComponents();
@@ -172,7 +178,7 @@ namespace ClinicEx_2024
                 Location = new Point(10, 105),
                 AutoSize = true
             };
-            DateTimePicker dateTimePickerConsulta = new DateTimePicker
+            dateTimePickerConsulta = new DateTimePicker
             {
                 Format = DateTimePickerFormat.Short,
                 Location = new Point(10, 135),
@@ -267,7 +273,7 @@ namespace ClinicEx_2024
                 AutoSize = true
             };
 
-            Button photoUploadButton = new Button
+            photoUploadButton = new Button
             {
                 Text = "Selecciona foto",
                 Location = new Point(1100, 240),
@@ -454,7 +460,7 @@ namespace ClinicEx_2024
                 AutoSize = true
             };
 
-            Button Agregar = new Button
+            Agregar = new Button
             {
                 Text = "Agregar",
                 Location = new Point(1030, 1480),
@@ -543,10 +549,88 @@ namespace ClinicEx_2024
             textBoxapellidom.Text = this.ApellidoMaterno;
             comboBoxSexo.Text = this.Sexo;
             textBoxEdad.Text = this.Edad.ToString();
-            int PacienteID = this.PacienteID;
+            
+
+            if (this.FechaConsulta != DateTime.MinValue)
+            {
+                int PacienteID = this.PacienteID;
+                dateTimePickerConsulta.Value = this.FechaConsulta;
+                this.CargarDatosConsulta(PacienteID, FechaConsulta);
+                photoUploadButton.Text = "Mostrar fotos";
+            }
+
+            else
+            {
+                dateTimePickerConsulta.Value = DateTime.Now;
+            }
+
+        }
+        private CConexion conexion = new CConexion();
+
+        private MySqlCommand PrepararComando(string query, params (string, object)[] parametros)
+        {
+            var cmd = new MySqlCommand(query, conexion.establecerConexion());
+            foreach (var (nombre, valor) in parametros)
+            {
+                cmd.Parameters.AddWithValue(nombre, valor);
+            }
+            return cmd;
         }
 
-        private void CalcularIMC()
+        public void CargarDatosConsulta(int pacienteID, DateTime fechaConsulta)
+        {
+            string query = "SELECT * FROM Consultas WHERE ID_Paciente = @ID_Paciente AND FechaConsulta = @FechaConsulta LIMIT 1";
+
+            var cmd = PrepararComando(query);
+            cmd.Parameters.AddWithValue("@ID_Paciente", pacienteID);
+            cmd.Parameters.AddWithValue("@FechaConsulta", fechaConsulta);
+
+            try
+            {
+                conexion.establecerConexion();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        idConsulta = int.Parse(reader["ID_Consulta"].ToString());
+                        textBoxPresionArterial.Text = reader["PresionArterial"].ToString();
+                        textBoxtemperatura.Text = reader["Temperatura"].ToString();
+                        textBoxFrecuenciaCardiaca.Text = reader["FrecuenciaCardiaca"].ToString();
+                        textBoxFrecuenciaRespiratoria.Text = reader["FrecuenciaRespiratoria"].ToString();
+                        textBoxPeso.Text = reader["Peso"].ToString();
+                        textBoxTalla.Text = reader["Talla"].ToString();
+                        // Assuming datoIMC is a Label or TextBox that can display the calculated IMC
+                        datoIMC.Text = reader["IMC"].ToString();
+                        textBoxCintura.Text = reader["CircunferenciaCintura"].ToString();
+                        textBoxsaturacion.Text = reader["SaturacionOxigeno"].ToString();
+                        textBoxglucemia.Text = reader["Glucemia"].ToString();
+                        textBoxalergias.Text = reader["Alergias"].ToString();
+                        textBoxPadecimientoActual.Text = reader["PadecimientoActual"].ToString();
+                        textBoxAntecedentesImportancia.Text = reader["AntecedentesImportancia"].ToString();
+                        textBoxHallazgos.Text = reader["HallazgosExploracionFisica"].ToString();
+                        textBoxPruebasDiag.Text = reader["PruebasDiagnosticasRealizadas"].ToString();
+                        textBoxDiagnostico.Text = reader["Diagnostico"].ToString();
+                        textBoxTratamiento.Text = reader["Tratamiento"].ToString();
+                        textBoxPronostico.Text = reader["Pronostico"].ToString();
+                    }
+                    else
+                    {
+                        MessageBox.Show("No data found for the given patient ID and date.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading consultation data: " + ex.Message);
+            }
+            finally
+            {
+                conexion.cerrarConexion();
+            }
+        }
+
+    
+    private void CalcularIMC()
         {
             if (
                 double.TryParse(textBoxPeso.Text, out double peso)
@@ -639,8 +723,6 @@ namespace ClinicEx_2024
                 {
                     label.Font = new Font(nombreFuente, nuevoTamano, label.Font.Style);
                 }
-
-                // Si el control tiene controles hijos, busca Labels dentro de ellos también
                 if (control.HasChildren)
                 {
                     CambiarFuenteLabels(control, nombreFuente, nuevoTamano);
@@ -678,19 +760,81 @@ namespace ClinicEx_2024
 
         private void UploadPhotoButton_Click()
         {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            if (photoUploadButton.Text == "Selecciona foto")
             {
-                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp|All Files|*.*";
-                openFileDialog.Title = $"Selecciona foto";
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
                 {
-                    string filePath = openFileDialog.FileName;
-                    // Crear y mostrar el nuevo formulario con la imagen
-                    ImageForm imageForm = new ImageForm(filePath);
-                    imageForm.Show();
+                    openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp|All Files|*.*";
+                    openFileDialog.Title = "Selecciona foto";
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string filePath = openFileDialog.FileName;
+                        ImageForm imageForm = new ImageForm(filePath);
+                        imageForm.Show();
+                    }
                 }
             }
+            else if (photoUploadButton.Text == "Mostrar fotos")
+            {
+                var images = GetImagesFromDatabase(idConsulta);
+                DisplayImages(images);
+            }
         }
+
+        private List<byte[]> GetImagesFromDatabase(int idConsulta)
+        {
+            var images = new List<byte[]>();
+
+            string query = @"
+        SELECT Imagenes.Imagen FROM Imagenes
+        INNER JOIN Expediente ON Imagenes.ID_Imagen = Expediente.ID_Imagen
+        WHERE Expediente.ID_Consulta = @ID_Consulta";
+
+            var cmd = PrepararComando(query);
+            cmd.Parameters.AddWithValue("@ID_Consulta", idConsulta);
+
+            try
+            {
+                conexion.establecerConexion();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        byte[] imageBytes = reader["Imagen"] as byte[];
+                        images.Add(imageBytes);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error retrieving images: " + ex.Message);
+            }
+            finally
+            {
+                conexion.cerrarConexion();
+            }
+
+            return images;
+        }
+        private void DisplayImages(List<byte[]> images)
+        {
+            foreach (byte[] imageBytes in images)
+            {
+                Image image = ConvertByteArrayToImage(imageBytes);
+                ImageDisplayForm displayForm = new ImageDisplayForm(image);
+                displayForm.Show(); 
+            }
+        }
+
+
+        public static Image ConvertByteArrayToImage(byte[] byteArray)
+        {
+            using (var ms = new MemoryStream(byteArray))
+            {
+                return Image.FromStream(ms);
+            }
+        }
+
     }
 }
