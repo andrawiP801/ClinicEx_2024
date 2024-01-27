@@ -10,6 +10,7 @@ namespace ClinicEx_2024
 {
     public partial class MainForm : Form
     {
+        // Propiedades
         public int PacienteID { get; set; }
         public string Nombre { get; set; }
         public string ApellidoPaterno { get; set; }
@@ -17,67 +18,228 @@ namespace ClinicEx_2024
         public string Sexo { get; set; }
         public int Edad { get; set; }
         public DateTime FechaConsulta { get; set; }
-        private Label labelnombre,
+
+        // Declaraciones de controles
+        private Label labelNombre,
             labelGral,
-            labelDireccion;
-        private TextBox textBoxnombrep;
-        private TextBox textBoxapellidop,
-            textBoxapellidom;
-        private TextBox comboBoxSexo;
-        private TextBox textBoxPeso;
-        private TextBox textBoxTalla;
-        private Label datoIMC;
+            labelDireccion,
+            datoIMC;
         private TextBox textBoxPresionArterial,
-            textBoxtemperatura,
+            textBoxTemperatura,
             textBoxFrecuenciaCardiaca,
             textBoxFrecuenciaRespiratoria,
             textBoxCintura,
-            textBoxsaturacion,
-            textBoxglucemia,
-            textBoxalergias;
-        private TextBox textBoxPadecimientoActual;
-        private TextBox textBoxAntecedentesImportancia;
-        private TextBox textBoxHallazgos;
-        private TextBox textBoxPruebasDiag;
-        private TextBox textBoxDiagnostico,
+            textBoxSaturacion,
+            textBoxGlucemia,
+            textBoxAlergias,
+            textBoxNombreP,
+            textBoxApellidoP,
+            textBoxApellidoM,
+            comboBoxSexo,
+            textBoxPeso,
+            textBoxTalla,
+            textBoxPadecimientoActual,
+            textBoxAntecedentesImportancia,
+            textBoxHallazgos,
+            textBoxPruebasDiag,
+            textBoxDiagnostico,
             textBoxTratamiento,
-            textBoxPronostico;
-        private TextBox textBoxEdad;
-        Button Agregar;
-        Button photoUploadButton;
-        public DateTimePicker dateTimePickerConsulta;
-        private Panel panelScroll;
-
-        Image logoImage = Resources.Logo;
+            textBoxPronostico,
+            textBoxEdad;
+        private Button agregarButton,
+            imprimirButton,
+            photoUploadButton;
+        private DateTimePicker dateTimePickerConsulta;
+        private Image logoImage = Resources.Logo;
         private int idConsulta;
+
         public MainForm()
         {
-            InitializeFormComponents();
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.Load += MainForm_Load;
-            panelScroll.BackColor = Color.LightBlue;
-            CambiarFuenteLabels(this, "Century", 10);
-            labelnombre.Font = new Font("Century", 15, FontStyle.Bold);
-            labelGral.Font = new Font("Century", 15, FontStyle.Bold);
-            this.Icon = Properties.Resources.Icono;
-
-            AjustarAnchoTextBox(textBoxPadecimientoActual);
-            AjustarAnchoTextBox(textBoxAntecedentesImportancia);
-            AjustarAnchoTextBox(textBoxHallazgos);
-            AjustarAnchoTextBox(textBoxPruebasDiag);
-            AjustarAnchoTextBox(textBoxDiagnostico);
-            AjustarAnchoTextBox(textBoxTratamiento);
-            AjustarAnchoTextBox(textBoxPronostico);
-
-            this.Resize += MainForm_Resize;
-            this.Layout += new LayoutEventHandler(Form1_Layout);
+            InitializeComponent();
+            CustomizeForm();
+            SubscribeToEvents();
         }
 
-        private void InitializeFormComponents()
+        private void InitializeComponent()
         {
             this.Size = new Size(1300, 700);
+            this.AutoScroll = true;
+            this.SetAutoScrollMargin(0, 10);
             this.Text = "Registro de Expediente Médico";
 
+            AddControls();
+        }
+
+        private void CustomizeForm()
+        {
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.BackColor = Color.LightBlue;
+            this.Icon = Properties.Resources.Icono;
+
+            ChangeFontOfLabels(this, "Century", 10);
+            labelNombre.Font = new Font("Century", 15, FontStyle.Bold);
+            labelGral.Font = new Font("Century", 15, FontStyle.Bold);
+        }
+
+        private void SubscribeToEvents()
+        {
+            // Suscripción a eventos del formulario
+            this.Load += MainForm_Load;
+            this.Resize += MainForm_Resize;
+            this.Layout += new LayoutEventHandler(Form1_Layout);
+
+            // Suscripción a eventos de los botones
+            agregarButton.Click += Agregar_Click;
+            imprimirButton.Click += Imprimir_Click;
+        }
+
+        private void AddControls()
+        {
+            // Creación y configuración de Labels
+            labelNombre = CreateLabel("Consultorio San Francisco", new Point(5, 5), true);
+            labelGral = CreateLabel("\"Medicina General\"", new Point(5, 30), true);
+            labelDireccion = CreateLabel(
+                "Av. Hidalgo 67 Tequexquináhuac, Texcoco",
+                new Point(5, 55),
+                true
+            );
+            Label labelNombreP = CreateLabel("Nombre", new Point(450, 105), true);
+            Label labelApellidoP = CreateLabel("Apellido Paterno", new Point(590, 105), true);
+            Label labelApellidoM = CreateLabel("Apellido Materno", new Point(750, 105), true);
+            Label labelEdad = CreateLabel("Edad", new Point(930, 105), true);
+            Label labelSexo = CreateLabel("Sexo", new Point(1010, 105), true);
+            Label labelFechaConsulta = CreateLabel("Fecha de consulta", new Point(10, 105), true);
+            Label labelSignosVitales = CreateLabel("Signos vitales", new Point(10, 180), true);
+            Label labelPresionArterial = CreateLabel("Presión arterial", new Point(20, 210), true);
+            Label labelTemperatura = CreateLabel("Temperatura", new Point(180, 210), true);
+            Label labelFrecuenciaCardiaca = CreateLabel(
+                "Frecuencia Cardiaca",
+                new Point(330, 210),
+                true
+            );
+            Label labelFrecuenciaRespiratoria = CreateLabel(
+                "Frecuencia Respiratoria",
+                new Point(540, 210),
+                true
+            );
+            Label labelPeso = CreateLabel("Peso (kg)", new Point(760, 210), true);
+            Label labelTalla = CreateLabel("Talla (cm)", new Point(880, 210), true);
+            Label labelIMC = CreateLabel("IMC", new Point(1010, 210), true);
+            datoIMC = CreateLabel(Text = "--", new Point(1010, 240), true);
+            Label labelCintura = CreateLabel(
+                "Circunferencia de cintura (cm)",
+                new Point(20, 310),
+                true
+            );
+            Label labelSaturacion = CreateLabel("Saturación de oxígeno", new Point(280, 310), true);
+            Label labelGlucemia = CreateLabel("Glucemia", new Point(495, 310), true);
+            Label labelAlergias = CreateLabel("Alergias", new Point(640, 310), true);
+            Label lineSV = CreateSeparator(new Point(0, 190), this.Width);
+            Label photoLabel = CreateLabel("Estudios", new Point(1100, 210), true);
+            Label labelNotaMedica = CreateLabel("Nota médica", new Point(10, 400), true);
+            Label lineNM = CreateSeparator(new Point(0, 410), this.Width);
+            Label labelPadecimientoActual = CreateLabel(
+                "Padecimiento actual",
+                new Point(10, 430),
+                true
+            );
+            Label labelAntecedentesImportancia = CreateLabel(
+                "Antecedentes de importancia",
+                new Point(10, 570),
+                true
+            );
+            Label labelHallazgos = CreateLabel(
+                "Hallazgos en exploración física",
+                new Point(10, 710),
+                true
+            );
+            Label labelPruebasDiag = CreateLabel(
+                "Pruebas diagnósticas realizadas",
+                new Point(10, 850),
+                true
+            );
+            Label labelDiagnostico = CreateLabel("Diagnóstico", new Point(10, 990), true);
+            Label labelTratamiento = CreateLabel("Tratamiento", new Point(10, 1130), true);
+            Label labelPronostico = CreateLabel("Pronóstico", new Point(10, 1270), true);
+            Label labelMedico = CreateLabel("Médico", new Point(10, 1430), true);
+            Label lineMed = CreateSeparator(new Point(0, 1440), this.Width);
+            Label labelDatoNom = CreateLabel("Nombre del Médico", new Point(25, 1460), true);
+            Label labelDatoCed = CreateLabel("Cédula Profesional", new Point(600, 1460), true);
+            Label labelNombreMedico = CreateLabel(
+                "FABIOLA ALEJANDRA MARQUEZ CADENA",
+                new Point(25, 1485),
+                true
+            );
+            Label labelCedulaPro = CreateLabel("4443217", new Point(600, 1485), true);
+
+            // Creación de TextBoxes
+            textBoxNombreP = CreateTextBox(new Point(450, 135), new Size(100, 50), false, Nombre);
+            textBoxApellidoP = CreateTextBox(
+                new Point(590, 135),
+                new Size(111, 50),
+                false,
+                ApellidoPaterno
+            );
+            textBoxApellidoM = CreateTextBox(
+                new Point(750, 135),
+                new Size(115, 50),
+                false,
+                ApellidoMaterno
+            );
+            textBoxEdad = CreateTextBox(
+                new Point(930, 135),
+                new Size(42, 50),
+                false,
+                Edad.ToString()
+            );
+            comboBoxSexo = CreateTextBox(new Point(1010, 135), new Size(100, 20), false, Sexo);
+            textBoxPresionArterial = CreateTextBox(new Point(20, 240), new Size(105, 20), true, "");
+            textBoxTemperatura = CreateTextBox(new Point(180, 240), new Size(89, 20), true, "");
+            textBoxFrecuenciaCardiaca = CreateTextBox(
+                new Point(330, 240),
+                new Size(138, 20),
+                true,
+                ""
+            );
+            textBoxFrecuenciaRespiratoria = CreateTextBox(
+                new Point(540, 240),
+                new Size(158, 20),
+                true,
+                ""
+            );
+            textBoxPeso = CreateTextBox(new Point(760, 240), new Size(62, 20), true, "");
+            textBoxTalla = CreateTextBox(new Point(880, 240), new Size(67, 20), true, "");
+            textBoxCintura = CreateTextBox(new Point(20, 340), new Size(200, 20), true, "");
+            textBoxSaturacion = CreateTextBox(new Point(280, 340), new Size(147, 20), true, "");
+            textBoxGlucemia = CreateTextBox(new Point(495, 340), new Size(65, 20), true, "");
+            textBoxAlergias = CreateTextBox(new Point(640, 340), new Size(350, 20), true, "");
+
+            textBoxPadecimientoActual = CreateMultilineTextBox(
+                new Point(10, 460),
+                new Size(650, 100)
+            );
+            textBoxAntecedentesImportancia = CreateMultilineTextBox(
+                new Point(10, 600),
+                new Size(650, 100)
+            );
+            textBoxHallazgos = CreateMultilineTextBox(new Point(10, 740), new Size(760, 100));
+            textBoxPruebasDiag = CreateMultilineTextBox(new Point(10, 880), new Size(760, 100));
+            textBoxDiagnostico = CreateMultilineTextBox(new Point(10, 1020), new Size(760, 100));
+            textBoxTratamiento = CreateMultilineTextBox(new Point(10, 1160), new Size(760, 100));
+            textBoxPronostico = CreateMultilineTextBox(new Point(10, 1300), new Size(760, 100));
+
+            // Eventos para TextBoxes
+            textBoxPeso.TextChanged += (sender, e) => CalcularIMC();
+            textBoxTalla.TextChanged += (sender, e) => CalcularIMC();
+
+            // Creación de otros controles
+            agregarButton = CreateButton("Agregar", new Point(1000, 1470), new Size(100, 50));
+            imprimirButton = CreateButton("Imprimir", new Point(1150, 1470), new Size(100, 50));
+            dateTimePickerConsulta = CreateDateTimePicker(
+                new Point(10, 135),
+                new Size(120, 50),
+                DateTimePickerFormat.Short
+            );
             PictureBox pictureBox = new PictureBox
             {
                 Size = new Size(75, 75),
@@ -85,471 +247,182 @@ namespace ClinicEx_2024
                 Image = logoImage,
                 SizeMode = PictureBoxSizeMode.Zoom
             };
-            labelnombre = new Label
-            {
-                Text = "Consultorio San Francisco",
-                TextAlign = ContentAlignment.MiddleCenter,
-                AutoSize = true
-            };
-            labelGral = new Label
-            {
-                Text = "\"Medicina General\"",
-                TextAlign = ContentAlignment.MiddleCenter,
-                AutoSize = true
-            };
-            labelDireccion = new Label
-            {
-                Text = "Av. hidalgo 67 Tequexquináhuac, Texcoco",
-                TextAlign = ContentAlignment.MiddleCenter,
-                AutoSize = true
-            };
+            photoUploadButton = CreateButton(
+                "Selecciona foto",
+                new Point(1100, 240),
+                new Size(150, 50)
+            );
+            photoUploadButton.Click += (sender, e) => UploadPhotoButton_Click();            
 
-            Label labelnombrep = new Label
-            {
-                Text = "Nombre",
-                Location = new Point(450, 105),
-                AutoSize = true
-            };
-            textBoxnombrep = new TextBox
-            {
-                Text = Nombre,
-                Location = new Point(450, 135),
-                Size = new Size(100, 50),
-                Enabled = false
-            };
+            // Agregar controles al formulario
+            this.Controls.AddRange(
+                new Control[]
+                {
+                    labelNombre,
+                    labelGral,
+                    labelDireccion,
+                    labelNombreP,
+                    labelApellidoP,
+                    labelApellidoM,
+                    labelEdad,
+                    labelSexo,
+                    labelFechaConsulta,
+                    dateTimePickerConsulta,
+                    labelSignosVitales,
+                    labelPresionArterial,
+                    labelTemperatura,
+                    labelFrecuenciaCardiaca,
+                    labelFrecuenciaRespiratoria,
+                    labelPeso,
+                    labelTalla,
+                    labelIMC,
+                    datoIMC,
+                    labelCintura,
+                    labelSaturacion,
+                    labelGlucemia,
+                    labelAlergias,
+                    textBoxNombreP,
+                    textBoxApellidoP,
+                    textBoxApellidoM,
+                    textBoxEdad,
+                    comboBoxSexo,
+                    textBoxPresionArterial,
+                    textBoxTemperatura,
+                    textBoxFrecuenciaCardiaca,
+                    textBoxFrecuenciaRespiratoria,
+                    textBoxPeso,
+                    textBoxTalla,
+                    textBoxCintura,
+                    textBoxSaturacion,
+                    textBoxGlucemia,
+                    textBoxAlergias,
+                    pictureBox,
+                    lineSV,
+                    photoLabel,
+                    labelNotaMedica,
+                    lineNM,
+                    labelPadecimientoActual,
+                    labelAntecedentesImportancia,
+                    labelHallazgos,
+                    labelPruebasDiag,
+                    labelDiagnostico,
+                    labelTratamiento,
+                    labelPronostico,
+                    labelMedico,
+                    lineMed,
+                    labelDatoNom,
+                    labelDatoCed,
+                    labelNombreMedico,
+                    labelCedulaPro,
+                    photoUploadButton,
+                    textBoxPadecimientoActual,
+                    textBoxAntecedentesImportancia,
+                    textBoxHallazgos,
+                    textBoxPruebasDiag,
+                    textBoxDiagnostico,
+                    textBoxTratamiento,
+                    textBoxPronostico,
+                    agregarButton,
+                    imprimirButton                    
+                }
+            );
+        }
 
-            Label labelapellidop = new Label
-            {
-                Text = "Apellido Paterno",
-                Location = new Point(590, 105),
-                AutoSize = true
-            };
-            textBoxapellidop = new TextBox
-            {
-                Text = ApellidoPaterno,
-                Location = new Point(590, 135),
-                Size = new Size(111, 50),
-                Enabled = false
-            };
+        private void Imprimir_Click(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
-            Label labelapellidom = new Label
+        private Label CreateLabel(string text, Point location, bool autoSize)
+        {
+            return new Label
             {
-                Text = "Apellido Materno",
-                Location = new Point(750, 105),
-                AutoSize = true
+                Text = text,
+                Location = location,
+                AutoSize = autoSize
             };
-            textBoxapellidom = new TextBox
-            {
-                Text = ApellidoMaterno,
-                Location = new Point(750, 135),
-                Size = new Size(115, 50),
-                Enabled = false
-            };
+        }
 
-            Label labelEdad = new Label
+        private TextBox CreateTextBox(Point location, Size size, bool enabled, string text)
+        {
+            return new TextBox
             {
-                Text = "Edad",
-                Location = new Point(930, 105),
-                AutoSize = true
+                Location = location,
+                Size = size,
+                Enabled = enabled,
+                Text = text
             };
-            textBoxEdad = new TextBox
-            {
-                Location = new Point(930, 135),
-                Size = new Size(42, 50),
-                Enabled = false
-            };
+        }
 
-            Label labelsexo = new Label
+        private Button CreateButton(string text, Point location, Size size)
+        {
+            return new Button
             {
-                Text = "Sexo",
-                Location = new Point(1010, 105),
-                AutoSize = true
+                Text = text,
+                Location = location,
+                Size = size
             };
-            comboBoxSexo = new TextBox
-            {
-                Location = new Point(1010, 135),
-                Width = 100,
-                Enabled = false,
-            };
+        }
 
-            Label labelFechaConsulta = new Label
+        private DateTimePicker CreateDateTimePicker(
+            Point location,
+            Size size,
+            DateTimePickerFormat format
+        )
+        {
+            return new DateTimePicker
             {
-                Text = "Fecha de consulta",
-                Location = new Point(10, 105),
-                AutoSize = true
+                Location = location,
+                Size = size,
+                Format = format
             };
-            dateTimePickerConsulta = new DateTimePicker
-            {
-                Format = DateTimePickerFormat.Short,
-                Location = new Point(10, 135),
-                Width = 120
-            };
+        }
 
-            Label labelSignosVitales = new Label
+        private Label CreateSeparator(Point location, int width)
+        {
+            return new Label
             {
-                Text = "Signos vitales",
-                Location = new Point(10, 180),
-                AutoSize = true
+                AutoSize = false,
+                Height = 2,
+                BorderStyle = BorderStyle.Fixed3D,
+                Width = width,
+                Location = location,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
-            Label lineSV = new Label();
-            lineSV.AutoSize = false;
-            lineSV.Height = 2;
-            lineSV.BorderStyle = BorderStyle.Fixed3D;
-            lineSV.Width = this.Width;
-            lineSV.Location = new Point(0, 190);
-            lineSV.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        }
 
-            Label labelPresionArterial = new Label
-            {
-                Text = "Presión arterial",
-                Location = new Point(20, 210),
-                AutoSize = true
-            };
-            textBoxPresionArterial = new TextBox { Location = new Point(20, 240), Width = 105 };
-
-            Label temperaturalabel = new Label
-            {
-                Text = "Temperatura",
-                Location = new Point(180, 210),
-                AutoSize = true
-            };
-            textBoxtemperatura = new TextBox { Location = new Point(180, 240), Width = 89 };
-
-            Label labelFrecuenciaCardiaca = new Label
-            {
-                Text = "Frecuencia Cardiaca",
-                Location = new Point(330, 210),
-                AutoSize = true
-            };
-            textBoxFrecuenciaCardiaca = new TextBox { Location = new Point(330, 240), Width = 138 };
-
-            Label labelFrecuenciaRespiratoria = new Label
-            {
-                Text = "Frecuencia Respiratoria",
-                Location = new Point(540, 210),
-                AutoSize = true
-            };
-            textBoxFrecuenciaRespiratoria = new TextBox
-            {
-                Location = new Point(540, 240),
-                Width = 158
-            };
-
-            Label labelPeso = new Label
-            {
-                Text = "Peso (kg)",
-                Location = new Point(760, 210),
-                AutoSize = true
-            };
-            textBoxPeso = new TextBox { Location = new Point(760, 240), Width = 62 };
-
-            Label labelTalla = new Label
-            {
-                Text = "Talla (cm)",
-                Location = new Point(880, 210),
-                AutoSize = true
-            };
-            textBoxTalla = new TextBox { Location = new Point(880, 240), Width = 67 };
-
-            Label labelIMC = new Label
-            {
-                Text = "IMC",
-                Location = new Point(1010, 210),
-                AutoSize = true
-            };
-            datoIMC = new Label
-            {
-                Text = "--",
-                Location = new Point(1010, 240),
-                AutoSize = true
-            };
-            textBoxPeso.TextChanged += (sender, e) => CalcularIMC();
-            textBoxTalla.TextChanged += (sender, e) => CalcularIMC();
-
-            Label photoLabel = new Label
-            {
-                Text = "Estudios",
-                Location = new Point(1100, 210),
-                AutoSize = true
-            };
-
-            photoUploadButton = new Button
-            {
-                Text = "Selecciona foto",
-                Location = new Point(1100, 240),
-                Width = 150,
-                Height = 50
-            };
-            photoUploadButton.Click += (sender, e) => UploadPhotoButton_Click();
-
-            Label labelCintura = new Label
-            {
-                Text = "Circunferencia de cintura (cm)",
-                Location = new Point(20, 310),
-                AutoSize = true
-            };
-            textBoxCintura = new TextBox { Location = new Point(20, 340), Width = 200 };
-
-            Label saturacionlabel = new Label
-            {
-                Text = "Saturación de oxígeno",
-                Location = new Point(280, 310),
-                AutoSize = true
-            };
-            textBoxsaturacion = new TextBox { Location = new Point(280, 340), Width = 147 };
-
-            Label glucemialabel = new Label
-            {
-                Text = "Glucemia",
-                Location = new Point(495, 310),
-                AutoSize = true
-            };
-            textBoxglucemia = new TextBox { Location = new Point(495, 340), Width = 65 };
-
-            Label alergiaslabel = new Label
-            {
-                Text = "Alergias",
-                Location = new Point(640, 310),
-                AutoSize = true
-            };
-            textBoxalergias = new TextBox { Location = new Point(640, 340), Width = 350 };
-
-            Label labelNotaMedica = new Label
-            {
-                Text = "Nota médica",
-                Location = new Point(10, 400),
-                AutoSize = true
-            };
-            Label lineNM = new Label();
-            lineNM.AutoSize = false;
-            lineNM.Height = 2;
-            lineNM.BorderStyle = BorderStyle.Fixed3D;
-            lineNM.Width = this.Width;
-            lineNM.Location = new Point(0, 410);
-            lineNM.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-
-            Label labelPadecimientoActual = new Label
-            {
-                Text = "Padecimiento actual",
-                Location = new Point(10, 430),
-                AutoSize = true
-            };
-            textBoxPadecimientoActual = new TextBox
+        private TextBox CreateMultilineTextBox(Point location, Size size)
+        {
+            return new TextBox
             {
                 Multiline = true,
-                Location = new Point(10, 460),
-                Size = new Size(650, 100)
+                Location = location,
+                Size = size
             };
+        }
 
-            Label labelAntecedentesImportancia = new Label
+        private void ChangeFontOfLabels(Control parent, string fontName, float size)
+        {
+            foreach (Control control in parent.Controls)
             {
-                Text = "Antecedentes de importancia",
-                Location = new Point(10, 570),
-                AutoSize = true
-            };
-            textBoxAntecedentesImportancia = new TextBox
-            {
-                Multiline = true,
-                Location = new Point(10, 600),
-                Size = new Size(650, 100)
-            };
-
-            Label labelHallazgos = new Label
-            {
-                Text = "Hallazgos en exploración física",
-                Location = new Point(10, 710),
-                AutoSize = true
-            };
-            textBoxHallazgos = new TextBox
-            {
-                Multiline = true,
-                Location = new Point(10, 740),
-                Size = new Size(760, 100)
-            };
-
-            Label labelPruebasDiag = new Label
-            {
-                Text = "Pruebas diagnósticas realizadas",
-                Location = new Point(10, 850),
-                AutoSize = true
-            };
-            textBoxPruebasDiag = new TextBox
-            {
-                Multiline = true,
-                Location = new Point(10, 880),
-                Size = new Size(760, 100)
-            };
-
-            Label labelDiagnostico = new Label
-            {
-                Text = "Diagnóstico",
-                Location = new Point(10, 990),
-                AutoSize = true
-            };
-            textBoxDiagnostico = new TextBox
-            {
-                Multiline = true,
-                Location = new Point(10, 1020),
-                Size = new Size(760, 100)
-            };
-
-            Label labelTratamiento = new Label
-            {
-                Text = "Tratamiento",
-                Location = new Point(10, 1130),
-                AutoSize = true
-            };
-            textBoxTratamiento = new TextBox
-            {
-                Multiline = true,
-                Location = new Point(10, 1160),
-                Size = new Size(760, 100)
-            };
-
-            Label labelPronostico = new Label
-            {
-                Text = "Pronóstico",
-                Location = new Point(10, 1270),
-                AutoSize = true
-            };
-            textBoxPronostico = new TextBox
-            {
-                Multiline = true,
-                Location = new Point(10, 1300),
-                Size = new Size(760, 100)
-            };
-
-            Label labelMedico = new Label
-            {
-                Text = "Médico",
-                Location = new Point(10, 1430),
-                AutoSize = true
-            };
-            Label lineMed = new Label();
-            lineMed.AutoSize = false;
-            lineMed.Height = 2;
-            lineMed.BorderStyle = BorderStyle.Fixed3D;
-            lineMed.Width = this.Width;
-            lineMed.Location = new Point(0, 1440);
-            lineMed.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-
-            Label labelDatoNom = new Label
-            {
-                Text = "Nombre del Médico",
-                Location = new Point(25, 1460),
-                AutoSize = true
-            };
-            Label labelDatoCed = new Label
-            {
-                Text = "Cédula Profesional",
-                Location = new Point(600, 1460),
-                AutoSize = true
-            };
-
-            Label labelNombreMedico = new Label
-            {
-                Text = "FABIOLA ALEJANDRA MARQUEZ CADENA",
-                Location = new Point(25, 1485),
-                AutoSize = true
-            };
-
-            Label labelCedulaPro = new Label
-            {
-                Text = "4443217",
-                Location = new Point(600, 1485),
-                AutoSize = true
-            };
-
-            Agregar = new Button
-            {
-                Text = "Agregar",
-                Location = new Point(1030, 1480),
-                Size = new Size(100, 60),
-                BackColor = Color.FromArgb(128, 0, 32),
-                ForeColor = Color.White
-            };
-            Agregar.Click += new EventHandler(Agregar_Click);
-
-            panelScroll = new Panel { AutoScroll = true, Dock = DockStyle.Fill };
-
-            panelScroll.SuspendLayout();
-            panelScroll.Controls.Add(labelnombre);
-            panelScroll.Controls.Add(labelGral);
-            panelScroll.Controls.Add(labelDireccion);
-            panelScroll.Controls.Add(pictureBox);
-            panelScroll.Controls.Add(labelnombrep);
-            panelScroll.Controls.Add(textBoxnombrep);
-            panelScroll.Controls.Add(labelapellidop);
-            panelScroll.Controls.Add(textBoxapellidop);
-            panelScroll.Controls.Add(labelapellidom);
-            panelScroll.Controls.Add(textBoxapellidom);
-            panelScroll.Controls.Add(labelEdad);
-            panelScroll.Controls.Add(textBoxEdad);
-            panelScroll.Controls.Add(labelsexo);
-            panelScroll.Controls.Add(comboBoxSexo);
-            panelScroll.Controls.Add(labelFechaConsulta);
-            panelScroll.Controls.Add(dateTimePickerConsulta);
-            panelScroll.Controls.Add(labelSignosVitales);
-            panelScroll.Controls.Add(lineSV);
-            panelScroll.Controls.Add(labelPeso);
-            panelScroll.Controls.Add(textBoxPeso);
-            panelScroll.Controls.Add(labelTalla);
-            panelScroll.Controls.Add(textBoxTalla);
-            panelScroll.Controls.Add(labelIMC);
-            panelScroll.Controls.Add(datoIMC);
-            panelScroll.Controls.Add(labelCintura);
-            panelScroll.Controls.Add(textBoxCintura);
-            panelScroll.Controls.Add(labelPresionArterial);
-            panelScroll.Controls.Add(textBoxPresionArterial);
-            panelScroll.Controls.Add(labelFrecuenciaCardiaca);
-            panelScroll.Controls.Add(textBoxFrecuenciaCardiaca);
-            panelScroll.Controls.Add(labelFrecuenciaRespiratoria);
-            panelScroll.Controls.Add(textBoxFrecuenciaRespiratoria);
-            panelScroll.Controls.Add(temperaturalabel);
-            panelScroll.Controls.Add(textBoxtemperatura);
-            panelScroll.Controls.Add(saturacionlabel);
-            panelScroll.Controls.Add(textBoxsaturacion);
-            panelScroll.Controls.Add(glucemialabel);
-            panelScroll.Controls.Add(textBoxglucemia);
-            panelScroll.Controls.Add(alergiaslabel);
-            panelScroll.Controls.Add(textBoxalergias);
-            panelScroll.Controls.Add(photoLabel);
-            panelScroll.Controls.Add(photoUploadButton);
-            panelScroll.Controls.Add(labelNotaMedica);
-            panelScroll.Controls.Add(lineNM);
-            panelScroll.Controls.Add(labelPadecimientoActual);
-            panelScroll.Controls.Add(textBoxPadecimientoActual);
-            panelScroll.Controls.Add(labelAntecedentesImportancia);
-            panelScroll.Controls.Add(textBoxAntecedentesImportancia);
-            panelScroll.Controls.Add(labelHallazgos);
-            panelScroll.Controls.Add(textBoxHallazgos);
-            panelScroll.Controls.Add(labelPruebasDiag);
-            panelScroll.Controls.Add(textBoxPruebasDiag);
-            panelScroll.Controls.Add(labelDiagnostico);
-            panelScroll.Controls.Add(textBoxDiagnostico);
-            panelScroll.Controls.Add(labelTratamiento);
-            panelScroll.Controls.Add(textBoxTratamiento);
-            panelScroll.Controls.Add(labelPronostico);
-            panelScroll.Controls.Add(textBoxPronostico);
-            panelScroll.Controls.Add(labelMedico);
-            panelScroll.Controls.Add(lineMed);
-            panelScroll.Controls.Add(labelDatoNom);
-            panelScroll.Controls.Add(labelDatoCed);
-            panelScroll.Controls.Add(labelNombreMedico);
-            panelScroll.Controls.Add(labelCedulaPro);
-            panelScroll.Controls.Add(Agregar);
-            panelScroll.ResumeLayout(false);
-            this.Controls.Add(panelScroll);
+                if (control is Label label)
+                {
+                    label.Font = new Font(fontName, size, label.Font.Style);
+                }
+                if (control.HasChildren)
+                {
+                    ChangeFontOfLabels(control, fontName, size);
+                }
+            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            textBoxnombrep.Text = this.Nombre;
-            textBoxapellidop.Text = this.ApellidoPaterno;
-            textBoxapellidom.Text = this.ApellidoMaterno;
+            textBoxNombreP.Text = this.Nombre;
+            textBoxApellidoP.Text = this.ApellidoPaterno;
+            textBoxApellidoM.Text = this.ApellidoMaterno;
             comboBoxSexo.Text = this.Sexo;
             textBoxEdad.Text = this.Edad.ToString();
-            
 
             if (this.FechaConsulta != DateTime.MinValue)
             {
@@ -558,13 +431,12 @@ namespace ClinicEx_2024
                 this.CargarDatosConsulta(PacienteID, FechaConsulta);
                 photoUploadButton.Text = "Mostrar fotos";
             }
-
             else
             {
                 dateTimePickerConsulta.Value = DateTime.Now;
             }
-
         }
+
         private CConexion conexion = new CConexion();
 
         private MySqlCommand PrepararComando(string query, params (string, object)[] parametros)
@@ -579,7 +451,8 @@ namespace ClinicEx_2024
 
         public void CargarDatosConsulta(int pacienteID, DateTime fechaConsulta)
         {
-            string query = "SELECT * FROM Consultas WHERE ID_Paciente = @ID_Paciente AND FechaConsulta = @FechaConsulta LIMIT 1";
+            string query =
+                "SELECT * FROM Consultas WHERE ID_Paciente = @ID_Paciente AND FechaConsulta = @FechaConsulta LIMIT 1";
 
             var cmd = PrepararComando(query);
             cmd.Parameters.AddWithValue("@ID_Paciente", pacienteID);
@@ -594,21 +467,27 @@ namespace ClinicEx_2024
                     {
                         idConsulta = int.Parse(reader["ID_Consulta"].ToString());
                         textBoxPresionArterial.Text = reader["PresionArterial"].ToString();
-                        textBoxtemperatura.Text = reader["Temperatura"].ToString();
+                        textBoxTemperatura.Text = reader["Temperatura"].ToString();
                         textBoxFrecuenciaCardiaca.Text = reader["FrecuenciaCardiaca"].ToString();
-                        textBoxFrecuenciaRespiratoria.Text = reader["FrecuenciaRespiratoria"].ToString();
+                        textBoxFrecuenciaRespiratoria.Text = reader[
+                            "FrecuenciaRespiratoria"
+                        ].ToString();
                         textBoxPeso.Text = reader["Peso"].ToString();
                         textBoxTalla.Text = reader["Talla"].ToString();
                         // Assuming datoIMC is a Label or TextBox that can display the calculated IMC
                         datoIMC.Text = reader["IMC"].ToString();
                         textBoxCintura.Text = reader["CircunferenciaCintura"].ToString();
-                        textBoxsaturacion.Text = reader["SaturacionOxigeno"].ToString();
-                        textBoxglucemia.Text = reader["Glucemia"].ToString();
-                        textBoxalergias.Text = reader["Alergias"].ToString();
+                        textBoxSaturacion.Text = reader["SaturacionOxigeno"].ToString();
+                        textBoxGlucemia.Text = reader["Glucemia"].ToString();
+                        textBoxAlergias.Text = reader["Alergias"].ToString();
                         textBoxPadecimientoActual.Text = reader["PadecimientoActual"].ToString();
-                        textBoxAntecedentesImportancia.Text = reader["AntecedentesImportancia"].ToString();
+                        textBoxAntecedentesImportancia.Text = reader[
+                            "AntecedentesImportancia"
+                        ].ToString();
                         textBoxHallazgos.Text = reader["HallazgosExploracionFisica"].ToString();
-                        textBoxPruebasDiag.Text = reader["PruebasDiagnosticasRealizadas"].ToString();
+                        textBoxPruebasDiag.Text = reader[
+                            "PruebasDiagnosticasRealizadas"
+                        ].ToString();
                         textBoxDiagnostico.Text = reader["Diagnostico"].ToString();
                         textBoxTratamiento.Text = reader["Tratamiento"].ToString();
                         textBoxPronostico.Text = reader["Pronostico"].ToString();
@@ -629,8 +508,7 @@ namespace ClinicEx_2024
             }
         }
 
-    
-    private void CalcularIMC()
+        private void CalcularIMC()
         {
             if (
                 double.TryParse(textBoxPeso.Text, out double peso)
@@ -656,16 +534,20 @@ namespace ClinicEx_2024
             {
                 DateTime fechaConsulta = DateTime.Now; // O usa un DateTimePicker si la fecha no es la actual
                 string presionArterial = textBoxPresionArterial.Text;
-                decimal temperatura = decimal.Parse(textBoxtemperatura.Text);
+                decimal temperatura = decimal.Parse(textBoxTemperatura.Text);
                 int frecuenciaCardiaca = int.Parse(textBoxFrecuenciaCardiaca.Text);
                 int frecuenciaRespiratoria = int.Parse(textBoxFrecuenciaRespiratoria.Text);
                 decimal peso = decimal.Parse(textBoxPeso.Text);
                 decimal talla = decimal.Parse(textBoxTalla.Text);
                 decimal imc = decimal.Parse(datoIMC.Text); // Asegúrate de que esto es un decimal
-                decimal circunferenciaCintura = decimal.Parse(textBoxCintura.Text);
-                decimal saturacionOxigeno = decimal.Parse(textBoxsaturacion.Text);
-                decimal glucemia = decimal.Parse(textBoxglucemia.Text);
-                string alergias = textBoxalergias.Text;
+                decimal circunferenciaCintura = string.IsNullOrEmpty(textBoxCintura.Text)
+                    ? 0
+                    : decimal.Parse(textBoxCintura.Text);
+                decimal saturacionOxigeno = decimal.Parse(textBoxSaturacion.Text);
+                decimal glucemia = string.IsNullOrEmpty(textBoxGlucemia.Text)
+                    ? 0
+                    : decimal.Parse(textBoxGlucemia.Text);
+                string alergias = textBoxAlergias.Text;
                 string padecimientoActual = textBoxPadecimientoActual.Text;
                 string antecedentesImportancia = textBoxAntecedentesImportancia.Text;
                 string hallazgosExploracionFisica = textBoxHallazgos.Text;
@@ -704,7 +586,6 @@ namespace ClinicEx_2024
 
                 this.Close();
             }
-            
             catch (Exception ex)
             {
                 MessageBox.Show("Error al guardar la consulta: " + ex.Message);
@@ -732,8 +613,8 @@ namespace ClinicEx_2024
 
         private void AjustarAnchoTextBox(TextBox textBox)
         {
-            int margenDerecho = 150 + panelScroll.Padding.Right;
-            textBox.Width = panelScroll.ClientSize.Width - textBox.Location.X - margenDerecho;
+            int margenDerecho = 150 + this.Padding.Right;
+            textBox.Width = this.ClientSize.Width - textBox.Location.X - margenDerecho;
             textBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         }
 
@@ -750,7 +631,7 @@ namespace ClinicEx_2024
 
         private void Form1_Layout(object sender, LayoutEventArgs e)
         {
-            labelnombre.Location = new Point((this.ClientSize.Width - labelnombre.Width) / 2, 10);
+            labelNombre.Location = new Point((this.ClientSize.Width - labelNombre.Width) / 2, 10);
             labelGral.Location = new Point((this.ClientSize.Width - labelGral.Width) / 2, 35);
             labelDireccion.Location = new Point(
                 (this.ClientSize.Width - labelDireccion.Width) / 2,
@@ -764,7 +645,8 @@ namespace ClinicEx_2024
             {
                 using (OpenFileDialog openFileDialog = new OpenFileDialog())
                 {
-                    openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp|All Files|*.*";
+                    openFileDialog.Filter =
+                        "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp|All Files|*.*";
                     openFileDialog.Title = "Selecciona foto";
 
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -786,7 +668,8 @@ namespace ClinicEx_2024
         {
             var images = new List<byte[]>();
 
-            string query = @"
+            string query =
+                @"
         SELECT Imagenes.Imagen FROM Imagenes
         INNER JOIN Expediente ON Imagenes.ID_Imagen = Expediente.ID_Imagen
         WHERE Expediente.ID_Consulta = @ID_Consulta";
@@ -817,16 +700,16 @@ namespace ClinicEx_2024
 
             return images;
         }
+
         private void DisplayImages(List<byte[]> images)
         {
             foreach (byte[] imageBytes in images)
             {
                 Image image = ConvertByteArrayToImage(imageBytes);
                 ImageDisplayForm displayForm = new ImageDisplayForm(image);
-                displayForm.Show(); 
+                displayForm.Show();
             }
         }
-
 
         public static Image ConvertByteArrayToImage(byte[] byteArray)
         {
@@ -835,6 +718,5 @@ namespace ClinicEx_2024
                 return Image.FromStream(ms);
             }
         }
-
     }
 }

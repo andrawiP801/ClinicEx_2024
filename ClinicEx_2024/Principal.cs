@@ -6,7 +6,8 @@ namespace ClinicEx_2024
     public partial class Principal : Form
     {
         private Button buscar,
-            miBoton;
+            miBoton,
+            botonRefresh;
         private Label miLabel,
             labelGral,
             labelDireccion,
@@ -77,6 +78,7 @@ namespace ClinicEx_2024
                 new Point(400, 90)
             );
             textBoxNombre = CrearTextBox(new Point(400, 120));
+            textBoxNombre.Focus();
 
             labelApellidoPaterno = CrearLabel(
                 "Apellido paterno*:",
@@ -108,6 +110,9 @@ namespace ClinicEx_2024
 
             miBoton = CrearButton("Registrar", new Point(400, 410), miBotonClick);
             buscar = CrearButton("Buscar", new Point(700, 410), buscarClick);
+            botonRefresh = CrearButton("Limpiar", new Point(1050, 610), refreshClick);
+            botonRefresh.Hide();
+            botonRefresh.Enabled = false;
 
             labelConsultasAnteriores = CrearLabel(
                 "Consultas anteriores:",
@@ -195,7 +200,7 @@ namespace ClinicEx_2024
         }
 
         private void CentrarControl(Control control)
-        {            
+        {
             if (control != null)
             {
                 control.Location = new Point(
@@ -318,7 +323,9 @@ namespace ClinicEx_2024
 
                 int pacienteID = objP.BuscarPaciente(nombre, apellidoP, apellidoM, fechaNacimiento);
                 if (pacienteID != 0)
-                {                    
+                {
+                    botonRefresh.Enabled = true;
+                    botonRefresh.Show();
                     var paciente = objP.ObtenerDatosPaciente(pacienteID);
                     MessageBox.Show("Paciente encontrado. ID: " + pacienteID);
                     buscar.Size = new Size(150, 40);
@@ -329,10 +336,15 @@ namespace ClinicEx_2024
                     DataTable consultas = objP.GetConsultasPorPaciente(pacienteID);
                     dataGridViewConsultas.DataSource = consultas;
                     dataGridViewConsultas.Columns["Nombre"].HeaderText = "Nombre del Paciente";
-                    dataGridViewConsultas.Columns["FechaConsulta"].HeaderText = "Fecha de la Consulta";
-                    
+                    dataGridViewConsultas.Columns["FechaConsulta"].HeaderText =
+                        "Fecha de la Consulta";
+
                     //diseño tabla
-                    dataGridViewConsultas.ColumnHeadersDefaultCellStyle.Font = new Font("Tahoma", 7.75F, FontStyle.Bold);
+                    dataGridViewConsultas.ColumnHeadersDefaultCellStyle.Font = new Font(
+                        "Tahoma",
+                        7.75F,
+                        FontStyle.Bold
+                    );
                     dataGridViewConsultas.ColumnHeadersDefaultCellStyle.BackColor = Color.LightBlue;
                     dataGridViewConsultas.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
                     dataGridViewConsultas.EnableHeadersVisualStyles = false;
@@ -344,18 +356,20 @@ namespace ClinicEx_2024
                     dataGridViewConsultas.DefaultCellStyle.SelectionBackColor = Color.Navy;
                     dataGridViewConsultas.DefaultCellStyle.SelectionForeColor = Color.White;
 
-                    dataGridViewConsultas.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
-                    dataGridViewConsultas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; 
+                    dataGridViewConsultas.AlternatingRowsDefaultCellStyle.BackColor =
+                        Color.LightGray;
+                    dataGridViewConsultas.AutoSizeColumnsMode =
+                        DataGridViewAutoSizeColumnsMode.Fill;
                     dataGridViewConsultas.RowHeadersVisible = false;
                     dataGridViewConsultas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                    dataGridViewConsultas.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+                    dataGridViewConsultas.CellBorderStyle =
+                        DataGridViewCellBorderStyle.SingleHorizontal;
                     dataGridViewConsultas.GridColor = Color.LightGray;
-
-
                 }
                 else
                 {
                     MessageBox.Show("El Paciente no está Registrado");
+                    miBoton.Enabled = true;
                 }
             }
             else if (buscar.Text == "Nueva Consulta")
@@ -389,9 +403,11 @@ namespace ClinicEx_2024
                 textBoxNombre.Text = "";
                 textBoxApellidoPaterno.Text = "";
                 textBoxApellidoMaterno.Text = "";
-                dateTimePickerFechaNacimiento.Value = DateTime.Now; 
+                dateTimePickerFechaNacimiento.Value = DateTime.Now;
                 comboBoxSexo.SelectedIndex = -1;
                 buscar.Text = "Buscar";
+                buscar.Location = new Point(700, 410);
+                buscar.Width = 100;
                 if (dataGridViewConsultas.DataSource != null)
                 {
                     dataGridViewConsultas.DataSource = null;
@@ -402,13 +418,21 @@ namespace ClinicEx_2024
                 }
 
                 dataGridViewConsultas.Columns.Clear();
+                miBoton.Enabled = true;
+                botonRefresh.Enabled = false;
+                botonRefresh.Hide();
+                textBoxNombre.Focus();
                 this.Hide();
                 nform.FormClosed += (s, args) => this.Show();
             }
         }
-        private void dataGridViewConsultas_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+
+        private void dataGridViewConsultas_CellDoubleClick(
+            object sender,
+            DataGridViewCellEventArgs e
+        )
         {
-            if (e.RowIndex >= 0) 
+            if (e.RowIndex >= 0)
             {
                 Clases.CPacientes objP = new Clases.CPacientes();
 
@@ -425,7 +449,9 @@ namespace ClinicEx_2024
                     apellidoMaterno,
                     fechaNacimiento
                 );
-                DateTime fechaConsulta = Convert.ToDateTime(dataGridViewConsultas.Rows[e.RowIndex].Cells["FechaConsulta"].Value);
+                DateTime fechaConsulta = Convert.ToDateTime(
+                    dataGridViewConsultas.Rows[e.RowIndex].Cells["FechaConsulta"].Value
+                );
                 MainForm nform = new MainForm
                 {
                     PacienteID = pacienteID,
@@ -440,8 +466,33 @@ namespace ClinicEx_2024
                 nform.Show();
                 this.Hide();
                 nform.FormClosed += (s, args) => this.Show();
-
             }
+        }
+
+        private void refreshClick(object? sender, EventArgs e)
+        {
+            textBoxNombre.Text = "";
+            textBoxApellidoPaterno.Text = "";
+            textBoxApellidoMaterno.Text = "";
+            dateTimePickerFechaNacimiento.Value = DateTime.Now;
+            comboBoxSexo.SelectedIndex = -1;
+            buscar.Text = "Buscar";
+            buscar.Location = new Point(700, 410);
+            buscar.Width = 100;
+            if (dataGridViewConsultas.DataSource != null)
+            {
+                dataGridViewConsultas.DataSource = null;
+            }
+            else
+            {
+                dataGridViewConsultas.Rows.Clear();
+            }
+
+            dataGridViewConsultas.Columns.Clear();
+            miBoton.Enabled = true;
+            botonRefresh.Enabled = false;
+            botonRefresh.Hide();
+            textBoxNombre.Focus();
         }
     }
 }

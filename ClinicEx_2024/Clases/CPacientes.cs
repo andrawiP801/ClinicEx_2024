@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
 using MySql.Data.MySqlClient;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static ClinicEx_2024.Clases.CPacientes;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ClinicEx_2024.Clases
 {
@@ -15,11 +15,11 @@ namespace ClinicEx_2024.Clases
             var cmd = new MySqlCommand(query, conexion.establecerConexion());
             foreach (var (nombre, valor) in parametros)
             {
-                cmd.Parameters.AddWithValue(nombre, valor);
+                cmd.Parameters.AddWithValue(nombre, valor ?? DBNull.Value);
             }
             return cmd;
         }
-        
+
         public int GuardarPaciente(
             string nombre,
             string apellidoP,
@@ -56,73 +56,89 @@ namespace ClinicEx_2024.Clases
             }
         }
 
-            public int GuardarConsulta(
-                int pacienteID,
-                DateTime fechaConsulta,
-                string presionArterial,
-                decimal temperatura,
-                int frecuenciaCardiaca,
-                int frecuenciaRespiratoria,
-                decimal peso,
-                decimal talla,
-                decimal imc,
-                decimal circunferenciaCintura,
-                decimal saturacionOxigeno,
-                decimal glucemia,
-                string alergias,
-                string padecimientoActual,
-                string antecedentesImportancia,
-                string hallazgosExploracionFisica,
-                string pruebasDiagnosticasRealizadas,
-                string diagnostico,
-                string tratamiento,
-                string pronostico
-            )
-            {
+        public int GuardarConsulta(
+            int pacienteID,
+            DateTime fechaConsulta,
+            string presionArterial,
+            decimal temperatura,
+            int frecuenciaCardiaca,
+            int frecuenciaRespiratoria,
+            decimal peso,
+            decimal talla,
+            decimal imc,
+            decimal? circunferenciaCintura,
+            decimal saturacionOxigeno,
+            decimal? glucemia,
+            string alergias,
+            string padecimientoActual,
+            string antecedentesImportancia,
+            string hallazgosExploracionFisica,
+            string pruebasDiagnosticasRealizadas,
+            string diagnostico,
+            string tratamiento,
+            string pronostico
+        )
+        {
             int idConsulta = 0;
             try
-                {
+            {
                 string query =
-"INSERT INTO Consultas (ID_Paciente, FechaConsulta, PresionArterial, Temperatura, FrecuenciaCardiaca, FrecuenciaRespiratoria, Peso, Talla, IMC, CircunferenciaCintura, SaturacionOxigeno, Glucemia, Alergias, PadecimientoActual, AntecedentesImportancia, HallazgosExploracionFisica, PruebasDiagnosticasRealizadas, Diagnostico, Tratamiento, Pronostico) "
-+ "VALUES (@ID_Paciente, @FechaConsulta, @PresionArterial, @Temperatura, @FrecuenciaCardiaca, @FrecuenciaRespiratoria, @Peso, @Talla, @IMC, @CircunferenciaCintura, @SaturacionOxigeno, @Glucemia, @Alergias, @PadecimientoActual, @AntecedentesImportancia, @HallazgosExploracionFisica, @PruebasDiagnosticasRealizadas, @Diagnostico, @Tratamiento, @Pronostico);";
+                    "INSERT INTO Consultas (ID_Paciente, FechaConsulta, PresionArterial, Temperatura, FrecuenciaCardiaca, FrecuenciaRespiratoria, Peso, Talla, IMC, CircunferenciaCintura, SaturacionOxigeno, Glucemia, Alergias, PadecimientoActual, AntecedentesImportancia, HallazgosExploracionFisica, PruebasDiagnosticasRealizadas, Diagnostico, Tratamiento, Pronostico) "
+                    + "VALUES (@ID_Paciente, @FechaConsulta, @PresionArterial, @Temperatura, @FrecuenciaCardiaca, @FrecuenciaRespiratoria, @Peso, @Talla, @IMC, @CircunferenciaCintura, @SaturacionOxigeno, @Glucemia, @Alergias, @PadecimientoActual, @AntecedentesImportancia, @HallazgosExploracionFisica, @PruebasDiagnosticasRealizadas, @Diagnostico, @Tratamiento, @Pronostico);";
 
                 var cmd = PrepararComando(
-                        query,
-                        ("@ID_Paciente", pacienteID),
-                        ("@FechaConsulta", fechaConsulta),
-                        ("@PresionArterial", presionArterial),
-                        ("@Temperatura", temperatura),
-                        ("@FrecuenciaCardiaca", frecuenciaCardiaca),
-                        ("@FrecuenciaRespiratoria", frecuenciaRespiratoria),
-                        ("@Peso", peso),
-                        ("@Talla", talla),
-                        ("@IMC", imc),
-                        ("@CircunferenciaCintura", circunferenciaCintura),
-                        ("@SaturacionOxigeno", saturacionOxigeno),
-                        ("@Glucemia", glucemia),
-                        ("@Alergias", alergias),
-                        ("@PadecimientoActual", padecimientoActual),
-                        ("@AntecedentesImportancia", antecedentesImportancia),
-                        ("@HallazgosExploracionFisica", hallazgosExploracionFisica),
-                        ("@PruebasDiagnosticasRealizadas", pruebasDiagnosticasRealizadas),
-                        ("@Diagnostico", diagnostico),
-                        ("@Tratamiento", tratamiento),
-                        ("@Pronostico", pronostico)
-                    );
+                    query,
+                    ("@ID_Paciente", pacienteID),
+                    ("@FechaConsulta", fechaConsulta),
+                    (
+                        "@PresionArterial",
+                        string.IsNullOrEmpty(presionArterial)
+                            ? DBNull.Value
+                            : (object)presionArterial
+                    ),
+                    ("@Temperatura", temperatura),
+                    ("@FrecuenciaCardiaca", frecuenciaCardiaca),
+                    ("@FrecuenciaRespiratoria", frecuenciaRespiratoria),
+                    ("@Peso", peso),
+                    ("@Talla", talla),
+                    ("@IMC", imc),
+                    (
+                        "@CircunferenciaCintura",
+                        circunferenciaCintura.HasValue ? (object)circunferenciaCintura.Value : 0m
+                    ),
+                    ("@SaturacionOxigeno", saturacionOxigeno),
+                    ("@Glucemia", glucemia.HasValue ? (object)glucemia.Value : 0m),
+                    ("@Alergias", alergias),
+                    ("@PadecimientoActual", padecimientoActual),
+                    ("@AntecedentesImportancia", antecedentesImportancia),
+                    ("@HallazgosExploracionFisica", hallazgosExploracionFisica),
+                    (
+                        "@PruebasDiagnosticasRealizadas",
+                        string.IsNullOrEmpty(pruebasDiagnosticasRealizadas)
+                            ? DBNull.Value
+                            : (object)pruebasDiagnosticasRealizadas
+                    ),
+                    ("@Diagnostico", diagnostico),
+                    ("@Tratamiento", tratamiento),
+                    (
+                        "@Pronostico",
+                        string.IsNullOrEmpty(pronostico) ? DBNull.Value : (object)pronostico
+                    )
+                );
                 cmd.ExecuteNonQuery();
-                    MessageBox.Show("Consulta agregada con éxito.");
+                MessageBox.Show("Consulta agregada con éxito.");
                 string queryGetId = "SELECT LAST_INSERT_ID();";
                 var cmdGetId = PrepararComando(queryGetId);
                 idConsulta = Convert.ToInt32(cmdGetId.ExecuteScalar());
             }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al guardar la Consulta: {ex.Message}");
-                }
-                finally
-                {
-                    conexion.cerrarConexion();
-                }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar la Consulta: {ex.Message}");
+            }
+            finally
+            {
+                conexion.cerrarConexion();
+            }
             return idConsulta;
         }
 
@@ -195,13 +211,15 @@ namespace ClinicEx_2024.Clases
             public string ApellidoM { get; set; }
             public string Sexo { get; set; }
         }
+
         public DataTable GetConsultasPorPaciente(int idPaciente)
         {
             DataTable consultas = new DataTable();
 
             try
             {
-                string query = @"
+                string query =
+                    @"
             SELECT p.Nombre, c.FechaConsulta 
             FROM Consultas AS c
             JOIN Pacientes AS p ON c.ID_Paciente = p.ID_Paciente
@@ -225,11 +243,13 @@ namespace ClinicEx_2024.Clases
 
             return consultas;
         }
+
         public int GuardarImagen(byte[] imageBytes)
         {
             try
             {
-                string query = "INSERT INTO Imagenes (Imagen) VALUES (@Imagen); SELECT LAST_INSERT_ID();";
+                string query =
+                    "INSERT INTO Imagenes (Imagen) VALUES (@Imagen); SELECT LAST_INSERT_ID();";
                 var cmd = PrepararComando(query, ("@Imagen", imageBytes));
                 int newImageId = Convert.ToInt32(cmd.ExecuteScalar());
                 return newImageId;
@@ -244,12 +264,14 @@ namespace ClinicEx_2024.Clases
                 conexion.cerrarConexion();
             }
         }
+
         public List<int> ObtenerIDsImagenesNoRegistradas()
         {
             List<int> idsImagenes = new List<int>();
             try
             {
-                string query = "SELECT ID_Imagen FROM Imagenes WHERE ID_Imagen NOT IN (SELECT ID_Imagen FROM Expediente)";
+                string query =
+                    "SELECT ID_Imagen FROM Imagenes WHERE ID_Imagen NOT IN (SELECT ID_Imagen FROM Expediente)";
                 var cmd = PrepararComando(query);
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -261,7 +283,9 @@ namespace ClinicEx_2024.Clases
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al obtener los IDs de las imágenes no registradas: {ex.Message}");
+                MessageBox.Show(
+                    $"Error al obtener los IDs de las imágenes no registradas: {ex.Message}"
+                );
             }
             finally
             {
@@ -280,14 +304,21 @@ namespace ClinicEx_2024.Clases
                 {
                     foreach (int idImagen in idsImagenes)
                     {
-                        string query = "INSERT INTO Expediente (ID_Consulta, ID_Imagen) VALUES (@ID_Consulta, @ID_Imagen);";
-                        var cmd = PrepararComando(query, ("@ID_Consulta", idConsulta), ("@ID_Imagen", idImagen));
+                        string query =
+                            "INSERT INTO Expediente (ID_Consulta, ID_Imagen) VALUES (@ID_Consulta, @ID_Imagen);";
+                        var cmd = PrepararComando(
+                            query,
+                            ("@ID_Consulta", idConsulta),
+                            ("@ID_Imagen", idImagen)
+                        );
                         cmd.ExecuteNonQuery();
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error al actualizar el expediente con las imágenes: {ex.Message}");
+                    MessageBox.Show(
+                        $"Error al actualizar el expediente con las imágenes: {ex.Message}"
+                    );
                 }
                 finally
                 {
@@ -296,9 +327,10 @@ namespace ClinicEx_2024.Clases
             }
             else
             {
-                MessageBox.Show("No hay imágenes nuevas para registrar o el ID de la consulta no es válido.");
+                MessageBox.Show(
+                    "No hay imágenes nuevas para registrar o el ID de la consulta no es válido."
+                );
             }
         }
-
     }
 }
