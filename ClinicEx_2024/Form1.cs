@@ -727,7 +727,8 @@ namespace ClinicEx_2024
         }
         private void ImprimirConsulta()
         {
-            string plantillaPath = @"C:\Users\aguir\Desktop\ClinicEx_2024\format\Formatoexp.docx";
+            string plantillaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Resources\Formatoexp.docx");
+            MessageBox.Show(plantillaPath);
 
             // Verifica si el archivo de la plantilla existe
             if (!File.Exists(plantillaPath))
