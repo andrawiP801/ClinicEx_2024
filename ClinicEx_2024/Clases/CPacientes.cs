@@ -265,13 +265,18 @@ namespace ClinicEx_2024.Clases
             }
         }
 
+        // Excepción personalizada
+        public class SinImagenesException : Exception
+        {
+            public SinImagenesException(string message) : base(message) { }
+        }
+
         public List<int> ObtenerIDsImagenesNoRegistradas()
         {
             List<int> idsImagenes = new List<int>();
             try
             {
-                string query =
-                    "SELECT ID_Imagen FROM Imagenes WHERE ID_Imagen NOT IN (SELECT ID_Imagen FROM Expediente)";
+                string query = "SELECT ID_Imagen FROM Imagenes WHERE ID_Imagen NOT IN (SELECT ID_Imagen FROM Expediente)";
                 var cmd = PrepararComando(query);
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -280,12 +285,15 @@ namespace ClinicEx_2024.Clases
                         idsImagenes.Add(reader.GetInt32(0));
                     }
                 }
+
+                if (idsImagenes.Count == 0)
+                {
+                    throw new SinImagenesException("No se encontraron imágenes registradas");
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Error al obtener los IDs de las imágenes no registradas: {ex.Message}"
-                );
+                throw; 
             }
             finally
             {
@@ -296,41 +304,37 @@ namespace ClinicEx_2024.Clases
 
         public void ActualizarExpediente(int idConsulta)
         {
-            List<int> idsImagenes = ObtenerIDsImagenesNoRegistradas();
-
-            if (idsImagenes.Count > 0 && idConsulta > 0)
+            try
             {
-                try
+                List<int> idsImagenes = ObtenerIDsImagenesNoRegistradas();
+
+                if (idConsulta > 0)
                 {
                     foreach (int idImagen in idsImagenes)
                     {
-                        string query =
-                            "INSERT INTO Expediente (ID_Consulta, ID_Imagen) VALUES (@ID_Consulta, @ID_Imagen);";
-                        var cmd = PrepararComando(
-                            query,
-                            ("@ID_Consulta", idConsulta),
-                            ("@ID_Imagen", idImagen)
-                        );
+                        string query = "INSERT INTO Expediente (ID_Consulta, ID_Imagen) VALUES (@ID_Consulta, @ID_Imagen);";
+                        var cmd = PrepararComando(query, ("@ID_Consulta", idConsulta), ("@ID_Imagen", idImagen));
                         cmd.ExecuteNonQuery();
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show(
-                        $"Error al actualizar el expediente con las imágenes: {ex.Message}"
-                    );
-                }
-                finally
-                {
-                    conexion.cerrarConexion();
+                    MessageBox.Show("El ID de la consulta no es válido.");
                 }
             }
-            else
+            catch (SinImagenesException sinImgEx)
             {
-                MessageBox.Show(
-                    "No hay imágenes nuevas para registrar o el ID de la consulta no es válido."
-                );
+                MessageBox.Show(sinImgEx.Message);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al actualizar el expediente con las imágenes: {ex.Message}");
+            }
+            finally
+            {
+                conexion.cerrarConexion();
             }
         }
+
     }
 }

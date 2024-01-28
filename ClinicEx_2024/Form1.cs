@@ -1,8 +1,10 @@
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ClinicEx_2024.Clases;
 using ClinicEx_2024.Properties;
+using Microsoft.VisualBasic.ApplicationServices;
 using MySql.Data.MySqlClient;
 using static ClinicEx_2024.Clases.CPacientes;
 
@@ -328,11 +330,6 @@ namespace ClinicEx_2024
             );
         }
 
-        private void Imprimir_Click(object? sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         private Label CreateLabel(string text, Point location, bool autoSize)
         {
             return new Label
@@ -474,7 +471,6 @@ namespace ClinicEx_2024
                         ].ToString();
                         textBoxPeso.Text = reader["Peso"].ToString();
                         textBoxTalla.Text = reader["Talla"].ToString();
-                        // Assuming datoIMC is a Label or TextBox that can display the calculated IMC
                         datoIMC.Text = reader["IMC"].ToString();
                         textBoxCintura.Text = reader["CircunferenciaCintura"].ToString();
                         textBoxSaturacion.Text = reader["SaturacionOxigeno"].ToString();
@@ -716,6 +712,86 @@ namespace ClinicEx_2024
             using (var ms = new MemoryStream(byteArray))
             {
                 return Image.FromStream(ms);
+            }
+        }
+        private void Imprimir_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                ImprimirConsulta();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error al imprimir la consulta: " + ex.Message);
+            }
+        }
+        private void ImprimirConsulta()
+        {
+            string plantillaPath = @"C:\Users\aguir\Desktop\ClinicEx_2024\format\Formatoexp.docx";
+
+            // Verifica si el archivo de la plantilla existe
+            if (!File.Exists(plantillaPath))
+            {
+                MessageBox.Show("No se ha encontrado el archivo de la plantilla. Asegúrate de que la ruta es correcta y el archivo existe.");
+                return;
+            }
+
+            var wordApp = new Microsoft.Office.Interop.Word.Application
+            {
+                Visible = true // Hace visible la aplicación Word
+            };
+
+            Microsoft.Office.Interop.Word.Document document = null;
+
+            try
+            {
+                document = wordApp.Documents.Open(plantillaPath);
+
+                // Rellenar los datos en el documento
+
+                ReemplazarTextoEnDocumento(document, "{consulta}", idConsulta.ToString());
+                ReemplazarTextoEnDocumento(document, "{Nombre}", textBoxNombreP.Text);
+                ReemplazarTextoEnDocumento(document, "{ApellidoPaterno}", textBoxApellidoP.Text);
+                ReemplazarTextoEnDocumento(document, "{ApellidoMaterno}", textBoxApellidoM.Text);
+                ReemplazarTextoEnDocumento(document, "{Edad}", textBoxEdad.Text);
+                ReemplazarTextoEnDocumento(document, "{Sexo}", comboBoxSexo.Text);
+                ReemplazarTextoEnDocumento(document, "{PA}", textBoxPresionArterial.Text);
+                ReemplazarTextoEnDocumento(document, "{TEMP}", textBoxTemperatura.Text);
+                ReemplazarTextoEnDocumento(document, "{FC}", textBoxFrecuenciaCardiaca.Text);
+                ReemplazarTextoEnDocumento(document, "{FR}", textBoxFrecuenciaRespiratoria.Text);
+                ReemplazarTextoEnDocumento(document, "{Peso}", textBoxPeso.Text);
+                ReemplazarTextoEnDocumento(document, "{Talla}", textBoxTalla.Text);
+                ReemplazarTextoEnDocumento(document, "{Cintura}", textBoxCintura.Text);
+                ReemplazarTextoEnDocumento(document, "{SAT}", textBoxSaturacion.Text);
+                ReemplazarTextoEnDocumento(document, "{Glucosa}", textBoxGlucemia.Text);
+                ReemplazarTextoEnDocumento(document, "{Al}", textBoxAlergias.Text);
+                ReemplazarTextoEnDocumento(document, "{PadecimientoActual}", textBoxPadecimientoActual.Text);
+                ReemplazarTextoEnDocumento(document, "{AntecedentesImportancia}", textBoxAntecedentesImportancia.Text);
+                ReemplazarTextoEnDocumento(document, "{Hallazgos}", textBoxHallazgos.Text);
+                ReemplazarTextoEnDocumento(document, "{PruebasDiag}", textBoxPruebasDiag.Text);
+                ReemplazarTextoEnDocumento(document, "{Diagnostico}", textBoxDiagnostico.Text);
+                ReemplazarTextoEnDocumento(document, "{Tratamiento}", textBoxTratamiento.Text);
+                ReemplazarTextoEnDocumento(document, "{Pronostico}", textBoxPronostico.Text);
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error al imprimir el documento: " + ex.Message);
+            }
+            
+        }
+
+
+        private void ReemplazarTextoEnDocumento(Microsoft.Office.Interop.Word.Document doc, string placeholder, string text)
+        {
+            foreach (Microsoft.Office.Interop.Word.Range storyRange in doc.StoryRanges)
+            {
+                Microsoft.Office.Interop.Word.Find find = storyRange.Find;
+                find.Text = placeholder; 
+                find.Replacement.Text = text; 
+
+                find.Execute(Replace: Microsoft.Office.Interop.Word.WdReplace.wdReplaceAll);
             }
         }
     }
