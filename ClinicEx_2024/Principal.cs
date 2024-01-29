@@ -66,7 +66,7 @@ namespace ClinicEx_2024
                 true
             );
             labelDireccion = CrearLabel(
-                "Av. hidalgo 67 Tequexquináhuac, Texcoco",
+                "Av. Hidalgo 67 Tequexquináhuac, Texcoco",
                 new Font("Century", 10),
                 new Point(0, 60),
                 true
@@ -285,8 +285,7 @@ namespace ClinicEx_2024
             {
                 if (
                     string.IsNullOrWhiteSpace(textBoxNombre.Text)
-                    || string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text)
-                    || string.IsNullOrWhiteSpace(textBoxApellidoMaterno.Text)
+                    || string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text)                    
                 )
                 {
                     string camposFaltantes = "";
@@ -297,11 +296,7 @@ namespace ClinicEx_2024
                     if (string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text))
                     {
                         camposFaltantes += "Apellido Paterno, ";
-                    }
-                    if (string.IsNullOrWhiteSpace(textBoxApellidoMaterno.Text))
-                    {
-                        camposFaltantes += "Apellido Materno, ";
-                    }
+                    }                    
 
                     camposFaltantes = camposFaltantes.TrimEnd(',', ' ');
 
@@ -317,11 +312,10 @@ namespace ClinicEx_2024
                 Clases.CPacientes objP = new Clases.CPacientes();
 
                 string nombre = textBoxNombre.Text;
-                string apellidoP = textBoxApellidoPaterno.Text;
-                string apellidoM = textBoxApellidoMaterno.Text;
+                string apellidoP = textBoxApellidoPaterno.Text;                
                 DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value;
 
-                int pacienteID = objP.BuscarPaciente(nombre, apellidoP, apellidoM, fechaNacimiento);
+                int pacienteID = objP.BuscarPaciente(nombre, apellidoP, fechaNacimiento);
                 if (pacienteID != 0)
                 {
                     botonRefresh.Enabled = true;
@@ -332,6 +326,7 @@ namespace ClinicEx_2024
                     buscar.Text = "Nueva Consulta";
                     buscar.Location = new Point(650, 415);
                     miBoton.Enabled = false;
+                    textBoxApellidoMaterno.Text = paciente.ApellidoM;
                     comboBoxSexo.SelectedItem = paciente.Sexo;
                     DataTable consultas = objP.GetConsultasPorPaciente(pacienteID);
                     dataGridViewConsultas.DataSource = consultas;
@@ -384,8 +379,7 @@ namespace ClinicEx_2024
                 int edad = CalculateAge(fechaNacimiento);
                 int pacienteID = objP.BuscarPaciente(
                     nombre,
-                    apellidoPaterno,
-                    apellidoMaterno,
+                    apellidoPaterno,                   
                     fechaNacimiento
                 );
 
@@ -445,8 +439,7 @@ namespace ClinicEx_2024
 
                 int pacienteID = objP.BuscarPaciente(
                     nombre,
-                    apellidoPaterno,
-                    apellidoMaterno,
+                    apellidoPaterno,                    
                     fechaNacimiento
                 );
                 DateTime fechaConsulta = Convert.ToDateTime(

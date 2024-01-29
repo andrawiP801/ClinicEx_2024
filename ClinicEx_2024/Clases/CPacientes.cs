@@ -70,6 +70,7 @@ namespace ClinicEx_2024.Clases
             decimal saturacionOxigeno,
             decimal? glucemia,
             string alergias,
+            string estadoN,
             string padecimientoActual,
             string antecedentesImportancia,
             string hallazgosExploracionFisica,
@@ -83,8 +84,8 @@ namespace ClinicEx_2024.Clases
             try
             {
                 string query =
-                    "INSERT INTO Consultas (ID_Paciente, FechaConsulta, PresionArterial, Temperatura, FrecuenciaCardiaca, FrecuenciaRespiratoria, Peso, Talla, IMC, CircunferenciaCintura, SaturacionOxigeno, Glucemia, Alergias, PadecimientoActual, AntecedentesImportancia, HallazgosExploracionFisica, PruebasDiagnosticasRealizadas, Diagnostico, Tratamiento, Pronostico) "
-                    + "VALUES (@ID_Paciente, @FechaConsulta, @PresionArterial, @Temperatura, @FrecuenciaCardiaca, @FrecuenciaRespiratoria, @Peso, @Talla, @IMC, @CircunferenciaCintura, @SaturacionOxigeno, @Glucemia, @Alergias, @PadecimientoActual, @AntecedentesImportancia, @HallazgosExploracionFisica, @PruebasDiagnosticasRealizadas, @Diagnostico, @Tratamiento, @Pronostico);";
+                    "INSERT INTO Consultas (ID_Paciente, FechaConsulta, PresionArterial, Temperatura, FrecuenciaCardiaca, FrecuenciaRespiratoria, Peso, Talla, IMC, CircunferenciaCintura, SaturacionOxigeno, Glucemia, Alergias, EstadoNutricional, PadecimientoActual, AntecedentesImportancia, HallazgosExploracionFisica, PruebasDiagnosticasRealizadas, Diagnostico, Tratamiento, Pronostico) "
+                    + "VALUES (@ID_Paciente, @FechaConsulta, @PresionArterial, @Temperatura, @FrecuenciaCardiaca, @FrecuenciaRespiratoria, @Peso, @Talla, @IMC, @CircunferenciaCintura, @SaturacionOxigeno, @Glucemia, @Alergias, @EstadoN, @PadecimientoActual, @AntecedentesImportancia, @HallazgosExploracionFisica, @PruebasDiagnosticasRealizadas, @Diagnostico, @Tratamiento, @Pronostico);";
 
                 var cmd = PrepararComando(
                     query,
@@ -109,6 +110,7 @@ namespace ClinicEx_2024.Clases
                     ("@SaturacionOxigeno", saturacionOxigeno),
                     ("@Glucemia", glucemia.HasValue ? (object)glucemia.Value : 0m),
                     ("@Alergias", alergias),
+                    ("@EstadoN", estadoN),
                     ("@PadecimientoActual", padecimientoActual),
                     ("@AntecedentesImportancia", antecedentesImportancia),
                     ("@HallazgosExploracionFisica", hallazgosExploracionFisica),
@@ -144,20 +146,18 @@ namespace ClinicEx_2024.Clases
 
         public int BuscarPaciente(
             string nombre,
-            string apellidoP,
-            string apellidoM,
+            string apellidoP,            
             DateTime fechaNacimiento
         )
         {
             try
             {
                 string query =
-                    "SELECT ID_Paciente FROM Pacientes WHERE Nombre = @Nombre AND ApellidoP = @ApellidoP AND ApellidoM = @ApellidoM AND FechaN = @FechaN";
+                    "SELECT ID_Paciente FROM Pacientes WHERE Nombre = @Nombre AND ApellidoP = @ApellidoP AND FechaN = @FechaN";
                 var cmd = PrepararComando(
                     query,
                     ("@Nombre", nombre),
-                    ("@ApellidoP", apellidoP),
-                    ("@ApellidoM", apellidoM),
+                    ("@ApellidoP", apellidoP),                    
                     ("@FechaN", fechaNacimiento.Date)
                 );
 

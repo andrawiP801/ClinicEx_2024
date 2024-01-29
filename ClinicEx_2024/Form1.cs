@@ -1,12 +1,7 @@
-using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using ClinicEx_2024.Clases;
 using ClinicEx_2024.Properties;
-using Microsoft.VisualBasic.ApplicationServices;
 using MySql.Data.MySqlClient;
-using static ClinicEx_2024.Clases.CPacientes;
+using WinForms = System.Windows.Forms;
 
 namespace ClinicEx_2024
 {
@@ -26,13 +21,14 @@ namespace ClinicEx_2024
             labelGral,
             labelDireccion,
             datoIMC;
-        private TextBox textBoxPresionArterial,
+        private WinForms.TextBox textBoxPresionArterial,
             textBoxTemperatura,
             textBoxFrecuenciaCardiaca,
             textBoxFrecuenciaRespiratoria,
             textBoxCintura,
             textBoxSaturacion,
             textBoxGlucemia,
+            textBoxEstadoN,
             textBoxAlergias,
             textBoxNombreP,
             textBoxApellidoP,
@@ -48,7 +44,7 @@ namespace ClinicEx_2024
             textBoxTratamiento,
             textBoxPronostico,
             textBoxEdad;
-        private Button agregarButton,
+        private WinForms.Button agregarButton,
             imprimirButton,
             photoUploadButton;
         private DateTimePicker dateTimePickerConsulta;
@@ -76,7 +72,7 @@ namespace ClinicEx_2024
         {
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.LightBlue;
-            this.Icon = Properties.Resources.Icono;
+            this.Icon = Resources.Icono;
 
             ChangeFontOfLabels(this, "Century", 10);
             labelNombre.Font = new Font("Century", 15, FontStyle.Bold);
@@ -136,6 +132,7 @@ namespace ClinicEx_2024
             Label labelSaturacion = CreateLabel("Saturación de oxígeno", new Point(280, 310), true);
             Label labelGlucemia = CreateLabel("Glucemia", new Point(495, 310), true);
             Label labelAlergias = CreateLabel("Alergias", new Point(640, 310), true);
+            Label labelEstadoN = CreateLabel("Estado Nutricional", new Point(1050, 310), true);
             Label lineSV = CreateSeparator(new Point(0, 190), this.Width);
             Label photoLabel = CreateLabel("Estudios", new Point(1100, 210), true);
             Label labelNotaMedica = CreateLabel("Nota médica", new Point(10, 400), true);
@@ -214,6 +211,7 @@ namespace ClinicEx_2024
             textBoxCintura = CreateTextBox(new Point(20, 340), new Size(200, 20), true, "");
             textBoxSaturacion = CreateTextBox(new Point(280, 340), new Size(147, 20), true, "");
             textBoxGlucemia = CreateTextBox(new Point(495, 340), new Size(65, 20), true, "");
+            textBoxEstadoN = CreateTextBox(new Point(1050, 340), new Size(150, 20), true, "");
             textBoxAlergias = CreateTextBox(new Point(640, 340), new Size(350, 20), true, "");
 
             textBoxPadecimientoActual = CreateMultilineTextBox(
@@ -254,7 +252,7 @@ namespace ClinicEx_2024
                 new Point(1100, 240),
                 new Size(150, 50)
             );
-            photoUploadButton.Click += (sender, e) => UploadPhotoButton_Click();            
+            photoUploadButton.Click += (sender, e) => UploadPhotoButton_Click();
 
             // Agregar controles al formulario
             this.Controls.AddRange(
@@ -283,6 +281,7 @@ namespace ClinicEx_2024
                     labelSaturacion,
                     labelGlucemia,
                     labelAlergias,
+                    labelEstadoN,
                     textBoxNombreP,
                     textBoxApellidoP,
                     textBoxApellidoM,
@@ -297,6 +296,7 @@ namespace ClinicEx_2024
                     textBoxCintura,
                     textBoxSaturacion,
                     textBoxGlucemia,
+                    textBoxEstadoN,
                     textBoxAlergias,
                     pictureBox,
                     lineSV,
@@ -325,7 +325,7 @@ namespace ClinicEx_2024
                     textBoxTratamiento,
                     textBoxPronostico,
                     agregarButton,
-                    imprimirButton                    
+                    imprimirButton
                 }
             );
         }
@@ -340,9 +340,9 @@ namespace ClinicEx_2024
             };
         }
 
-        private TextBox CreateTextBox(Point location, Size size, bool enabled, string text)
+        private WinForms.TextBox CreateTextBox(Point location, Size size, bool enabled, string text)
         {
-            return new TextBox
+            return new WinForms.TextBox
             {
                 Location = location,
                 Size = size,
@@ -351,9 +351,9 @@ namespace ClinicEx_2024
             };
         }
 
-        private Button CreateButton(string text, Point location, Size size)
+        private WinForms.Button CreateButton(string text, Point location, Size size)
         {
-            return new Button
+            return new WinForms.Button
             {
                 Text = text,
                 Location = location,
@@ -388,9 +388,9 @@ namespace ClinicEx_2024
             };
         }
 
-        private TextBox CreateMultilineTextBox(Point location, Size size)
+        private WinForms.TextBox CreateMultilineTextBox(Point location, Size size)
         {
-            return new TextBox
+            return new WinForms.TextBox
             {
                 Multiline = true,
                 Location = location,
@@ -427,6 +427,7 @@ namespace ClinicEx_2024
                 dateTimePickerConsulta.Value = this.FechaConsulta;
                 this.CargarDatosConsulta(PacienteID, FechaConsulta);
                 photoUploadButton.Text = "Mostrar fotos";
+                agregarButton.Hide();
             }
             else
             {
@@ -476,6 +477,7 @@ namespace ClinicEx_2024
                         textBoxSaturacion.Text = reader["SaturacionOxigeno"].ToString();
                         textBoxGlucemia.Text = reader["Glucemia"].ToString();
                         textBoxAlergias.Text = reader["Alergias"].ToString();
+                        textBoxEstadoN.Text = reader["EstadoNutricional"].ToString();
                         textBoxPadecimientoActual.Text = reader["PadecimientoActual"].ToString();
                         textBoxAntecedentesImportancia.Text = reader[
                             "AntecedentesImportancia"
@@ -526,24 +528,138 @@ namespace ClinicEx_2024
 
         private void Agregar_Click(object sender, EventArgs e)
         {
+            decimal temperatura,
+                peso,
+                talla,
+                saturacionOxigeno;
+            int frecuenciaCardiaca,
+                frecuenciaRespiratoria;
+
+            //Validacion de campos
+            var camposAValidar = new List<string>
+            {
+                "Temperatura",
+                "Frecuencia Cardiaca",
+                "Frecuencia Respiratoria",
+                "Peso",
+                "Talla",
+                "Saturación",
+                "Estado Nutricional",
+                "Alergias",
+                "Padecimiento Actual",
+                "Antecedentes de Importancia",
+                "Hallazgos",
+                "Pruebas Diagnósticas",
+                "Diagnóstico",
+                "Tratamiento"
+            };
+
+            var camposFaltantes = new List<string>();
+            var camposInvalidos = new List<string>();
+
+            if (
+                string.IsNullOrWhiteSpace(textBoxTemperatura.Text)
+                || !decimal.TryParse(textBoxTemperatura.Text, out temperatura)
+            )
+                (
+                    string.IsNullOrWhiteSpace(textBoxTemperatura.Text)
+                        ? camposFaltantes
+                        : camposInvalidos
+                ).Add("Temperatura");
+            if (
+                string.IsNullOrWhiteSpace(textBoxFrecuenciaCardiaca.Text)
+                || !int.TryParse(textBoxFrecuenciaCardiaca.Text, out frecuenciaCardiaca)
+            )
+                (
+                    string.IsNullOrWhiteSpace(textBoxFrecuenciaCardiaca.Text)
+                        ? camposFaltantes
+                        : camposInvalidos
+                ).Add("Frecuencia Cardiaca");
+            if (
+                string.IsNullOrWhiteSpace(textBoxFrecuenciaRespiratoria.Text)
+                || !int.TryParse(textBoxFrecuenciaRespiratoria.Text, out frecuenciaRespiratoria)
+            )
+                (
+                    string.IsNullOrWhiteSpace(textBoxFrecuenciaRespiratoria.Text)
+                        ? camposFaltantes
+                        : camposInvalidos
+                ).Add("Frecuencia Respiratoria");
+            if (
+                string.IsNullOrWhiteSpace(textBoxPeso.Text)
+                || !decimal.TryParse(textBoxPeso.Text, out peso)
+            )
+                (
+                    string.IsNullOrWhiteSpace(textBoxPeso.Text) ? camposFaltantes : camposInvalidos
+                ).Add("Peso");
+            if (
+                string.IsNullOrWhiteSpace(textBoxTalla.Text)
+                || !decimal.TryParse(textBoxTalla.Text, out talla)
+            )
+                (
+                    string.IsNullOrWhiteSpace(textBoxTalla.Text) ? camposFaltantes : camposInvalidos
+                ).Add("Talla");
+            if (
+                string.IsNullOrWhiteSpace(textBoxSaturacion.Text)
+                || !decimal.TryParse(textBoxSaturacion.Text, out saturacionOxigeno)
+            )
+                (
+                    string.IsNullOrWhiteSpace(textBoxSaturacion.Text)
+                        ? camposFaltantes
+                        : camposInvalidos
+                ).Add("Saturación de Oxígeno");
+
+            if (string.IsNullOrWhiteSpace(textBoxEstadoN.Text))
+                camposFaltantes.Add("Estado Nutricional");
+            if (string.IsNullOrWhiteSpace(textBoxAlergias.Text))
+                camposFaltantes.Add("Alergias");
+            if (string.IsNullOrWhiteSpace(textBoxPadecimientoActual.Text))
+                camposFaltantes.Add("Padecimiento Actual");
+            if (string.IsNullOrWhiteSpace(textBoxAntecedentesImportancia.Text))
+                camposFaltantes.Add("Antecedentes de Importancia");
+            if (string.IsNullOrWhiteSpace(textBoxHallazgos.Text))
+                camposFaltantes.Add("Hallazgos de Exploración Física");
+            if (string.IsNullOrWhiteSpace(textBoxPruebasDiag.Text))
+                camposFaltantes.Add("Pruebas Diagnósticas Realizadas");
+            if (string.IsNullOrWhiteSpace(textBoxDiagnostico.Text))
+                camposFaltantes.Add("Diagnóstico");
+            if (string.IsNullOrWhiteSpace(textBoxTratamiento.Text))
+                camposFaltantes.Add("Tratamiento");
+
+            var mensajesError = new List<string>();
+            if (camposFaltantes.Any())
+                mensajesError.Add("Campos faltantes: " + string.Join(", ", camposFaltantes));
+            if (camposInvalidos.Any())
+                mensajesError.Add(
+                    "Campos con datos no válidos (deben ser numéricos): "
+                        + string.Join(", ", camposInvalidos)
+                );
+
+            // Si hay errores, muestra un mensaje y retorna
+            if (mensajesError.Any())
+            {
+                MessageBox.Show(string.Join("\n", mensajesError));
+                return;
+            }
+
             try
             {
                 DateTime fechaConsulta = DateTime.Now; // O usa un DateTimePicker si la fecha no es la actual
                 string presionArterial = textBoxPresionArterial.Text;
-                decimal temperatura = decimal.Parse(textBoxTemperatura.Text);
-                int frecuenciaCardiaca = int.Parse(textBoxFrecuenciaCardiaca.Text);
-                int frecuenciaRespiratoria = int.Parse(textBoxFrecuenciaRespiratoria.Text);
-                decimal peso = decimal.Parse(textBoxPeso.Text);
-                decimal talla = decimal.Parse(textBoxTalla.Text);
+                temperatura = decimal.Parse(textBoxTemperatura.Text);
+                frecuenciaCardiaca = int.Parse(textBoxFrecuenciaCardiaca.Text);
+                frecuenciaRespiratoria = int.Parse(textBoxFrecuenciaRespiratoria.Text);
+                peso = decimal.Parse(textBoxPeso.Text);
+                talla = decimal.Parse(textBoxTalla.Text);
                 decimal imc = decimal.Parse(datoIMC.Text); // Asegúrate de que esto es un decimal
                 decimal circunferenciaCintura = string.IsNullOrEmpty(textBoxCintura.Text)
                     ? 0
                     : decimal.Parse(textBoxCintura.Text);
-                decimal saturacionOxigeno = decimal.Parse(textBoxSaturacion.Text);
+                saturacionOxigeno = decimal.Parse(textBoxSaturacion.Text);
                 decimal glucemia = string.IsNullOrEmpty(textBoxGlucemia.Text)
                     ? 0
                     : decimal.Parse(textBoxGlucemia.Text);
                 string alergias = textBoxAlergias.Text;
+                string estadoN = textBoxEstadoN.Text;
                 string padecimientoActual = textBoxPadecimientoActual.Text;
                 string antecedentesImportancia = textBoxAntecedentesImportancia.Text;
                 string hallazgosExploracionFisica = textBoxHallazgos.Text;
@@ -567,6 +683,7 @@ namespace ClinicEx_2024
                     saturacionOxigeno,
                     glucemia,
                     alergias,
+                    estadoN,
                     padecimientoActual,
                     antecedentesImportancia,
                     hallazgosExploracionFisica,
@@ -607,7 +724,7 @@ namespace ClinicEx_2024
             }
         }
 
-        private void AjustarAnchoTextBox(TextBox textBox)
+        private void AjustarAnchoTextBox(WinForms.TextBox textBox)
         {
             int margenDerecho = 150 + this.Padding.Right;
             textBox.Width = this.ClientSize.Width - textBox.Location.X - margenDerecho;
@@ -714,6 +831,7 @@ namespace ClinicEx_2024
                 return Image.FromStream(ms);
             }
         }
+
         private void Imprimir_Click(object? sender, EventArgs e)
         {
             try
@@ -725,74 +843,112 @@ namespace ClinicEx_2024
                 MessageBox.Show("Ocurrió un error al imprimir la consulta: " + ex.Message);
             }
         }
+
         private void ImprimirConsulta()
         {
-            string plantillaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Resources\Formatoexp.docx");
+            string plantillaPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                @"Resources\PruebaFormato.xlsx"
+            );
             MessageBox.Show(plantillaPath);
 
             // Verifica si el archivo de la plantilla existe
             if (!File.Exists(plantillaPath))
             {
-                MessageBox.Show("No se ha encontrado el archivo de la plantilla. Asegúrate de que la ruta es correcta y el archivo existe.");
+                MessageBox.Show(
+                    "No se ha encontrado el archivo de la plantilla. Asegúrate de que la ruta es correcta y el archivo existe."
+                );
                 return;
             }
 
-            var wordApp = new Microsoft.Office.Interop.Word.Application
+            var excelApp = new Microsoft.Office.Interop.Excel.Application
             {
-                Visible = true // Hace visible la aplicación Word
+                Visible = true // Hace visible la aplicación Excel
             };
 
-            Microsoft.Office.Interop.Word.Document document = null;
+            Microsoft.Office.Interop.Excel.Workbook workbook = null;
+            Microsoft.Office.Interop.Excel.Worksheet sheet = null;
 
             try
             {
-                document = wordApp.Documents.Open(plantillaPath);
+                workbook = excelApp.Workbooks.Open(plantillaPath);
+                sheet = workbook.Sheets[1];
 
                 // Rellenar los datos en el documento
-
-                ReemplazarTextoEnDocumento(document, "{consulta}", idConsulta.ToString());
-                ReemplazarTextoEnDocumento(document, "{Nombre}", textBoxNombreP.Text);
-                ReemplazarTextoEnDocumento(document, "{ApellidoPaterno}", textBoxApellidoP.Text);
-                ReemplazarTextoEnDocumento(document, "{ApellidoMaterno}", textBoxApellidoM.Text);
-                ReemplazarTextoEnDocumento(document, "{Edad}", textBoxEdad.Text);
-                ReemplazarTextoEnDocumento(document, "{Sexo}", comboBoxSexo.Text);
-                ReemplazarTextoEnDocumento(document, "{PA}", textBoxPresionArterial.Text);
-                ReemplazarTextoEnDocumento(document, "{TEMP}", textBoxTemperatura.Text);
-                ReemplazarTextoEnDocumento(document, "{FC}", textBoxFrecuenciaCardiaca.Text);
-                ReemplazarTextoEnDocumento(document, "{FR}", textBoxFrecuenciaRespiratoria.Text);
-                ReemplazarTextoEnDocumento(document, "{Peso}", textBoxPeso.Text);
-                ReemplazarTextoEnDocumento(document, "{Talla}", textBoxTalla.Text);
-                ReemplazarTextoEnDocumento(document, "{Cintura}", textBoxCintura.Text);
-                ReemplazarTextoEnDocumento(document, "{SAT}", textBoxSaturacion.Text);
-                ReemplazarTextoEnDocumento(document, "{Glucosa}", textBoxGlucemia.Text);
-                ReemplazarTextoEnDocumento(document, "{Al}", textBoxAlergias.Text);
-                ReemplazarTextoEnDocumento(document, "{PadecimientoActual}", textBoxPadecimientoActual.Text);
-                ReemplazarTextoEnDocumento(document, "{AntecedentesImportancia}", textBoxAntecedentesImportancia.Text);
-                ReemplazarTextoEnDocumento(document, "{Hallazgos}", textBoxHallazgos.Text);
-                ReemplazarTextoEnDocumento(document, "{PruebasDiag}", textBoxPruebasDiag.Text);
-                ReemplazarTextoEnDocumento(document, "{Diagnostico}", textBoxDiagnostico.Text);
-                ReemplazarTextoEnDocumento(document, "{Tratamiento}", textBoxTratamiento.Text);
-                ReemplazarTextoEnDocumento(document, "{Pronostico}", textBoxPronostico.Text);
-
-
+                ReemplazarTextoEnHojaDeExcel(
+                    sheet,
+                    "{consulta}",
+                    "EXPEDIENTE: " + idConsulta.ToString()
+                );
+                ReemplazarTextoEnHojaDeExcel(
+                    sheet,
+                    "{Nombre}",
+                    textBoxNombreP.Text + " " + textBoxApellidoP.Text + " " + textBoxApellidoM.Text
+                );
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Edad}", textBoxEdad.Text);
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Sexo}", comboBoxSexo.Text);
+                ReemplazarTextoEnHojaDeExcel(sheet, "{PA}", textBoxPresionArterial.Text + " mmHg");
+                ReemplazarTextoEnHojaDeExcel(sheet, "{TEMP}", textBoxTemperatura.Text + " °C");
+                ReemplazarTextoEnHojaDeExcel(
+                    sheet,
+                    "{FC}",
+                    textBoxFrecuenciaCardiaca.Text + " ppm"
+                );
+                ReemplazarTextoEnHojaDeExcel(
+                    sheet,
+                    "{FR}",
+                    textBoxFrecuenciaRespiratoria.Text + " rpm"
+                );
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Peso}", textBoxPeso.Text + " kg");
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Talla}", textBoxTalla.Text + " cm");
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Cintura}", textBoxCintura.Text + " cm");
+                ReemplazarTextoEnHojaDeExcel(sheet, "{SAT}", textBoxSaturacion.Text + " O2");
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Glucosa}", textBoxGlucemia.Text + " mg/dl");
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Al}", "Alergias: " + textBoxAlergias.Text);
+                ReemplazarTextoEnHojaDeExcel(sheet, "{eNutricional}", textBoxEstadoN.Text);
+                ReemplazarTextoEnHojaDeExcel(
+                    sheet,
+                    "{PadecimientoActual}",
+                    textBoxPadecimientoActual.Text
+                );
+                ReemplazarTextoEnHojaDeExcel(
+                    sheet,
+                    "{AntecedentesImportancia}",
+                    textBoxAntecedentesImportancia.Text
+                );
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Hallazgos}", textBoxHallazgos.Text);
+                ReemplazarTextoEnHojaDeExcel(sheet, "{PruebasDiag}", textBoxPruebasDiag.Text);
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Diagnostico}", textBoxDiagnostico.Text);
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Tratamiento}", textBoxTratamiento.Text);
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Pronostico}", textBoxPronostico.Text);
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ocurrió un error al imprimir el documento: " + ex.Message);
             }
-            
         }
 
-
-        private void ReemplazarTextoEnDocumento(Microsoft.Office.Interop.Word.Document doc, string placeholder, string text)
+        private void ReemplazarTextoEnHojaDeExcel(
+            Microsoft.Office.Interop.Excel.Worksheet sheet,
+            string placeholder,
+            string text
+        )
         {
-            foreach (Microsoft.Office.Interop.Word.Range storyRange in doc.StoryRanges)
-            {
-                Microsoft.Office.Interop.Word.Find find = storyRange.Find;
-                find.Text = placeholder; 
-                find.Replacement.Text = text; 
+            Microsoft.Office.Interop.Excel.Range range = sheet.UsedRange;
+            Microsoft.Office.Interop.Excel.Range foundRange = range.Find(
+                What: placeholder,
+                LookIn: Microsoft.Office.Interop.Excel.XlFindLookIn.xlValues,
+                LookAt: Microsoft.Office.Interop.Excel.XlLookAt.xlPart,
+                SearchOrder: Microsoft.Office.Interop.Excel.XlSearchOrder.xlByRows,
+                SearchDirection: Microsoft.Office.Interop.Excel.XlSearchDirection.xlNext,
+                MatchCase: false,
+                MatchByte: false
+            );
 
-                find.Execute(Replace: Microsoft.Office.Interop.Word.WdReplace.wdReplaceAll);
+            while (foundRange != null)
+            {
+                foundRange.Value2 = text;
+                foundRange = range.FindNext(foundRange);
             }
         }
     }

@@ -25,6 +25,7 @@ CREATE TABLE Consultas (
     CircunferenciaCintura DECIMAL(5,2),
     SaturacionOxigeno DECIMAL(5,2),
     Glucemia DECIMAL(5,2),
+    EstadoNutricional varchar(15),
     Alergias VARCHAR(45),
     PadecimientoActual TEXT,
     AntecedentesImportancia TEXT,
