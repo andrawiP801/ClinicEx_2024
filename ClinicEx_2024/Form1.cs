@@ -14,13 +14,20 @@ namespace ClinicEx_2024
         public string ApellidoMaterno { get; set; }
         public string Sexo { get; set; }
         public int Edad { get; set; }
+        public DateTime FechaNac { get; set; }
+
         public DateTime FechaConsulta { get; set; }
 
         // Declaraciones de controles
         private Label labelNombre,
             labelGral,
             labelDireccion,
+            labelDatoNom,
+            labelDatoCed,
+            labelNombreMedico,
+            labelCedulaPro,
             datoIMC;
+
         private WinForms.TextBox textBoxPresionArterial,
             textBoxTemperatura,
             textBoxFrecuenciaCardiaca,
@@ -71,12 +78,14 @@ namespace ClinicEx_2024
         private void CustomizeForm()
         {
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.LightBlue;
+            this.BackColor = ColorTranslator.FromHtml("#2984FF");
             this.Icon = Resources.Icono;
 
-            ChangeFontOfLabels(this, "Century", 10);
-            labelNombre.Font = new Font("Century", 15, FontStyle.Bold);
-            labelGral.Font = new Font("Century", 15, FontStyle.Bold);
+            ChangeFontOfLabels(this, "GenericSansSerif", 10);
+            labelDireccion.Font =  new Font("Eras Demi ITC", 10, FontStyle.Bold);
+            labelNombre.Font = new Font("Eras Demi ITC", 14, FontStyle.Bold);
+            labelGral.Font = new Font("Eras Demi ITC", 14, FontStyle.Bold);
+        
         }
 
         private void SubscribeToEvents()
@@ -254,7 +263,6 @@ namespace ClinicEx_2024
             );
             photoUploadButton.Click += (sender, e) => UploadPhotoButton_Click();
 
-            // Agregar controles al formulario
             this.Controls.AddRange(
                 new Control[]
                 {
@@ -420,7 +428,7 @@ namespace ClinicEx_2024
             textBoxApellidoM.Text = this.ApellidoMaterno;
             comboBoxSexo.Text = this.Sexo;
             textBoxEdad.Text = this.Edad.ToString();
-
+            
             if (this.FechaConsulta != DateTime.MinValue)
             {
                 int PacienteID = this.PacienteID;
@@ -878,7 +886,7 @@ namespace ClinicEx_2024
                 ReemplazarTextoEnHojaDeExcel(
                     sheet,
                     "{consulta}",
-                    "EXPEDIENTE: " + idConsulta.ToString()
+                    "EXPEDIENTE: " + PacienteID.ToString()
                 );
                 ReemplazarTextoEnHojaDeExcel(
                     sheet,
@@ -887,6 +895,11 @@ namespace ClinicEx_2024
                 );
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Edad}", textBoxEdad.Text);
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Sexo}", comboBoxSexo.Text);
+                string formattedDate = this.FechaNac.ToString("dd/MM/yyyy");
+                string formattedDate2 = dateTimePickerConsulta.Value.ToString("dd/MM/yyyy");
+
+
+                ReemplazarTextoEnHojaDeExcel(sheet, "{fechaNacimiento}", formattedDate);
                 ReemplazarTextoEnHojaDeExcel(sheet, "{PA}", textBoxPresionArterial.Text + " mmHg");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{TEMP}", textBoxTemperatura.Text + " °C");
                 ReemplazarTextoEnHojaDeExcel(
@@ -901,10 +914,12 @@ namespace ClinicEx_2024
                 );
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Peso}", textBoxPeso.Text + " kg");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Talla}", textBoxTalla.Text + " cm");
+                ReemplazarTextoEnHojaDeExcel(sheet, "{IMC}", datoIMC.Text );
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Cintura}", textBoxCintura.Text + " cm");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{SAT}", textBoxSaturacion.Text + " O2");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Glucosa}", textBoxGlucemia.Text + " mg/dl");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Al}", "Alergias: " + textBoxAlergias.Text);
+                ReemplazarTextoEnHojaDeExcel(sheet, "{Fecha}", formattedDate2);
                 ReemplazarTextoEnHojaDeExcel(sheet, "{eNutricional}", textBoxEstadoN.Text);
                 ReemplazarTextoEnHojaDeExcel(
                     sheet,
