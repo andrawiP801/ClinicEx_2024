@@ -1,6 +1,7 @@
 ﻿using ClinicEx_2024.Clases;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static ClinicEx_2024.Clases.CPacientes;
@@ -573,8 +574,6 @@ namespace ClinicEx_2024
                         textBoxTratamiento = reader["Tratamiento"].ToString();
                         textBoxPronostico = reader["Pronostico"].ToString();
                     }
-
-
                     try
                     {
                         string plantillaPath = Path.Combine(
@@ -594,7 +593,7 @@ namespace ClinicEx_2024
 
                         var excelApp = new Microsoft.Office.Interop.Excel.Application
                         {
-                            Visible = true // Hace visible la aplicación Excel
+                            Visible = false // Hace visible la aplicación Excel
                         };
 
                         Microsoft.Office.Interop.Excel.Workbook workbook = null;
@@ -672,6 +671,36 @@ namespace ClinicEx_2024
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Diagnostico}", textBoxDiagnostico);
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Tratamiento}", textBoxTratamiento);
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Pronostico}", textBoxPronostico);
+                            string pdfPath = Path.Combine(
+                            AppDomain.CurrentDomain.BaseDirectory,
+                          @"Resources\ConsultaImpresa.pdf"
+                            );
+                            // Asegúrate de que el libro de trabajo y la hoja estén inicializados correctamente
+                            if (workbook != null && sheet != null)
+                            {
+                                // Guardar la hoja actual como PDF
+                                sheet.ExportAsFixedFormat(
+                                    Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF,
+                                    pdfPath
+                                );
+
+                                // Cerrar el libro y la aplicación de Excel adecuadamente
+                                workbook.Close(false);
+                                excelApp.Quit();
+
+                                // Liberar los recursos de COM de Excel
+                                Marshal.ReleaseComObject(sheet);
+                                Marshal.ReleaseComObject(workbook);
+                                Marshal.ReleaseComObject(excelApp);
+
+                                // Abrir el archivo PDF con la aplicación predeterminada
+                                ProcessStartInfo startInfo = new ProcessStartInfo
+                                {
+                                    FileName = pdfPath,
+                                    UseShellExecute = true
+                                };
+                                Process.Start(startInfo);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -680,6 +709,7 @@ namespace ClinicEx_2024
                     }
                     finally
                     {
+
                         conexion.cerrarConexion();
                     }
                 }

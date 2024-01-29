@@ -1,6 +1,8 @@
 using ClinicEx_2024.Clases;
 using ClinicEx_2024.Properties;
 using MySql.Data.MySqlClient;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using WinForms = System.Windows.Forms;
 
 namespace ClinicEx_2024
@@ -871,7 +873,7 @@ namespace ClinicEx_2024
 
             var excelApp = new Microsoft.Office.Interop.Excel.Application
             {
-                Visible = true // Hace visible la aplicación Excel
+                Visible = false // Hace visible la aplicación Excel
             };
 
             Microsoft.Office.Interop.Excel.Workbook workbook = null;
@@ -939,7 +941,53 @@ namespace ClinicEx_2024
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ocurrió un error al imprimir el documento: " + ex.Message);
+                MessageBox.Show("Ocurrió un error al guardar el documento: " + ex.Message);
+            }
+            string pdfPath = Path.Combine(
+        AppDomain.CurrentDomain.BaseDirectory,
+        @"Resources\ConsultaImpresa.pdf"
+    );
+
+            try
+            {
+                // Asegúrate de que el libro de trabajo y la hoja estén inicializados correctamente
+                if (workbook != null && sheet != null)
+                {
+                    // Guardar la hoja actual como PDF
+                    sheet.ExportAsFixedFormat(
+                        Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF,
+                        pdfPath
+                    );
+
+                    // Cerrar el libro y la aplicación de Excel adecuadamente
+                    workbook.Close(false);
+                    excelApp.Quit();
+
+                    // Liberar los recursos de COM de Excel
+                    Marshal.ReleaseComObject(sheet);
+                    Marshal.ReleaseComObject(workbook);
+                    Marshal.ReleaseComObject(excelApp);
+
+                    // Abrir el archivo PDF con la aplicación predeterminada
+                    ProcessStartInfo startInfo = new ProcessStartInfo
+                    {
+                        FileName = pdfPath,
+                        UseShellExecute = true
+                    };
+                    Process.Start(startInfo);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error al guardar documento: " + ex.Message);
+            }
+            finally
+            {
+                // Asegúrate de liberar los recursos COM de Excel
+                if (sheet != null) Marshal.ReleaseComObject(sheet);
+                if (workbook != null) Marshal.ReleaseComObject(workbook);
+                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
             }
         }
 
