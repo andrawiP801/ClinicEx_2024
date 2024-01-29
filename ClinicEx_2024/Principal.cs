@@ -534,117 +534,157 @@ namespace ClinicEx_2024
                     dataGridViewConsultas.Rows[e.RowIndex].Cells["FechaConsulta"].Value
                 );
 
+                string query =
+                "SELECT * FROM Consultas WHERE ID_Paciente = @ID_Paciente AND FechaConsulta = @FechaConsulta LIMIT 1";
 
+                var cmd = PrepararComando(query);
+                cmd.Parameters.AddWithValue("@ID_Paciente", pacienteID);
+                cmd.Parameters.AddWithValue("@FechaConsulta", fechaConsulta);
 
-                try
+                conexion.establecerConexion();
+                using (var reader = cmd.ExecuteReader())
                 {
-                    string plantillaPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                @"Resources\PruebaFormato.xlsx"
-            );
-                    MessageBox.Show(plantillaPath);
-
-                    // Verifica si el archivo de la plantilla existe
-                    if (!File.Exists(plantillaPath))
+                    if (reader.Read())
                     {
-                        MessageBox.Show(
-                            "No se ha encontrado el archivo de la plantilla. Asegúrate de que la ruta es correcta y el archivo existe."
-                        );
-                        return;
+                        idConsulta = int.Parse(reader["ID_Consulta"].ToString());
+                        textBoxPresionArterial = reader["PresionArterial"].ToString();
+                        textBoxTemperatura = reader["Temperatura"].ToString();
+                        textBoxFrecuenciaCardiaca = reader["FrecuenciaCardiaca"].ToString();
+                        textBoxFrecuenciaRespiratoria = reader[
+                            "FrecuenciaRespiratoria"
+                        ].ToString();
+                        textBoxPeso = reader["Peso"].ToString();
+                        textBoxTalla = reader["Talla"].ToString();
+                        datoIMC = reader["IMC"].ToString();
+                        textBoxCintura = reader["CircunferenciaCintura"].ToString();
+                        textBoxSaturacion = reader["SaturacionOxigeno"].ToString();
+                        textBoxGlucemia = reader["Glucemia"].ToString();
+                        textBoxAlergias = reader["Alergias"].ToString();
+                        textBoxEstadoN = reader["EstadoNutricional"].ToString();
+                        textBoxPadecimientoActual = reader["PadecimientoActual"].ToString();
+                        textBoxAntecedentesImportancia = reader[
+                            "AntecedentesImportancia"
+                        ].ToString();
+                        textBoxHallazgos = reader["HallazgosExploracionFisica"].ToString();
+                        textBoxPruebasDiag = reader[
+                            "PruebasDiagnosticasRealizadas"
+                        ].ToString();
+                        textBoxDiagnostico = reader["Diagnostico"].ToString();
+                        textBoxTratamiento = reader["Tratamiento"].ToString();
+                        textBoxPronostico = reader["Pronostico"].ToString();
                     }
 
-                    var excelApp = new Microsoft.Office.Interop.Excel.Application
-                    {
-                        Visible = true // Hace visible la aplicación Excel
-                    };
-
-                    Microsoft.Office.Interop.Excel.Workbook workbook = null;
-                    Microsoft.Office.Interop.Excel.Worksheet sheet = null;
 
                     try
                     {
-                        workbook = excelApp.Workbooks.Open(plantillaPath);
-                        sheet = workbook.Sheets[1];
-                        
-                       
-                        MainForm nform = new MainForm
+                        string plantillaPath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    @"Resources\PruebaFormato.xlsx"
+                );
+                        MessageBox.Show(plantillaPath);
+
+                        // Verifica si el archivo de la plantilla existe
+                        if (!File.Exists(plantillaPath))
                         {
-                            PacienteID = pacienteID,
-                            Nombre = nombre,
-                            ApellidoPaterno = apellidoPaterno,
-                            ApellidoMaterno = apellidoMaterno,
-                            Sexo = sexo,
-                            Edad = edad,
-                            FechaConsulta = fechaConsulta,
-                            FechaNac = fechaNacimiento,
+                            MessageBox.Show(
+                                "No se ha encontrado el archivo de la plantilla. Asegúrate de que la ruta es correcta y el archivo existe."
+                            );
+                            return;
+                        }
+
+                        var excelApp = new Microsoft.Office.Interop.Excel.Application
+                        {
+                            Visible = true // Hace visible la aplicación Excel
                         };
 
-                        // Rellenar los datos en el documento
-                        ReemplazarTextoEnHojaDeExcel(
-                            sheet,
-                            "{consulta}",
-                            "EXPEDIENTE: " + pacienteID.ToString()
-                        );
-                        ReemplazarTextoEnHojaDeExcel(
-                            sheet,
-                            "{Nombre}",
-                            textBoxNombre.Text + " " + textBoxApellidoPaterno.Text + " " + textBoxApellidoMaterno.Text
-                        );
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Edad}", edad.ToString());
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Sexo}", comboBoxSexo.Text);
-                        string formattedDate = fechaNacimiento.ToString("dd/MM/yyyy");
-                        string formattedDate2 = fechaConsulta.ToString("dd/MM/yyyy");
+                        Microsoft.Office.Interop.Excel.Workbook workbook = null;
+                        Microsoft.Office.Interop.Excel.Worksheet sheet = null;
+
+                        try
+                        {
+                            workbook = excelApp.Workbooks.Open(plantillaPath);
+                            sheet = workbook.Sheets[1];
 
 
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{fechaNacimiento}", formattedDate);
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{PA}", textBoxPresionArterial + " mmHg");
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{TEMP}", textBoxTemperatura + " °C");
-                        ReemplazarTextoEnHojaDeExcel(
-                            sheet,
-                            "{FC}",
-                            textBoxFrecuenciaCardiaca + " ppm"
-                        );
-                        ReemplazarTextoEnHojaDeExcel(
-                            sheet,
-                            "{FR}",
-                            textBoxFrecuenciaRespiratoria + " rpm"
-                        );
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Peso}", textBoxPeso + " kg");
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Talla}", textBoxTalla + " cm");
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{IMC}", datoIMC);
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Cintura}", textBoxCintura + " cm");
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{SAT}", textBoxSaturacion + " O2");
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Glucosa}", textBoxGlucemia + " mg/dl");
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Al}", "Alergias: " + textBoxAlergias);
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Fecha}", formattedDate2);
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{eNutricional}", textBoxEstadoN);
-                        ReemplazarTextoEnHojaDeExcel(
-                            sheet,
-                            "{PadecimientoActual}",
-                            textBoxPadecimientoActual
-                        );
-                        ReemplazarTextoEnHojaDeExcel(
-                            sheet,
-                            "{AntecedentesImportancia}",
-                            textBoxAntecedentesImportancia
-                        );
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Hallazgos}", textBoxHallazgos);
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{PruebasDiag}", textBoxPruebasDiag);
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Diagnostico}", textBoxDiagnostico);
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Tratamiento}", textBoxTratamiento);
-                        ReemplazarTextoEnHojaDeExcel(sheet, "{Pronostico}", textBoxPronostico);
+                            MainForm nform = new MainForm
+                            {
+                                PacienteID = pacienteID,
+                                Nombre = nombre,
+                                ApellidoPaterno = apellidoPaterno,
+                                ApellidoMaterno = apellidoMaterno,
+                                Sexo = sexo,
+                                Edad = edad,
+                                FechaConsulta = fechaConsulta,
+                                FechaNac = fechaNacimiento,
+                            };
+
+                            // Rellenar los datos en el documento
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{consulta}",
+                                "EXPEDIENTE: " + pacienteID.ToString()
+                            );
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{Nombre}",
+                                textBoxNombre.Text + " " + textBoxApellidoPaterno.Text + " " + textBoxApellidoMaterno.Text
+                            );
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Edad}", edad.ToString());
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Sexo}", comboBoxSexo.Text);
+                            string formattedDate = fechaNacimiento.ToString("dd/MM/yyyy");
+                            string formattedDate2 = fechaConsulta.ToString("dd/MM/yyyy");
+
+
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{fechaNacimiento}", formattedDate);
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{PA}", textBoxPresionArterial + " mmHg");
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{TEMP}", textBoxTemperatura + " °C");
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{FC}",
+                                textBoxFrecuenciaCardiaca + " ppm"
+                            );
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{FR}",
+                                textBoxFrecuenciaRespiratoria + " rpm"
+                            );
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Peso}", textBoxPeso + " kg");
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Talla}", textBoxTalla + " cm");
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{IMC}", datoIMC);
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Cintura}", textBoxCintura + " cm");
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{SAT}", textBoxSaturacion + " O2");
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Glucosa}", textBoxGlucemia + " mg/dl");
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Al}", "Alergias: " + textBoxAlergias);
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Fecha}", formattedDate2);
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{eNutricional}", textBoxEstadoN);
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{PadecimientoActual}",
+                                textBoxPadecimientoActual
+                            );
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{AntecedentesImportancia}",
+                                textBoxAntecedentesImportancia
+                            );
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Hallazgos}", textBoxHallazgos);
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{PruebasDiag}", textBoxPruebasDiag);
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Diagnostico}", textBoxDiagnostico);
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Tratamiento}", textBoxTratamiento);
+                            ReemplazarTextoEnHojaDeExcel(sheet, "{Pronostico}", textBoxPronostico);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Ocurrió un error al imprimir el documento: " + ex.Message);
+                        }
                     }
-                    catch (Exception ex)
+                    finally
                     {
-                        MessageBox.Show("Ocurrió un error al imprimir el documento: " + ex.Message);
+                        conexion.cerrarConexion();
                     }
                 }
-                finally
-                {
-                    conexion.cerrarConexion();
-                }
-            }
 
+            }
         }
 
         private void dataGridViewConsultas_CellDoubleClick(
