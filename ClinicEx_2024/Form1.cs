@@ -1,8 +1,8 @@
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using ClinicEx_2024.Clases;
 using ClinicEx_2024.Properties;
 using MySql.Data.MySqlClient;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using WinForms = System.Windows.Forms;
 
 namespace ClinicEx_2024
@@ -69,10 +69,10 @@ namespace ClinicEx_2024
 
         private void InitializeComponent()
         {
-            this.Size = new Size(1300, 700);
-            this.AutoScroll = true;
-            this.SetAutoScrollMargin(0, 10);
-            this.Text = "Registro de Expediente Médico";
+            Size = new Size(1300, 700);
+            AutoScroll = true;
+            SetAutoScrollMargin(0, 10);
+            Text = "Consulta Médica";
 
             AddControls();
         }
@@ -84,10 +84,9 @@ namespace ClinicEx_2024
             this.Icon = Resources.Icono;
 
             ChangeFontOfLabels(this, "GenericSansSerif", 10);
-            labelDireccion.Font =  new Font("Eras Demi ITC", 10, FontStyle.Bold);
+            labelDireccion.Font = new Font("Eras Demi ITC", 10, FontStyle.Bold);
             labelNombre.Font = new Font("Eras Demi ITC", 14, FontStyle.Bold);
             labelGral.Font = new Font("Eras Demi ITC", 14, FontStyle.Bold);
-        
         }
 
         private void SubscribeToEvents()
@@ -106,6 +105,7 @@ namespace ClinicEx_2024
         {
             // Creación y configuración de Labels
             labelNombre = CreateLabel("Consultorio San Francisco", new Point(5, 5), true);
+            labelNombre.Anchor = AnchorStyles.Top;
             labelGral = CreateLabel("\"Medicina General\"", new Point(5, 30), true);
             labelDireccion = CreateLabel(
                 "Av. Hidalgo 67 Tequexquináhuac, Texcoco",
@@ -430,7 +430,7 @@ namespace ClinicEx_2024
             textBoxApellidoM.Text = this.ApellidoMaterno;
             comboBoxSexo.Text = this.Sexo;
             textBoxEdad.Text = this.Edad.ToString();
-            
+
             if (this.FechaConsulta != DateTime.MinValue)
             {
                 int PacienteID = this.PacienteID;
@@ -443,6 +443,56 @@ namespace ClinicEx_2024
             {
                 dateTimePickerConsulta.Value = DateTime.Now;
             }
+        }
+
+
+        private void CambiarFuenteLabels(
+            Control controlPadre,
+            string nombreFuente,
+            float nuevoTamano
+        )
+        {
+            foreach (Control control in controlPadre.Controls)
+            {
+                if (control is Label label)
+                {
+                    label.Font = new Font(nombreFuente, nuevoTamano, label.Font.Style);
+                }
+                if (control.HasChildren)
+                {
+                    CambiarFuenteLabels(control, nombreFuente, nuevoTamano);
+                }
+            }
+        }
+
+        private void AjustarAnchoTextBox(WinForms.TextBox textBox)
+        {
+            int margenDerecho = 150 + this.Padding.Right;
+            textBox.Width = this.ClientSize.Width - textBox.Location.X - margenDerecho;
+            textBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            AjustarAnchoTextBox(textBoxPadecimientoActual);
+            AjustarAnchoTextBox(textBoxAntecedentesImportancia);
+            AjustarAnchoTextBox(textBoxHallazgos);
+            AjustarAnchoTextBox(textBoxPruebasDiag);
+            AjustarAnchoTextBox(textBoxDiagnostico);
+            AjustarAnchoTextBox(textBoxTratamiento);
+            AjustarAnchoTextBox(textBoxPronostico);
+        }
+
+        private void Form1_Layout(object sender, LayoutEventArgs e)
+        {
+            // Asegúrate de que la posición Y no se cambie durante el evento Layout.
+            var yNombre = labelNombre.Location.Y;
+            var yGral = labelGral.Location.Y;
+            var yDireccion = labelDireccion.Location.Y;
+
+            labelNombre.Location = new Point((this.ClientSize.Width - labelNombre.Width) / 2, yNombre);
+            labelGral.Location = new Point((this.ClientSize.Width - labelGral.Width) / 2, yGral);
+            labelDireccion.Location = new Point((this.ClientSize.Width - labelDireccion.Width) / 2, yDireccion);
         }
 
         private CConexion conexion = new CConexion();
@@ -715,53 +765,6 @@ namespace ClinicEx_2024
             }
         }
 
-        private void CambiarFuenteLabels(
-            Control controlPadre,
-            string nombreFuente,
-            float nuevoTamano
-        )
-        {
-            foreach (Control control in controlPadre.Controls)
-            {
-                if (control is Label label)
-                {
-                    label.Font = new Font(nombreFuente, nuevoTamano, label.Font.Style);
-                }
-                if (control.HasChildren)
-                {
-                    CambiarFuenteLabels(control, nombreFuente, nuevoTamano);
-                }
-            }
-        }
-
-        private void AjustarAnchoTextBox(WinForms.TextBox textBox)
-        {
-            int margenDerecho = 150 + this.Padding.Right;
-            textBox.Width = this.ClientSize.Width - textBox.Location.X - margenDerecho;
-            textBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-        }
-
-        private void MainForm_Resize(object sender, EventArgs e)
-        {
-            AjustarAnchoTextBox(textBoxPadecimientoActual);
-            AjustarAnchoTextBox(textBoxAntecedentesImportancia);
-            AjustarAnchoTextBox(textBoxHallazgos);
-            AjustarAnchoTextBox(textBoxPruebasDiag);
-            AjustarAnchoTextBox(textBoxDiagnostico);
-            AjustarAnchoTextBox(textBoxTratamiento);
-            AjustarAnchoTextBox(textBoxPronostico);
-        }
-
-        private void Form1_Layout(object sender, LayoutEventArgs e)
-        {
-            labelNombre.Location = new Point((this.ClientSize.Width - labelNombre.Width) / 2, 10);
-            labelGral.Location = new Point((this.ClientSize.Width - labelGral.Width) / 2, 35);
-            labelDireccion.Location = new Point(
-                (this.ClientSize.Width - labelDireccion.Width) / 2,
-                60
-            );
-        }
-
         private void UploadPhotoButton_Click()
         {
             if (photoUploadButton.Text == "Selecciona foto")
@@ -865,9 +868,7 @@ namespace ClinicEx_2024
             // Verifica si el archivo de la plantilla existe
             if (!File.Exists(plantillaPath))
             {
-                MessageBox.Show(
-                    "No se ha encontrado el archivo de la plantilla. Asegúrate de que la ruta es correcta y el archivo existe."
-                );
+                MessageBox.Show("No se ha encontrado el archivo de la plantilla.");
                 return;
             }
 
@@ -900,7 +901,6 @@ namespace ClinicEx_2024
                 string formattedDate = this.FechaNac.ToString("dd/MM/yyyy");
                 string formattedDate2 = dateTimePickerConsulta.Value.ToString("dd/MM/yyyy");
 
-
                 ReemplazarTextoEnHojaDeExcel(sheet, "{fechaNacimiento}", formattedDate);
                 ReemplazarTextoEnHojaDeExcel(sheet, "{PA}", textBoxPresionArterial.Text + " mmHg");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{TEMP}", textBoxTemperatura.Text + " °C");
@@ -916,9 +916,9 @@ namespace ClinicEx_2024
                 );
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Peso}", textBoxPeso.Text + " kg");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Talla}", textBoxTalla.Text + " cm");
-                ReemplazarTextoEnHojaDeExcel(sheet, "{IMC}", datoIMC.Text );
+                ReemplazarTextoEnHojaDeExcel(sheet, "{IMC}", datoIMC.Text);
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Cintura}", textBoxCintura.Text + " cm");
-                ReemplazarTextoEnHojaDeExcel(sheet, "{SAT}", textBoxSaturacion.Text + " O2");
+                ReemplazarTextoEnHojaDeExcel(sheet, "{SAT}", textBoxSaturacion.Text + "   O2");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Glucosa}", textBoxGlucemia.Text + " mg/dl");
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Al}", "Alergias: " + textBoxAlergias.Text);
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Fecha}", formattedDate2);
@@ -944,9 +944,9 @@ namespace ClinicEx_2024
                 MessageBox.Show("Ocurrió un error al guardar el documento: " + ex.Message);
             }
             string pdfPath = Path.Combine(
-        AppDomain.CurrentDomain.BaseDirectory,
-        @"Resources\ConsultaImpresa.pdf"
-    );
+                AppDomain.CurrentDomain.BaseDirectory,
+                @"Resources\ConsultaImpresa.pdf"
+            );
 
             try
             {
@@ -977,7 +977,6 @@ namespace ClinicEx_2024
                     Process.Start(startInfo);
                 }
             }
-
             catch (Exception ex)
             {
                 MessageBox.Show("Ocurrió un error al guardar documento: " + ex.Message);
@@ -985,9 +984,12 @@ namespace ClinicEx_2024
             finally
             {
                 // Asegúrate de liberar los recursos COM de Excel
-                if (sheet != null) Marshal.ReleaseComObject(sheet);
-                if (workbook != null) Marshal.ReleaseComObject(workbook);
-                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
+                if (sheet != null)
+                    Marshal.ReleaseComObject(sheet);
+                if (workbook != null)
+                    Marshal.ReleaseComObject(workbook);
+                if (excelApp != null)
+                    Marshal.ReleaseComObject(excelApp);
             }
         }
 

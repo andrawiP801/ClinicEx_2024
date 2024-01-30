@@ -1,10 +1,8 @@
-﻿using ClinicEx_2024.Clases;
-using MySql.Data.MySqlClient;
-using System.Data;
+﻿using System.Data;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using static ClinicEx_2024.Clases.CPacientes;
+using ClinicEx_2024.Clases;
+using MySql.Data.MySqlClient;
 
 namespace ClinicEx_2024
 {
@@ -29,25 +27,26 @@ namespace ClinicEx_2024
         public ComboBox comboBoxSexo;
         private DataGridView dataGridViewConsultas;
         int idConsulta;
-        string textBoxPresionArterial ;
-        string textBoxTemperatura ;
+        string textBoxPresionArterial;
+        string textBoxTemperatura;
         string textBoxFrecuenciaCardiaca;
-        string textBoxFrecuenciaRespiratoria ;
-        string textBoxPeso ;
-        string textBoxTalla ;
+        string textBoxFrecuenciaRespiratoria;
+        string textBoxPeso;
+        string textBoxTalla;
         string datoIMC;
         string textBoxCintura;
         string textBoxSaturacion;
-        string textBoxGlucemia ;
+        string textBoxGlucemia;
         string textBoxAlergias;
-        string textBoxEstadoN ;
+        string textBoxEstadoN;
         string textBoxPadecimientoActual;
-        string textBoxAntecedentesImportancia ;
-        string textBoxHallazgos ;
-        string textBoxPruebasDiag ;
+        string textBoxAntecedentesImportancia;
+        string textBoxHallazgos;
+        string textBoxPruebasDiag;
         string textBoxDiagnostico;
         string textBoxTratamiento;
         string textBoxPronostico;
+
         public Principal()
         {
             InitializeComponent();
@@ -61,6 +60,7 @@ namespace ClinicEx_2024
             BackColor = ColorTranslator.FromHtml("#2984FF");
             Size = new Size(1200, 700);
             Icon = Properties.Resources.Icono;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Layout += Principal_Layout;
         }
@@ -153,7 +153,6 @@ namespace ClinicEx_2024
                 ReadOnly = true
             };
             dataGridViewConsultas.CellDoubleClick += dataGridViewConsultas_CellDoubleClick;
-            
 
             Controls.Add(dataGridViewConsultas);
         }
@@ -304,6 +303,7 @@ namespace ClinicEx_2024
                 age--;
             return age;
         }
+
         private CConexion conexion = new CConexion();
 
         private MySqlCommand PrepararComando(string query, params (string, object)[] parametros)
@@ -315,16 +315,16 @@ namespace ClinicEx_2024
             }
             return cmd;
         }
-        public void CargarDatosConsulta(int pacienteID, DateTime fechaConsulta)
-        {
-        }
+
+        public void CargarDatosConsulta(int pacienteID, DateTime fechaConsulta) { }
+
         private void buscarClick(object sender, EventArgs e)
         {
             if (buscar.Text == "Buscar")
             {
                 if (
                     string.IsNullOrWhiteSpace(textBoxNombre.Text)
-                    || string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text)                    
+                    || string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text)
                 )
                 {
                     string camposFaltantes = "";
@@ -335,7 +335,7 @@ namespace ClinicEx_2024
                     if (string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text))
                     {
                         camposFaltantes += "Apellido Paterno, ";
-                    }                    
+                    }
 
                     camposFaltantes = camposFaltantes.TrimEnd(',', ' ');
 
@@ -351,7 +351,7 @@ namespace ClinicEx_2024
                 Clases.CPacientes objP = new Clases.CPacientes();
 
                 string nombre = textBoxNombre.Text;
-                string apellidoP = textBoxApellidoPaterno.Text;                
+                string apellidoP = textBoxApellidoPaterno.Text;
                 DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value;
 
                 int pacienteID = objP.BuscarPaciente(nombre, apellidoP, fechaNacimiento);
@@ -360,7 +360,7 @@ namespace ClinicEx_2024
                     botonRefresh.Enabled = true;
                     botonRefresh.Show();
                     var paciente = objP.ObtenerDatosPaciente(pacienteID);
-                    MessageBox.Show("Paciente encontrado. ID: " + pacienteID);
+                    MessageBox.Show("Paciente encontrado");
                     buscar.Size = new Size(150, 40);
                     buscar.Text = "Nueva Consulta";
                     buscar.Location = new Point(650, 415);
@@ -383,8 +383,10 @@ namespace ClinicEx_2024
                         dataGridViewConsultas.Columns.Add(imprimirColumn);
                     }
 
-                    dataGridViewConsultas.CellContentClick -= dataGridViewConsultas_CellContentClick;
-                    dataGridViewConsultas.CellContentClick += dataGridViewConsultas_CellContentClick;
+                    dataGridViewConsultas.CellContentClick -=
+                        dataGridViewConsultas_CellContentClick;
+                    dataGridViewConsultas.CellContentClick +=
+                        dataGridViewConsultas_CellContentClick;
                     // Establecer estilos solo si son necesarios actualizar dinámicamente...
 
 
@@ -416,13 +418,15 @@ namespace ClinicEx_2024
                     dataGridViewConsultas.DefaultCellStyle.SelectionForeColor = Color.White;
 
                     // Estilo de las filas alternas
-                    dataGridViewConsultas.AlternatingRowsDefaultCellStyle.BackColor = alternateColor; // Color más suave basado en el personalizado
-                    dataGridViewConsultas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                    dataGridViewConsultas.AlternatingRowsDefaultCellStyle.BackColor =
+                        alternateColor; // Color más suave basado en el personalizado
+                    dataGridViewConsultas.AutoSizeColumnsMode =
+                        DataGridViewAutoSizeColumnsMode.Fill;
                     dataGridViewConsultas.RowHeadersVisible = false;
                     dataGridViewConsultas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                    dataGridViewConsultas.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+                    dataGridViewConsultas.CellBorderStyle =
+                        DataGridViewCellBorderStyle.SingleHorizontal;
                     dataGridViewConsultas.GridColor = Color.LightGray;
-
                 }
                 else
                 {
@@ -430,10 +434,9 @@ namespace ClinicEx_2024
                     miBoton.Enabled = true;
                 }
             }
-
             else if (buscar.Text == "Nueva Consulta")
             {
-                Clases.CPacientes objP = new Clases.CPacientes();
+                CPacientes objP = new CPacientes();
 
                 string nombre = textBoxNombre.Text;
                 string apellidoPaterno = textBoxApellidoPaterno.Text;
@@ -441,11 +444,7 @@ namespace ClinicEx_2024
                 DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value;
                 string sexo = comboBoxSexo.SelectedItem.ToString();
                 int edad = CalculateAge(fechaNacimiento);
-                int pacienteID = objP.BuscarPaciente(
-                    nombre,
-                    apellidoPaterno,                   
-                    fechaNacimiento
-                );
+                int pacienteID = objP.BuscarPaciente(nombre, apellidoPaterno, fechaNacimiento);
 
                 MainForm nform = new MainForm
                 {
@@ -455,7 +454,7 @@ namespace ClinicEx_2024
                     ApellidoMaterno = apellidoMaterno,
                     Sexo = sexo,
                     Edad = edad,
-                    FechaNac=fechaNacimiento,
+                    FechaNac = fechaNacimiento,
                 };
 
                 nform.Show();
@@ -486,7 +485,6 @@ namespace ClinicEx_2024
             }
         }
 
-
         private void ReemplazarTextoEnHojaDeExcel(
             Microsoft.Office.Interop.Excel.Worksheet sheet,
             string placeholder,
@@ -510,14 +508,20 @@ namespace ClinicEx_2024
                 foundRange = range.FindNext(foundRange);
             }
         }
-        private void dataGridViewConsultas_CellContentClick(object sender, DataGridViewCellEventArgs e)
+
+        private void dataGridViewConsultas_CellContentClick(
+            object sender,
+            DataGridViewCellEventArgs e
+        )
         {
             // Asegúrate de que la columna "Imprimir" existe y que el clic fue en esa columna
-            if (dataGridViewConsultas.Columns["Imprimir"] != null &&
-                e.ColumnIndex == dataGridViewConsultas.Columns["Imprimir"].Index &&
-                e.RowIndex >= 0)
+            if (
+                dataGridViewConsultas.Columns["Imprimir"] != null
+                && e.ColumnIndex == dataGridViewConsultas.Columns["Imprimir"].Index
+                && e.RowIndex >= 0
+            )
             {
-                Clases.CPacientes objP = new Clases.CPacientes();
+                CPacientes objP = new CPacientes();
 
                 string nombre = textBoxNombre.Text;
                 string apellidoPaterno = textBoxApellidoPaterno.Text;
@@ -526,17 +530,13 @@ namespace ClinicEx_2024
                 string sexo = comboBoxSexo.SelectedItem.ToString();
                 int edad = CalculateAge(fechaNacimiento);
 
-                int pacienteID = objP.BuscarPaciente(
-                    nombre,
-                    apellidoPaterno,
-                    fechaNacimiento
-                );
+                int pacienteID = objP.BuscarPaciente(nombre, apellidoPaterno, fechaNacimiento);
                 DateTime fechaConsulta = Convert.ToDateTime(
                     dataGridViewConsultas.Rows[e.RowIndex].Cells["FechaConsulta"].Value
                 );
 
                 string query =
-                "SELECT * FROM Consultas WHERE ID_Paciente = @ID_Paciente AND FechaConsulta = @FechaConsulta LIMIT 1";
+                    "SELECT * FROM Consultas WHERE ID_Paciente = @ID_Paciente AND FechaConsulta = @FechaConsulta LIMIT 1";
 
                 var cmd = PrepararComando(query);
                 cmd.Parameters.AddWithValue("@ID_Paciente", pacienteID);
@@ -551,9 +551,7 @@ namespace ClinicEx_2024
                         textBoxPresionArterial = reader["PresionArterial"].ToString();
                         textBoxTemperatura = reader["Temperatura"].ToString();
                         textBoxFrecuenciaCardiaca = reader["FrecuenciaCardiaca"].ToString();
-                        textBoxFrecuenciaRespiratoria = reader[
-                            "FrecuenciaRespiratoria"
-                        ].ToString();
+                        textBoxFrecuenciaRespiratoria = reader["FrecuenciaRespiratoria"].ToString();
                         textBoxPeso = reader["Peso"].ToString();
                         textBoxTalla = reader["Talla"].ToString();
                         datoIMC = reader["IMC"].ToString();
@@ -567,9 +565,7 @@ namespace ClinicEx_2024
                             "AntecedentesImportancia"
                         ].ToString();
                         textBoxHallazgos = reader["HallazgosExploracionFisica"].ToString();
-                        textBoxPruebasDiag = reader[
-                            "PruebasDiagnosticasRealizadas"
-                        ].ToString();
+                        textBoxPruebasDiag = reader["PruebasDiagnosticasRealizadas"].ToString();
                         textBoxDiagnostico = reader["Diagnostico"].ToString();
                         textBoxTratamiento = reader["Tratamiento"].ToString();
                         textBoxPronostico = reader["Pronostico"].ToString();
@@ -577,16 +573,15 @@ namespace ClinicEx_2024
                     try
                     {
                         string plantillaPath = Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    @"Resources\PruebaFormato.xlsx"
-                );
-                        MessageBox.Show(plantillaPath);
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            @"Resources\PruebaFormato.xlsx"
+                        );                        
 
                         // Verifica si el archivo de la plantilla existe
                         if (!File.Exists(plantillaPath))
                         {
                             MessageBox.Show(
-                                "No se ha encontrado el archivo de la plantilla. Asegúrate de que la ruta es correcta y el archivo existe."
+                                "No se ha encontrado el archivo de la plantilla."
                             );
                             return;
                         }
@@ -603,7 +598,6 @@ namespace ClinicEx_2024
                         {
                             workbook = excelApp.Workbooks.Open(plantillaPath);
                             sheet = workbook.Sheets[1];
-
 
                             MainForm nform = new MainForm
                             {
@@ -626,17 +620,28 @@ namespace ClinicEx_2024
                             ReemplazarTextoEnHojaDeExcel(
                                 sheet,
                                 "{Nombre}",
-                                textBoxNombre.Text + " " + textBoxApellidoPaterno.Text + " " + textBoxApellidoMaterno.Text
+                                textBoxNombre.Text
+                                    + " "
+                                    + textBoxApellidoPaterno.Text
+                                    + " "
+                                    + textBoxApellidoMaterno.Text
                             );
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Edad}", edad.ToString());
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Sexo}", comboBoxSexo.Text);
                             string formattedDate = fechaNacimiento.ToString("dd/MM/yyyy");
                             string formattedDate2 = fechaConsulta.ToString("dd/MM/yyyy");
 
-
                             ReemplazarTextoEnHojaDeExcel(sheet, "{fechaNacimiento}", formattedDate);
-                            ReemplazarTextoEnHojaDeExcel(sheet, "{PA}", textBoxPresionArterial + " mmHg");
-                            ReemplazarTextoEnHojaDeExcel(sheet, "{TEMP}", textBoxTemperatura + " °C");
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{PA}",
+                                textBoxPresionArterial + " mmHg"
+                            );
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{TEMP}",
+                                textBoxTemperatura + " °C"
+                            );
                             ReemplazarTextoEnHojaDeExcel(
                                 sheet,
                                 "{FC}",
@@ -650,10 +655,22 @@ namespace ClinicEx_2024
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Peso}", textBoxPeso + " kg");
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Talla}", textBoxTalla + " cm");
                             ReemplazarTextoEnHojaDeExcel(sheet, "{IMC}", datoIMC);
-                            ReemplazarTextoEnHojaDeExcel(sheet, "{Cintura}", textBoxCintura + " cm");
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{Cintura}",
+                                textBoxCintura + " cm"
+                            );
                             ReemplazarTextoEnHojaDeExcel(sheet, "{SAT}", textBoxSaturacion + " O2");
-                            ReemplazarTextoEnHojaDeExcel(sheet, "{Glucosa}", textBoxGlucemia + " mg/dl");
-                            ReemplazarTextoEnHojaDeExcel(sheet, "{Al}", "Alergias: " + textBoxAlergias);
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{Glucosa}",
+                                textBoxGlucemia + " mg/dl"
+                            );
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{Al}",
+                                "Alergias: " + textBoxAlergias
+                            );
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Fecha}", formattedDate2);
                             ReemplazarTextoEnHojaDeExcel(sheet, "{eNutricional}", textBoxEstadoN);
                             ReemplazarTextoEnHojaDeExcel(
@@ -667,13 +684,25 @@ namespace ClinicEx_2024
                                 textBoxAntecedentesImportancia
                             );
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Hallazgos}", textBoxHallazgos);
-                            ReemplazarTextoEnHojaDeExcel(sheet, "{PruebasDiag}", textBoxPruebasDiag);
-                            ReemplazarTextoEnHojaDeExcel(sheet, "{Diagnostico}", textBoxDiagnostico);
-                            ReemplazarTextoEnHojaDeExcel(sheet, "{Tratamiento}", textBoxTratamiento);
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{PruebasDiag}",
+                                textBoxPruebasDiag
+                            );
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{Diagnostico}",
+                                textBoxDiagnostico
+                            );
+                            ReemplazarTextoEnHojaDeExcel(
+                                sheet,
+                                "{Tratamiento}",
+                                textBoxTratamiento
+                            );
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Pronostico}", textBoxPronostico);
                             string pdfPath = Path.Combine(
-                            AppDomain.CurrentDomain.BaseDirectory,
-                          @"Resources\ConsultaImpresa.pdf"
+                                AppDomain.CurrentDomain.BaseDirectory,
+                                @"Resources\ConsultaImpresa.pdf"
                             );
                             // Asegúrate de que el libro de trabajo y la hoja estén inicializados correctamente
                             if (workbook != null && sheet != null)
@@ -704,16 +733,16 @@ namespace ClinicEx_2024
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Ocurrió un error al imprimir el documento: " + ex.Message);
+                            MessageBox.Show(
+                                "Ocurrió un error al imprimir el documento: " + ex.Message
+                            );
                         }
                     }
                     finally
                     {
-
                         conexion.cerrarConexion();
                     }
                 }
-
             }
         }
 
@@ -733,11 +762,7 @@ namespace ClinicEx_2024
                 string sexo = comboBoxSexo.SelectedItem.ToString();
                 int edad = CalculateAge(fechaNacimiento);
 
-                int pacienteID = objP.BuscarPaciente(
-                    nombre,
-                    apellidoPaterno,
-                    fechaNacimiento
-                );
+                int pacienteID = objP.BuscarPaciente(nombre, apellidoPaterno, fechaNacimiento);
                 DateTime fechaConsulta = Convert.ToDateTime(
                     dataGridViewConsultas.Rows[e.RowIndex].Cells["FechaConsulta"].Value
                 );
@@ -757,7 +782,6 @@ namespace ClinicEx_2024
                 this.Hide();
                 nform.FormClosed += (s, args) => this.Show();
             }
-            
         }
 
         private void refreshClick(object? sender, EventArgs e)

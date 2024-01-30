@@ -1,6 +1,6 @@
 ﻿namespace ClinicEx_2024
 {
-    partial class Form1: Form
+    partial class Form1 : Form
     {
         /// <summary>
         ///  Required designer variable.

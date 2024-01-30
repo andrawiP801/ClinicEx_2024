@@ -291,7 +291,7 @@ namespace ClinicEx_2024.Clases
                     throw new SinImagenesException("No se encontraron imágenes registradas");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw; 
             }
