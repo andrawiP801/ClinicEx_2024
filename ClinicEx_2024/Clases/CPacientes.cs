@@ -42,7 +42,7 @@ namespace ClinicEx_2024.Clases
                 );
 
                 int pacienteID = Convert.ToInt32(cmd.ExecuteScalar());
-                MessageBox.Show($"Paciente agregado. ID: {pacienteID}");
+                MessageBox.Show($"Paciente agregado.");
                 return pacienteID;
             }
             catch (Exception ex)

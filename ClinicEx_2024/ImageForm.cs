@@ -60,7 +60,7 @@ namespace ClinicEx_2024
 
         private void guardarClick(object? sender, EventArgs e)
         {
-            if (MessageBox.Show("¿Desea guardar la imagen en la base de datos?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("¿Desea guardar la imagen?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 MemoryStream ms = new MemoryStream();
                 pictureBox1.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Png); 
@@ -71,7 +71,7 @@ namespace ClinicEx_2024
 
                 if (newImageId > 0)
                 {
-                    MessageBox.Show("La imagen ha sido guardada con éxito. ID de imagen: " + newImageId);
+                    MessageBox.Show("La imagen ha sido guardada con éxito.");
                     this.Close();
                 }
             }

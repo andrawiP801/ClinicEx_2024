@@ -6,6 +6,14 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Logo1.ico</ApplicationIcon>
+    <Copyright>Copyrigth © 2024</Copyright>
+    <Title>ClinicEx_2024</Title>
+    <PackageId>ClinicEx_2024</PackageId>
+    <Authors>Andrawi&amp;Heidi</Authors>
+    <Company>Andrawi&amp;Heidi</Company>
+    <Product>ClinicEx_2024</Product>
+    <Description>Sistema de Expedientes medicos para uso del Consultorio San Francisco</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Logo1.ico" />
     <Content Include="Resources\Formatoexp.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
