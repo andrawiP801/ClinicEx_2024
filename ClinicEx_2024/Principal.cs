@@ -255,12 +255,38 @@ namespace ClinicEx_2024
                 return;
             }
 
+            // Validar la fecha de nacimiento
+            DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value.Date;
+            DateTime currentDate = DateTime.Now;
+            if (fechaNacimiento > currentDate)
+            {
+                MessageBox.Show(
+                    "La fecha de nacimiento no puede ser en el futuro.",
+                    "Fecha de Nacimiento Inválida",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
+            int age = CalculateAge(fechaNacimiento);
+            if (age > 120)
+            {
+                MessageBox.Show(
+                    "La fecha de nacimiento no es válida.",
+                    "Fecha de Nacimiento Inválida",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
             Clases.CPacientes objP = new Clases.CPacientes();
 
             string nombre = textBoxNombre.Text;
             string apellidoP = textBoxApellidoPaterno.Text;
             string apellidoM = textBoxApellidoMaterno.Text;
-            DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value.Date;
+            fechaNacimiento = dateTimePickerFechaNacimiento.Value.Date;
             string sexo = comboBoxSexo.SelectedItem.ToString();
 
             int pacienteID = objP.GuardarPaciente(
