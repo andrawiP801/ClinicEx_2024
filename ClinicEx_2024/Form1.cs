@@ -445,7 +445,6 @@ namespace ClinicEx_2024
             }
         }
 
-
         private void CambiarFuenteLabels(
             Control controlPadre,
             string nombreFuente,
@@ -490,9 +489,15 @@ namespace ClinicEx_2024
             var yGral = labelGral.Location.Y;
             var yDireccion = labelDireccion.Location.Y;
 
-            labelNombre.Location = new Point((this.ClientSize.Width - labelNombre.Width) / 2, yNombre);
+            labelNombre.Location = new Point(
+                (this.ClientSize.Width - labelNombre.Width) / 2,
+                yNombre
+            );
             labelGral.Location = new Point((this.ClientSize.Width - labelGral.Width) / 2, yGral);
-            labelDireccion.Location = new Point((this.ClientSize.Width - labelDireccion.Width) / 2, yDireccion);
+            labelDireccion.Location = new Point(
+                (this.ClientSize.Width - labelDireccion.Width) / 2,
+                yDireccion
+            );
         }
 
         private CConexion conexion = new CConexion();
@@ -616,6 +621,7 @@ namespace ClinicEx_2024
 
             var camposFaltantes = new List<string>();
             var camposInvalidos = new List<string>();
+            var mensajesError = new List<string>();
 
             if (
                 string.IsNullOrWhiteSpace(textBoxTemperatura.Text)
@@ -668,6 +674,23 @@ namespace ClinicEx_2024
                         : camposInvalidos
                 ).Add("Saturación de Oxígeno");
 
+            // Validación del IMC
+            decimal imc;
+            if (
+                !decimal.TryParse(datoIMC.Text, out imc) 
+                || imc < 0 
+            )
+            {
+                camposInvalidos.Add("IMC"); 
+            }
+            else
+            {
+                int imcEntero = (int)imc;
+                if (imcEntero >= 100) 
+                {
+                    mensajesError.Add("Verifique que el peso y talla indicados son correctos");
+                }
+            }
             if (string.IsNullOrWhiteSpace(textBoxEstadoN.Text))
                 camposFaltantes.Add("Estado Nutricional");
             if (string.IsNullOrWhiteSpace(textBoxAlergias.Text))
@@ -684,8 +707,7 @@ namespace ClinicEx_2024
                 camposFaltantes.Add("Diagnóstico");
             if (string.IsNullOrWhiteSpace(textBoxTratamiento.Text))
                 camposFaltantes.Add("Tratamiento");
-
-            var mensajesError = new List<string>();
+            
             if (camposFaltantes.Any())
                 mensajesError.Add("Campos faltantes: " + string.Join(", ", camposFaltantes));
             if (camposInvalidos.Any())
@@ -710,7 +732,7 @@ namespace ClinicEx_2024
                 frecuenciaRespiratoria = int.Parse(textBoxFrecuenciaRespiratoria.Text);
                 peso = decimal.Parse(textBoxPeso.Text);
                 talla = decimal.Parse(textBoxTalla.Text);
-                decimal imc = decimal.Parse(datoIMC.Text); // Asegúrate de que esto es un decimal
+                imc = decimal.Parse(datoIMC.Text); // Asegúrate de que esto es un decimal
                 decimal circunferenciaCintura = string.IsNullOrEmpty(textBoxCintura.Text)
                     ? 0
                     : decimal.Parse(textBoxCintura.Text);
@@ -862,7 +884,7 @@ namespace ClinicEx_2024
             string plantillaPath = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"Resources\PruebaFormato.xlsx"
-            );            
+            );
 
             // Verifica si el archivo de la plantilla existe
             if (!File.Exists(plantillaPath))
