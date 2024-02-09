@@ -238,12 +238,10 @@ namespace ClinicEx_2024
         private void miBotonClick(object sender, EventArgs e)
         {
             if (
-                string.IsNullOrWhiteSpace(textBoxNombre.Text)
-                || string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text)
-                || (
-                    comboBoxSexo.SelectedItem == null
-                    || string.IsNullOrWhiteSpace(comboBoxSexo.SelectedItem.ToString())
-                )
+                string.IsNullOrWhiteSpace(textBoxNombre.Text) ||
+                string.IsNullOrWhiteSpace(textBoxApellidoPaterno.Text) ||
+                comboBoxSexo.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(comboBoxSexo.SelectedItem.ToString())
             )
             {
                 MessageBox.Show(
@@ -255,13 +253,12 @@ namespace ClinicEx_2024
                 return;
             }
 
-            // Validar la fecha de nacimiento
             DateTime fechaNacimiento = dateTimePickerFechaNacimiento.Value.Date;
-            DateTime currentDate = DateTime.Now;
-            if (fechaNacimiento > currentDate)
+            DateTime currentDate = DateTime.Today;
+            if (fechaNacimiento >= currentDate)
             {
                 MessageBox.Show(
-                    "La fecha de nacimiento no puede ser en el futuro.",
+                    "La fecha de nacimiento no puede ser hoy o en el futuro.",
                     "Fecha de Nacimiento Inválida",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
@@ -282,11 +279,9 @@ namespace ClinicEx_2024
             }
 
             Clases.CPacientes objP = new Clases.CPacientes();
-
             string nombre = textBoxNombre.Text;
             string apellidoP = textBoxApellidoPaterno.Text;
             string apellidoM = textBoxApellidoMaterno.Text;
-            fechaNacimiento = dateTimePickerFechaNacimiento.Value.Date;
             string sexo = comboBoxSexo.SelectedItem.ToString();
 
             int pacienteID = objP.GuardarPaciente(
@@ -296,12 +291,20 @@ namespace ClinicEx_2024
                 fechaNacimiento,
                 sexo
             );
-        }
 
+            if (pacienteID > 0)
+            {
+                MessageBox.Show("Paciente agregado con éxito.", "Operación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("No se pudo agregar el paciente.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void dateTimePickerFechaNacimiento_ValueChanged(object sender, EventArgs e)
         {
             DateTime birthDate = dateTimePickerFechaNacimiento.Value;
-            DateTime currentDate = DateTime.Now;
+            DateTime currentDate = DateTime.Today;
 
             if (birthDate > currentDate)
             {
@@ -534,13 +537,8 @@ namespace ClinicEx_2024
                 foundRange = range.FindNext(foundRange);
             }
         }
-
-        private void dataGridViewConsultas_CellContentClick(
-            object sender,
-            DataGridViewCellEventArgs e
-        )
+        private void dataGridViewConsultas_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Asegúrate de que la columna "Imprimir" existe y que el clic fue en esa columna
             if (
                 dataGridViewConsultas.Columns["Imprimir"] != null
                 && e.ColumnIndex == dataGridViewConsultas.Columns["Imprimir"].Index
@@ -596,36 +594,29 @@ namespace ClinicEx_2024
                         textBoxTratamiento = reader["Tratamiento"].ToString();
                         textBoxPronostico = reader["Pronostico"].ToString();
                     }
+                }
+
+                    try
+                {
+                    // Asegúrate de que el archivo de la plantilla exista.
+                    string plantillaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Resources\PruebaFormato.xlsx");
+                    if (!File.Exists(plantillaPath))
+                    {
+                        MessageBox.Show("No se ha encontrado el archivo de la plantilla.");
+                        return;
+                    }
+
+                    // Crear una instancia de Excel.
+                    var excelApp = new Microsoft.Office.Interop.Excel.Application();
+                    Microsoft.Office.Interop.Excel.Workbook workbook = null;
+                    Microsoft.Office.Interop.Excel.Worksheet sheet = null;
+
                     try
                     {
-                        string plantillaPath = Path.Combine(
-                            AppDomain.CurrentDomain.BaseDirectory,
-                            @"Resources\PruebaFormato.xlsx"
-                        );                        
+                        workbook = excelApp.Workbooks.Open(plantillaPath);
+                        sheet = workbook.Sheets[1];
 
-                        // Verifica si el archivo de la plantilla existe
-                        if (!File.Exists(plantillaPath))
-                        {
-                            MessageBox.Show(
-                                "No se ha encontrado el archivo de la plantilla."
-                            );
-                            return;
-                        }
-
-                        var excelApp = new Microsoft.Office.Interop.Excel.Application
-                        {
-                            Visible = false // Hace visible la aplicación Excel
-                        };
-
-                        Microsoft.Office.Interop.Excel.Workbook workbook = null;
-                        Microsoft.Office.Interop.Excel.Worksheet sheet = null;
-
-                        try
-                        {
-                            workbook = excelApp.Workbooks.Open(plantillaPath);
-                            sheet = workbook.Sheets[1];
-
-                            MainForm nform = new MainForm
+                         MainForm nform = new MainForm
                             {
                                 PacienteID = pacienteID,
                                 Nombre = nombre,
@@ -726,53 +717,74 @@ namespace ClinicEx_2024
                                 textBoxTratamiento
                             );
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Pronostico}", textBoxPronostico);
-                            string pdfPath = Path.Combine(
-                                AppDomain.CurrentDomain.BaseDirectory,
-                                @"Resources\ConsultaImpresa.pdf"
-                            );
-                            // Asegúrate de que el libro de trabajo y la hoja estén inicializados correctamente
-                            if (workbook != null && sheet != null)
-                            {
-                                // Guardar la hoja actual como PDF
-                                sheet.ExportAsFixedFormat(
-                                    Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF,
-                                    pdfPath
-                                );
 
-                                // Cerrar el libro y la aplicación de Excel adecuadamente
-                                workbook.Close(false);
-                                excelApp.Quit();
+                        // Obtiene la ruta del directorio del ejecutable.
+                        string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        string pdfFileName = "ConsultaImpresa.pdf";
+                        string pdfPath = Path.Combine(documentsPath, pdfFileName);
 
-                                // Liberar los recursos de COM de Excel
-                                Marshal.ReleaseComObject(sheet);
-                                Marshal.ReleaseComObject(workbook);
-                                Marshal.ReleaseComObject(excelApp);
+                        // Guardar la hoja como PDF.
+                        sheet.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, pdfPath);
 
-                                // Abrir el archivo PDF con la aplicación predeterminada
-                                ProcessStartInfo startInfo = new ProcessStartInfo
-                                {
-                                    FileName = pdfPath,
-                                    UseShellExecute = true
-                                };
-                                Process.Start(startInfo);
-                            }
-                        }
-                        catch (Exception ex)
+                        // Abre el archivo PDF con la aplicación predeterminada.
+                        ProcessStartInfo startInfo = new ProcessStartInfo
                         {
-                            MessageBox.Show(
-                                "Ocurrió un error al imprimir el documento: " + ex.Message
-                            );
-                        }
+                            FileName = pdfPath,
+                            UseShellExecute = true
+                        };
+                        Process.Start(startInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        
+                        MessageBox.Show(
+                            "Ocurrió un error al imprimir el documento: " + ex.Message +
+                            "\nStack Trace: " + ex.StackTrace
+                        );
+
+                        // Escribe el error en un archivo de log para un análisis posterior.
+                        string logPath = Path.Combine(
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            "errorLog.txt"
+                        );
+                        File.AppendAllText(logPath, $"{DateTime.Now}\n{ex.Message}\n{ex.StackTrace}\n\n");
                     }
                     finally
                     {
-                        conexion.cerrarConexion();
+                        // Asegúrate de liberar los recursos de COM.
+                        if (sheet != null)
+                        {
+                            Marshal.ReleaseComObject(sheet);
+                            sheet = null; // No es estrictamente necesario pero es buena práctica.
+                        }
+                        if (workbook != null)
+                        {
+                            workbook.Close(false); // Añade false para no guardar los cambios
+                            Marshal.ReleaseComObject(workbook);
+                            workbook = null; // No es estrictamente necesario pero es buena práctica.
+                        }
+                        if (excelApp != null)
+                        {
+                            excelApp.Quit();
+                            Marshal.ReleaseComObject(excelApp);
+                            excelApp = null; // No es estrictamente necesario pero es buena práctica.
+                        }
+
+                        GC.Collect(); // Forzar recolección de basura
+                        GC.WaitForPendingFinalizers(); // Espera a que la recolección de basura finalice
                     }
+
+                }
+                finally
+                {
+                    conexion.cerrarConexion();
                 }
             }
         }
 
-        private void dataGridViewConsultas_CellDoubleClick(
+                                
+  
+             private void dataGridViewConsultas_CellDoubleClick(
             object sender,
             DataGridViewCellEventArgs e
         )

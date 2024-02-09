@@ -942,10 +942,11 @@ namespace ClinicEx_2024
             {
                 MessageBox.Show("Ocurrió un error al guardar el documento: " + ex.Message);
             }
-            string pdfPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                @"Resources\ConsultaImpresa.pdf"
-            );
+            string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string pdfFileName = "ConsultaImpresa.pdf";
+            string pdfPath = Path.Combine(documentsPath, pdfFileName);
+
+            
 
             try
             {

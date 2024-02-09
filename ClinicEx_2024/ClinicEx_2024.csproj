@@ -46,12 +46,6 @@
 
   <ItemGroup>
     <Content Include="Logo1.ico" />
-    <Content Include="Resources\Formatoexp.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\PruebaFormato.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\PruebaFormato.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
