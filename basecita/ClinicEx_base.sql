@@ -21,7 +21,7 @@ CREATE TABLE Consultas (
     FrecuenciaRespiratoria INT,
     Peso DECIMAL(5,2),
     Talla DECIMAL(5,2),
-    IMC DECIMAL(5,2),
+    IMC DECIMAL(2,2),
     CircunferenciaCintura DECIMAL(5,2),
     SaturacionOxigeno DECIMAL(5,2),
     Glucemia DECIMAL(5,2),
