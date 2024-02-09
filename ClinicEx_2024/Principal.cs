@@ -637,11 +637,11 @@ namespace ClinicEx_2024
                             ReemplazarTextoEnHojaDeExcel(
                                 sheet,
                                 "{Nombre}",
-                                textBoxNombre.Text
+                                textBoxNombre.Text.ToUpper()
                                     + " "
-                                    + textBoxApellidoPaterno.Text
+                                    + textBoxApellidoPaterno.Text.ToUpper()
                                     + " "
-                                    + textBoxApellidoMaterno.Text
+                                    + textBoxApellidoMaterno.Text.ToUpper()
                             );
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Edad}", edad.ToString());
                             ReemplazarTextoEnHojaDeExcel(sheet, "{Sexo}", comboBoxSexo.Text);

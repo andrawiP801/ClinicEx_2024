@@ -915,7 +915,7 @@ namespace ClinicEx_2024
                 ReemplazarTextoEnHojaDeExcel(
                     sheet,
                     "{Nombre}",
-                    textBoxNombreP.Text + " " + textBoxApellidoP.Text + " " + textBoxApellidoM.Text
+                    textBoxNombreP.Text.ToUpper() + " " + textBoxApellidoP.Text.ToUpper() + " " + textBoxApellidoM.Text.ToUpper()
                 );
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Edad}", textBoxEdad.Text);
                 ReemplazarTextoEnHojaDeExcel(sheet, "{Sexo}", comboBoxSexo.Text);
