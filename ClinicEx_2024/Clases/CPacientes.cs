@@ -30,6 +30,11 @@ namespace ClinicEx_2024.Clases
         {
             try
             {
+                int pacienteExistenteID = BuscarPaciente(nombre, apellidoP, fechaNacimiento);
+                if (pacienteExistenteID > 0)
+                {
+                    return -1; 
+                }
                 string query =
                     "INSERT INTO Pacientes (Nombre, ApellidoP, ApellidoM, FechaN, Sexo) VALUES (@Nombre, @ApellidoP, @ApellidoM, @FechaN, @Sexo); SELECT LAST_INSERT_ID();";
                 var cmd = PrepararComando(
@@ -143,11 +148,7 @@ namespace ClinicEx_2024.Clases
             return idConsulta;
         }
 
-        public int BuscarPaciente(
-            string nombre,
-            string apellidoP,            
-            DateTime fechaNacimiento
-        )
+        public int BuscarPaciente(string nombre, string apellidoP, DateTime fechaNacimiento)
         {
             try
             {
@@ -156,7 +157,7 @@ namespace ClinicEx_2024.Clases
                 var cmd = PrepararComando(
                     query,
                     ("@Nombre", nombre),
-                    ("@ApellidoP", apellidoP),                    
+                    ("@ApellidoP", apellidoP),
                     ("@FechaN", fechaNacimiento.Date)
                 );
 
@@ -267,7 +268,8 @@ namespace ClinicEx_2024.Clases
         // Excepción personalizada
         public class SinImagenesException : Exception
         {
-            public SinImagenesException(string message) : base(message) { }
+            public SinImagenesException(string message)
+                : base(message) { }
         }
 
         public List<int> ObtenerIDsImagenesNoRegistradas()
@@ -275,7 +277,8 @@ namespace ClinicEx_2024.Clases
             List<int> idsImagenes = new List<int>();
             try
             {
-                string query = "SELECT ID_Imagen FROM Imagenes WHERE ID_Imagen NOT IN (SELECT ID_Imagen FROM Expediente)";
+                string query =
+                    "SELECT ID_Imagen FROM Imagenes WHERE ID_Imagen NOT IN (SELECT ID_Imagen FROM Expediente)";
                 var cmd = PrepararComando(query);
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -292,7 +295,7 @@ namespace ClinicEx_2024.Clases
             }
             catch (Exception)
             {
-                throw; 
+                throw;
             }
             finally
             {
@@ -311,8 +314,13 @@ namespace ClinicEx_2024.Clases
                 {
                     foreach (int idImagen in idsImagenes)
                     {
-                        string query = "INSERT INTO Expediente (ID_Consulta, ID_Imagen) VALUES (@ID_Consulta, @ID_Imagen);";
-                        var cmd = PrepararComando(query, ("@ID_Consulta", idConsulta), ("@ID_Imagen", idImagen));
+                        string query =
+                            "INSERT INTO Expediente (ID_Consulta, ID_Imagen) VALUES (@ID_Consulta, @ID_Imagen);";
+                        var cmd = PrepararComando(
+                            query,
+                            ("@ID_Consulta", idConsulta),
+                            ("@ID_Imagen", idImagen)
+                        );
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -327,13 +335,14 @@ namespace ClinicEx_2024.Clases
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al actualizar el expediente con las imágenes: {ex.Message}");
+                MessageBox.Show(
+                    $"Error al actualizar el expediente con las imágenes: {ex.Message}"
+                );
             }
             finally
             {
                 conexion.cerrarConexion();
             }
         }
-
     }
 }

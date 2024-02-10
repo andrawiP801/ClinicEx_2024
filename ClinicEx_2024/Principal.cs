@@ -291,10 +291,64 @@ namespace ClinicEx_2024
                 fechaNacimiento,
                 sexo
             );
-
-            if (pacienteID > 0)
+            
+            if (pacienteID == -1)
             {
-                MessageBox.Show("Paciente agregado con éxito.", "Operación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                        "El paciente ya está registrado en la base de datos.",
+                        "Registro Duplicado",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
+            }
+            else if (pacienteID > 0)
+            {
+                MessageBox.Show("Paciente agregado con éxito.", "Operación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);                
+
+                nombre = textBoxNombre.Text;
+                string apellidoPaterno = textBoxApellidoPaterno.Text;
+                string apellidoMaterno = textBoxApellidoMaterno.Text;
+                fechaNacimiento = dateTimePickerFechaNacimiento.Value;
+                sexo = comboBoxSexo.SelectedItem.ToString();
+                int edad = CalculateAge(fechaNacimiento);
+                pacienteID = objP.BuscarPaciente(nombre, apellidoPaterno, fechaNacimiento);
+
+                MainForm nform = new MainForm
+                {
+                    PacienteID = pacienteID,
+                    Nombre = nombre,
+                    ApellidoPaterno = apellidoPaterno,
+                    ApellidoMaterno = apellidoMaterno,
+                    Sexo = sexo,
+                    Edad = edad,
+                    FechaNac = fechaNacimiento,
+                };
+
+                nform.Show();
+                textBoxNombre.Text = "";
+                textBoxApellidoPaterno.Text = "";
+                textBoxApellidoMaterno.Text = "";
+                dateTimePickerFechaNacimiento.Value = DateTime.Now;
+                comboBoxSexo.SelectedIndex = -1;
+                buscar.Text = "Buscar";
+                buscar.Location = new Point(700, 410);
+                buscar.Width = 100;
+                if (dataGridViewConsultas.DataSource != null)
+                {
+                    dataGridViewConsultas.DataSource = null;
+                }
+                else
+                {
+                    dataGridViewConsultas.Rows.Clear();
+                }
+
+                dataGridViewConsultas.Columns.Clear();
+                miBoton.Enabled = true;
+                botonRefresh.Enabled = false;
+                botonRefresh.Hide();
+                textBoxNombre.Focus();
+                this.Hide();
+                nform.FormClosed += (s, args) => this.Show();
             }
             else
             {
